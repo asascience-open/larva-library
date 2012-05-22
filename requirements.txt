@@ -1,0 +1,4 @@
+Flask==0.8
+Flask-MongoKit==0.4
+Flask-OAuth
+gunicorn==0.13.4

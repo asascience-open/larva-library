@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block body %}
+    <form action="{{ url_for('add_report') }}" method=post class=add-report>
+        <dl>
+            <dt>Currents:
+            <dd><input type=text size=30 name=currents>
+            <dt>Waves:
+            <dd><input type=text size=30 name=waves>
+            <dt>Winds:
+            <dd><input type=text size=30 name=winds>
+            <dt>Comments:
+            <dd><input type=text size=30 name=comments>
+            <dd><input type=submit value=Share>
+        </dl>
+    </form>
+    <ul class=reports>
+        {% for report in reports %}
+            <li>{{ report.waves }}</li>
+            <li>{{ report.winds|safe }}</li>
+            <li>{{ report.currents|safe }}</li>
+            <li>{{ report.comments|safe }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
