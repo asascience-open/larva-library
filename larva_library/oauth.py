@@ -245,6 +245,8 @@ provided, the data is passed as it and the
 `format` parameter is ignored.
 :return: an :class:`OAuthResponse` object.
 """
+        print 'calling url ' + url
+        print 'with data ' + data 
         headers = dict(headers or {})
         client = self.make_client()
         url = self.expand_url(url)
