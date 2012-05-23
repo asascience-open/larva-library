@@ -64,7 +64,7 @@ def login_google():
 @app.route('/login/google_auth')
 @google.authorized_handler
 def google_authorized(resp):
-    if resp is None
+    if resp is None:
         flash(u'Access denied.')
         return redirect(url_for('show_reports'))
     
