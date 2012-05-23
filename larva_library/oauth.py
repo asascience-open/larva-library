@@ -365,7 +365,7 @@ function.
             body = ''
         else:
             url = self.expand_url(self.access_token_url)
-            body = remote_args
+            body = url_encode(remote_args)
             
         print 'making request in oauth2'
         print url
