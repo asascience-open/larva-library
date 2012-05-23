@@ -55,6 +55,25 @@ def twitter_authorized(resp):
     flash('Signed in as ' + session['user_id'])
     return redirect(next_url)
 
+#GOOGLE
+@app.route('/login_google')
+def login_google():
+    return google.authorize(callback=url_for('google_auth',
+        next=request.args.get('next') or request.referrer or None))
+    
+@app.route('/login/google_auth')
+@google.authorized_handler
+def google_authorized(resp):
+    if resp is None
+        flash(u'Access denied.')
+        return redirect(url_for('show_reports'))
+    
+    next_url = request.args.get('next') or url_for('show_reports')
+    print resp
+    print dir(resp)
+    print vars(resp)
+    return redirect(next_url)
+
 @twitter.tokengetter
 def get_twitter_token():
     if session.get('twitter_token') and session.get('twitter_secret'):

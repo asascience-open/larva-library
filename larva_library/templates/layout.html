@@ -9,6 +9,7 @@
         {% else %}
             <li><a href="{{ url_for('login_facebook') }}">sign in w/ facebook</a></li>
             <li><a href="{{ url_for('login_twitter') }}">sign in w/ twitter</a></li>
+            <li><a href="{{ url_for('login_google') }}">sign in w/ google</a>
         {% endif %}
     </ul>
     {% for message in get_flashed_messages() %}
