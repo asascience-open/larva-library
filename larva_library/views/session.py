@@ -59,7 +59,7 @@ def twitter_authorized(resp):
 @app.route('/login_google')
 def login_google():
     return google.authorize(callback=url_for('google_authorized',
-        next=None))
+        next=request.args.get('next') or request.referrer or None))
     
 @app.route('/google_auth')
 @google.authorized_handler
