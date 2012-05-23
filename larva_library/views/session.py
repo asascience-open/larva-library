@@ -82,5 +82,10 @@ def google_authorized(resp):
         return redirect(url_for('show_reports'))
     print 'in google_authorized'
     print resp.items()
+    session['google_token'] = resp['access_token']
+    session['user_id'] = google.request('https://www.googleapis.com/oauth2/v1/userinfo',data={'access_token':session['google_token']})
+    print 'made request to google api'
+    print session['user_id']
+    flash('Signed in as ')
     #session['google_token'] = resp['access_token']
     return redirect(url_for('show_reports'))
