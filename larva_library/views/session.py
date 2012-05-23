@@ -58,10 +58,6 @@ def twitter_authorized(resp):
 #GOOGLE
 @app.route('/login_google')
 def login_google():
-    print url_for('google_authorized')
-    print url_for('twitter_authorized')
-    print url_for('facebook_authorized')
-    return redirect(url_for('google_authorized'))
     return google.authorize(callback=url_for('google_authorized',
         next=None))
     
