@@ -80,6 +80,6 @@ def google_authorized(resp):
         return redirect(url_for('show_reports'))
     print 'in google_authorized'
     print dir(resp)
-    print vars(resp)
+    print resp.items()
     #session['google_token'] = resp['access_token']
     return redirect(url_for('show_reports'))
