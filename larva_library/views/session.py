@@ -77,9 +77,5 @@ def google_authorized(resp):
         flash(u'Access denied.')
         return redirect(url_for('show_reports'))
     
-    print resp
-    print dir(resp)
-    
-    next_url = request.args.get('next') or url_for('show_reports')
     #session['google_token'] = resp['access_token']
-    return redirect(next_url)
+    return redirect(url_for('show_reports'))
