@@ -25,6 +25,11 @@ twitter = oauth.remote_app('twitter',
     consumer_key=app.config.get('TWITTER_CONSUMER_KEY'),
     consumer_secret=app.config.get('TWITTER_CONSUMER_SECRET')
 )
+google=oauth.remote_app('google',
+    base_url='https://accounts.google.com/',
+    request_token_url='https://accounts.google.com/o/oauth2/auth',
+    access_token_url='https://www.googleapis.com/oauth2/v1/tokeninfo',
+    authorize_url='https://accounts.google.com/o/oauth2/auth')
 
 # Create connection to Mongo
 connection = Connection(host=app.config.get('MONGODB_HOST'),
