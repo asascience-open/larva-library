@@ -357,8 +357,8 @@ function.
             'redirect_uri': session.get(self.name + '_oauthredir')
         }
         # need this for google requests
-        if 'grant_type' in request_token_params:
-            remote_args['grant_type'] = request_token_params['grant_type']
+        if 'grant_type' in self.request_token_params:
+            remote_args['grant_type'] = self.request_token_params['grant_type']
             
         if self.access_token_method != 'POST':
             url = add_query(self.expand_url(self.access_token_url), remote_args)
