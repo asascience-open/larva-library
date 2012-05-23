@@ -359,7 +359,7 @@ function.
         if resp['status'] != '200':
             print 'status was not 200, instead:'
             print resp['status']
-            print resp['message']
+            print vars(resp)
             raise OAuthException('Invalid response from ' + self.name, data)
         return data
 
