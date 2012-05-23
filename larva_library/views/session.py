@@ -58,7 +58,9 @@ def twitter_authorized(resp):
 #GOOGLE
 @app.route('/login_google')
 def login_google():
-    return google.authorize(callback=url_for('google_authorized'))
+    # for some reason url_for('google_authorized') is only returning '/google_auth' instead of the actual url like the other use cases
+    # hardcoding the url for now
+    return google.authorize(callback='http://larva-library.herokuapp.com/google_auth')
     
 @app.route('/google_auth')
 @google.authorized_handler
