@@ -55,6 +55,13 @@ def twitter_authorized(resp):
     flash('Signed in as ' + session['user_id'])
     return redirect(next_url)
 
+@twitter.tokengetter
+def get_twitter_token():
+    if session.get('twitter_token') and session.get('twitter_secret'):
+        return session.get('twitter_token'), session.get('twitter_secret')
+    else:
+        return None
+
 #GOOGLE
 @app.route('/login_google')
 def login_google():
@@ -70,14 +77,5 @@ def google_authorized(resp):
         return redirect(url_for('show_reports'))
     
     next_url = request.args.get('next') or url_for('show_reports')
-    print resp
-    print dir(resp)
-    print vars(resp)
+    session['google_token'] = resp['access_token']
     return redirect(next_url)
-
-@twitter.tokengetter
-def get_twitter_token():
-    if session.get('twitter_token') and session.get('twitter_secret'):
-        return session.get('twitter_token'), session.get('twitter_secret')
-    else:
-        return None
