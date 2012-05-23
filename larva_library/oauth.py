@@ -247,7 +247,7 @@ provided, the data is passed as it and the
 """
         print 'calling url ' + url
         print 'with data: '
-        print dir(data)
+        print data.items()
         headers = dict(headers or {})
         client = self.make_client()
         url = self.expand_url(url)
