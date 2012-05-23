@@ -310,6 +310,10 @@ on the system that has to be decorated as :meth:`authorized_handler`.
             # callback for the access_token_url we need to keep it in the
             # session.
             params = dict(self.request_token_params)
+            #remove 'grant_type' in initial request
+            if 'grant_type' in params:
+                params.pop('grant_type')
+            
             params['redirect_uri'] = callback
             params['client_id'] = self.consumer_key
             session[self.name + '_oauthredir'] = callback
