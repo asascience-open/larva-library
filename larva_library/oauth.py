@@ -355,10 +355,13 @@ function.
         url = add_query(self.expand_url(self.access_token_url), remote_args)
         print 'making request in oauth2'
         print url
+        print 'with method'
+        print self.access_token_method
         resp, content = self._client.request(url, self.access_token_method)
         data = parse_response(resp, content)
-        #o.k. so ignoring the unknown and non-descript 405 we get from google, even though we get a code back (have no idea wth is going on there)
-        if resp['status'] != '200' and resp['status'] != '405':
+        print 'got response'
+        print vars(resp)
+        if resp['status'] != '200':
             raise OAuthException('Invalid response from ' + self.name, data)
         return data
 
