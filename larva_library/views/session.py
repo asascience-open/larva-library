@@ -71,7 +71,6 @@ def get_twitter_token():
 def login_google():
     # for some reason url_for('google_authorized') is only returning '/google_auth' instead of the actual url like the other use cases
     # hardcoding the url for now http://larva-library.herokuapp.com/google_auth
-    print 'in the login_google function'
     return google.authorize(callback=url_for('google_authorized',
         _external=True))
     

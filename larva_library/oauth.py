@@ -366,8 +366,8 @@ function.
         data = parse_response(resp, content)
         print 'got response'
         print dir(resp)
-        if resp['status'] != '200':
-            raise OAuthException('Invalid response from ' + self.name, data)
+        #if resp['status'] != '200':
+        #    raise OAuthException('Invalid response from ' + self.name, data)
         return data
 
     def handle_unknown_response(self):
