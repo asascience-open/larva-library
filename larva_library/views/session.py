@@ -24,6 +24,9 @@ def facebook_authorized(resp):
     if resp is None:
         flash (u'Access denied.')
         return redirect(url_for('show_reports'))
+    
+    print 'in facebook_authorized'
+    print resp.items()
 
     next_url = request.args.get('next') or url_for('show_reports')
     session['facebook_token'] = (resp['access_token'], '')
@@ -79,7 +82,6 @@ def google_authorized(resp):
         flash(u'Access denied.')
         return redirect(url_for('show_reports'))
     print 'in google_authorized'
-    print dir(resp)
     print resp.items()
     #session['google_token'] = resp['access_token']
     return redirect(url_for('show_reports'))
