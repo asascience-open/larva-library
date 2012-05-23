@@ -1,6 +1,6 @@
 from flask import Flask
 from mongokit import Connection, Database
-from flaskext.oauth import OAuth
+from oauth import OAuth
 
 # Create application object
 app = Flask(__name__)
