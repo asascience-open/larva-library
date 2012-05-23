@@ -76,6 +76,6 @@ def google_authorized(resp):
     if resp is None:
         flash(u'Access denied.')
         return redirect(url_for('show_reports'))
-    
+    print 'in google_authorized'
     #session['google_token'] = resp['access_token']
     return redirect(url_for('show_reports'))
