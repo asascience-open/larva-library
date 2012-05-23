@@ -346,7 +346,7 @@ function.
 """
         print 'in handle_oauth2_response'
         print 'code: '
-        print request.args.get('code')
+        print vars(request.args)
         remote_args = {
             'code': request.args.get('code'),
             'client_id': self.consumer_key,
@@ -357,6 +357,8 @@ function.
         resp, content = self._client.request(url, self.access_token_method)
         data = parse_response(resp, content)
         if resp['status'] != '200':
+            print 'status was not 200, instead:'
+            print resp['status']
             raise OAuthException('Invalid response from ' + self.name, data)
         return data
 
