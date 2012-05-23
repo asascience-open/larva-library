@@ -70,7 +70,6 @@ def login_google():
     # hardcoding the url for now http://larva-library.herokuapp.com/google_auth
     print 'in the login_google function'
     return google.authorize(callback=url_for('google_authorized',
-        next=url_encode(request.args.get('next')) or url.encode(request.referrer) or None,
         _external=True))
     
 @app.route('/google_auth')
