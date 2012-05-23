@@ -1,5 +1,6 @@
 from flask import Module, request, url_for, render_template, redirect, session, flash
 from larva_library import db, app, facebook, twitter, google
+from werkzeug import url_encode
 
 @app.route('/logout')
 def logout():
@@ -69,7 +70,7 @@ def login_google():
     # hardcoding the url for now http://larva-library.herokuapp.com/google_auth
     print 'in the login_google function'
     return google.authorize(callback=url_for('google_authorized',
-        next=None,
+        next=url_encode(request.args.get('next')) or url.encode(request.referrer) or None,
         _external=True))
     
 @app.route('/google_auth')
