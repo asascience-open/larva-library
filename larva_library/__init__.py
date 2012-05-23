@@ -33,7 +33,7 @@ google = oauth.remote_app('google',
     consumer_key=app.config.get('GOOGLE_CLIENT_ID'),
     consumer_secret=app.config.get('GOOGLE_CLIENT_SECRET'),
     access_token_method='POST',
-    request_token_params={'response_type':'code','scope':'https://www.googleapis.com/auth/userinfo.email'}
+    request_token_params={'response_type':'code','scope':'https://www.googleapis.com/auth/userinfo.email','grant_type':'authorization_code'}
 )
 
 # Create connection to Mongo

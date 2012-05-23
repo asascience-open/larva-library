@@ -352,16 +352,23 @@ function.
             'client_secret': self.consumer_secret,
             'redirect_uri': session.get(self.name + '_oauthredir')
         }
+        # need this for google requests
+        if 'grant_type' in request_token_params:
+            remote_args['grant_type'] = request_token_params['grant_type']
+            
         if self.access_token_method != 'POST':
             url = add_query(self.expand_url(self.access_token_url), remote_args)
             body = ''
         else:
             url = self.expand_url(self.access_token_url)
             body = remote_args
+            
         print 'making request in oauth2'
         print url
         print 'with method'
         print self.access_token_method
+        print 'with body'
+        print body
         resp, content = self._client.request(url, self.access_token_method, body=body)
         data = parse_response(resp, content)
         print 'got response'
