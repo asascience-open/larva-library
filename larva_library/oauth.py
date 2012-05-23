@@ -356,7 +356,7 @@ function.
             url = add_query(self.expand_url(self.access_token_url), remote_args)
             body = ''
         else:
-            url = add_query(self.expand_url(self.access_token_url))
+            url = self.expand_url(self.access_token_url)
             body = remote_args
         print 'making request in oauth2'
         print url
