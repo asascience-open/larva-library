@@ -246,7 +246,8 @@ provided, the data is passed as it and the
 :return: an :class:`OAuthResponse` object.
 """
         print 'calling url ' + url
-        print 'with data ' + data 
+        print 'with data: '
+        print dir(data)
         headers = dict(headers or {})
         client = self.make_client()
         url = self.expand_url(url)
