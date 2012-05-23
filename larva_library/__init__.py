@@ -32,6 +32,7 @@ google = oauth.remote_app('google',
     authorize_url='https://accounts.google.com/o/oauth2/auth',
     consumer_key=app.config.get('GOOGLE_CLIENT_ID'),
     consumer_secret=app.config.get('GOOGLE_CLIENT_SECRET'),
+    access_token_method='POST',
     request_token_params={'response_type':'code','scope':'https://www.googleapis.com/auth/userinfo.email'}
 )
 
