@@ -357,7 +357,7 @@ function.
         url = add_query(self.expand_url(self.access_token_url), remote_args)
         resp, content = self._client.request(url, self.access_token_method)
         data = parse_response(resp, content)
-        if resp['status'] != '200' & resp['status'] != '405':
+        if resp['status'] != '200':
             print 'status was not 200, instead:'
             print vars(resp)
             raise OAuthException('Invalid response from ' + self.name, data)
