@@ -1,5 +1,5 @@
 from flask import Module, request, url_for, render_template, redirect, session, flash
-from larva_library import db, app, facebook, twitter
+from larva_library import db, app, facebook, twitter, google
 
 @app.route('/logout')
 def logout():
