@@ -26,10 +26,10 @@ twitter = oauth.remote_app('twitter',
     consumer_secret=app.config.get('TWITTER_CONSUMER_SECRET')
 )
 google = oauth.remote_app('google',
-    base_url='https://accounts.google.com/o/oauth2/',
-    request_token_url='token',
-    access_token_url='token',
-    authorize_url='auth',
+    base_url='https://accounts.google.com/o/oauth2',
+    request_token_url='/token',
+    access_token_url='/token',
+    authorize_url='/auth',
     consumer_key=app.config.get('GOOGLE_CLIENT_ID'),
     consumer_secret=app.config.get('GOOGLE_CLIENT_SECRET'),
     request_token_params={'response_type':'code','scope':'https://www.googleapis.com/auth/userinfo.email'}
