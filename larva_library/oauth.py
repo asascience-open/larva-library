@@ -347,8 +347,7 @@ this method is forwarded as first argument to the handling view
 function.
 """
         print 'in handle_oauth2_response'
-        print 'code: '
-        print vars(request.args)
+        print request.args.items()
         remote_args = {
             'code': request.args.get('code'),
             'client_id': self.consumer_key,
