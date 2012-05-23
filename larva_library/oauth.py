@@ -365,7 +365,7 @@ function.
         resp, content = self._client.request(url, self.access_token_method, body=body)
         data = parse_response(resp, content)
         print 'got response'
-        print vars(resp)
+        print dir(resp)
         if resp['status'] != '200':
             raise OAuthException('Invalid response from ' + self.name, data)
         return data
