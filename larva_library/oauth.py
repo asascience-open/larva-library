@@ -294,6 +294,8 @@ provided, the data is passed as it and the
         assert self.tokengetter_func is not None, 'missing tokengetter function'
         print 'past assert'
         rv = self.tokengetter_func()
+        print 'got rv:'
+        print rv
         if rv is None:
             rv = session.get(self.name + '_oauthtok')
             if rv is None:
