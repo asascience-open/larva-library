@@ -1,6 +1,7 @@
 from flask import Module, request, url_for, render_template, redirect, session, flash
 from larva_library import db, app, facebook, twitter, google
 from werkzeug import url_encode
+from httplib2 import Http
 
 @app.route('/logout')
 def logout():
@@ -83,7 +84,11 @@ def google_authorized(resp):
     #session['user_id'] = google.request('https://www.googleapis.com/oauth2/v1/userinfo',data={'access_token':session['google_token']})
     #flash('Signed in as ')
     #return redirect(url_for('show_reports'))
-    return redirect('https://www.googleapis.com/oauth2/v1/userinfo?access_token='+session['google_token'])
+    req = Http(".cache")
+    resp, content = req.request('https://www.googleapis.com/oauth2/v1/userinfo', body='access_token='+session['google_token'])
+    print resp
+    print content
+    return redirect(url_for('show_reports'))
 
 def google_token_getter():
     return (google.access_token,google.consumer_secret)
