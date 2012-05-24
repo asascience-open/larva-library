@@ -12,6 +12,7 @@ def logout():
     session.pop('facebook_token', None)
     session.pop('google_token', None)
     session.pop('user_id', None)
+    session.pop('user_email')
     flash('Signed out')
     return redirect(request.referrer or url_for('show_reports'))
 
@@ -91,5 +92,6 @@ def google_authorized(resp):
     content = loads(content)
     # set user id & email
     session['user_id'] = content.get('email')
+    session['user_email'] = content.get('email')
     flash('Signed in as ' + session.get('user_id'))
     return redirect(url_for('show_reports'))
