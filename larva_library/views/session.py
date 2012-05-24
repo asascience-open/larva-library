@@ -12,6 +12,7 @@ def logout():
     session.pop('google_token', None)
     session.pop('user_id', None)
     session.pop('user_email', None)
+
     flash('Signed out')
     return redirect(request.referrer or url_for('index'))
 
@@ -31,6 +32,7 @@ def facebook_authorized(resp):
     
     next_url = request.args.get('next') or url_for('index')
     session['facebook_token'] = (resp['access_token'], '')
+    #request 'me' to get user id and email
     me = facebook.get('/me')
 
     user = find_or_create_by_email(me.data['email'])

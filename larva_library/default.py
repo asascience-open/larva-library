@@ -1,5 +1,6 @@
 DEBUG = False
 TESTING = False
+
 SECRET_KEY = 'supersecretkeysupersuper'
 
 FACEBOOK_APP_ID = '431140436905641'

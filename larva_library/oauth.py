@@ -75,9 +75,6 @@ application.
 """
 
     def __init__(self, resp, content):
-        print 'in __init__ of OAuthResponse'
-        print resp
-        print content
         #: a :class:`~werkzeug.Headers` object with the response headers
         #: the application sent.
         self.headers = Headers(resp)
@@ -248,7 +245,6 @@ provided, the data is passed as it and the
 `format` parameter is ignored.
 :return: an :class:`OAuthResponse` object.
 """
-        print data.items()
         headers = dict(headers or {})
         client = self.make_client()
         url = self.expand_url(url)
@@ -287,7 +283,6 @@ provided, the data is passed as it and the
     def get_request_token(self):
         assert self.tokengetter_func is not None, 'missing tokengetter function'
         rv = self.tokengetter_func()
-        print rv
         if rv is None:
             rv = session.get(self.name + '_oauthtok')
             if rv is None:
