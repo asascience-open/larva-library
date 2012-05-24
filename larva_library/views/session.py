@@ -83,11 +83,14 @@ def google_authorized(resp):
         return redirect(url_for('show_reports'))
     session['google_token'] = resp['access_token']
     google.access_token = session['google_token']
-    google.tokengetter(f=google_token_getter)
+    # create request for email
     body = {'access_token': session.get('google_token')}
     req = Http(".cache")
+    # request email
     resp, content = req.request('https://www.googleapis.com/oauth2/v1/userinfo?' + url_encode(body))
+    # parse JSON into dict
     content = loads(content)
+    # set user id & email
     session['user_id'] = content.get('email')
     flash('Signed in as ' + session.get('user_id'))
     return redirect(url_for('show_reports'))
