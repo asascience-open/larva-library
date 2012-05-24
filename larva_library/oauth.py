@@ -75,6 +75,9 @@ application.
 """
 
     def __init__(self, resp, content):
+        print 'in __init__ of OAuthResponse'
+        print resp
+        print content
         #: a :class:`~werkzeug.Headers` object with the response headers
         #: the application sent.
         self.headers = Headers(resp)
