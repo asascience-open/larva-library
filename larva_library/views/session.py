@@ -87,10 +87,10 @@ def google_authorized(resp):
     #return redirect(url_for('show_reports'))
     body = {'access_token': session.get('google_token')}
     print 'url: ' + 'https://www.googleapis.com/oauth2/v1/userinfo?' + url_encode(body)
-    #req = Http(".cache")
-    #resp, content = req.request('https://www.googleapis.com/oauth2/v1/userinfo?' + body)
-    #print resp
-    #print content
+    req = Http(".cache")
+    resp, content = req.request('https://www.googleapis.com/oauth2/v1/userinfo?' + url_encode(body))
+    print resp
+    print content
     return redirect(url_for('show_reports'))
 
 def google_token_getter():
