@@ -10,6 +10,7 @@ def logout():
     session.pop('twitter_secret', None)
     session.pop('twitter_token', None)
     session.pop('facebook_token', None)
+    session.pop('google_token', None)
     session.pop('user_id', None)
     flash('Signed out')
     return redirect(request.referrer or url_for('show_reports'))
@@ -87,7 +88,8 @@ def google_authorized(resp):
     req = Http(".cache")
     resp, content = req.request('https://www.googleapis.com/oauth2/v1/userinfo?' + url_encode(body))
     content = loads(content)
-    print content
+    session['user_id'] = content.get('email')
+    flash('Signed in as ' + session.get('user_id'))
     return redirect(url_for('show_reports'))
 
 def google_token_getter():
