@@ -84,8 +84,10 @@ def google_authorized(resp):
     #session['user_id'] = google.request('https://www.googleapis.com/oauth2/v1/userinfo',data={'access_token':session['google_token']})
     #flash('Signed in as ')
     #return redirect(url_for('show_reports'))
+    body = 'access_token=' + session.get('google_token')
     req = Http(".cache")
-    resp, content = req.request('https://www.googleapis.com/oauth2/v1/userinfo',body='access_token='+session['google_token'],headers={'Content-Type': 'application/x-www-form-urlencoded'})
+    resp, content = req.request('https://www.googleapis.com/oauth2/v1/userinfo',
+                                body=body)
     print resp
     print content
     return redirect(url_for('show_reports'))
