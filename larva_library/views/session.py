@@ -1,5 +1,6 @@
 from flask import Module, request, url_for, render_template, redirect, session, flash
 from larva_library import db, app, facebook, twitter, google
+from json import loads
 from werkzeug import url_encode
 from httplib2 import Http
 from flask.wrappers import Request
@@ -85,7 +86,8 @@ def google_authorized(resp):
     body = {'access_token': session.get('google_token')}
     req = Http(".cache")
     resp, content = req.request('https://www.googleapis.com/oauth2/v1/userinfo?' + url_encode(body))
-    print vars(content)
+    content = loads(content)
+    print content
     return redirect(url_for('show_reports'))
 
 def google_token_getter():
