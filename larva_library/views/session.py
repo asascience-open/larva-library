@@ -78,8 +78,12 @@ def google_authorized(resp):
         flash(u'Access denied.')
         return redirect(url_for('show_reports'))
     session['google_token'] = resp['access_token']
-    google.tokengetter(f=lambda x : (session['google_token'],google.consumer_secret))
+    google.access_token = session['google_token']
+    google.tokengetter(f=google_token_getter)
     session['user_id'] = google.request('https://www.googleapis.com/oauth2/v1/userinfo',data={'access_token':session['google_token']})
     flash('Signed in as ')
     #session['google_token'] = resp['access_token']
     return redirect(url_for('show_reports'))
+
+def google_token_getter():
+    return (google.access_token,google.consumer_secret)
