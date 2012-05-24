@@ -272,7 +272,11 @@ provided, the data is passed as it and the
                 data, content_type = encode_request_data(data, format)
             if content_type is not None:
                 headers['Content-Type'] = content_type
-        print 'exit of request'
+        print 'exit of request:'
+        print url
+        print method
+        print data
+        print headers
         return OAuthResponse(*client.request(url, method=method,
                                              body=data or '',
                                              headers=headers))
