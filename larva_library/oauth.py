@@ -222,6 +222,7 @@ to ``'GET'``.
 Usually you don't have to do that but use the :meth:`request`
 method instead.
 """
+        print 'in make_client'
         return oauth2.Client(self._consumer, self.get_request_token())
 
     def request(self, url, data="", headers=None, format='urlencoded',
@@ -289,6 +290,7 @@ provided, the data is passed as it and the
         return tup
 
     def get_request_token(self):
+        print 'in get_request_token'
         assert self.tokengetter_func is not None, 'missing tokengetter function'
         rv = self.tokengetter_func()
         if rv is None:
