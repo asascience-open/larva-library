@@ -258,7 +258,9 @@ provided, the data is passed as it and the
         if method == 'GET':
             print 'if statement'
             assert format == 'urlencoded'
+            print 'after method assert'
             if not data:
+                print 'in if not data'
                 url = add_query(url, data)
                 data = ""
         else:
@@ -267,6 +269,7 @@ provided, the data is passed as it and the
                 data, content_type = encode_request_data(data, format)
             if content_type is not None:
                 headers['Content-Type'] = content_type
+        print 'exit of request'
         return OAuthResponse(*client.request(url, method=method,
                                              body=data or '',
                                              headers=headers))
