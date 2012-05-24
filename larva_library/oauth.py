@@ -249,9 +249,11 @@ provided, the data is passed as it and the
         print 'with data: '
         print data.items()
         headers = dict(headers or {})
+        print 'after headers'
         client = self.make_client()
+        print 'after client'
         url = self.expand_url(url)
-        print 'before if method'
+        print 'before if method, url: ' + url
         if method == 'GET':
             print 'if statement'
             assert format == 'urlencoded'
