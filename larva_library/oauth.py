@@ -324,8 +324,6 @@ on the system that has to be decorated as :meth:`authorized_handler`.
             params['client_id'] = self.consumer_key
             session[self.name + '_oauthredir'] = callback
             url = add_query(self.expand_url(self.authorize_url), params)
-            print 'calling url:'
-            print url
         return redirect(url)
 
     def tokengetter(self, f):
@@ -373,16 +371,8 @@ function.
             url = self.expand_url(self.access_token_url)
             body = url_encode(remote_args)
             
-        print 'making request in oauth2'
-        print url
-        print 'with method'
-        print self.access_token_method
-        print 'with body'
-        print body
         resp, content = self._client.request(url, self.access_token_method, body=body)
         data = parse_response(resp, content)
-        print 'got response'
-        print dir(resp)
         #if resp['status'] != '200':
         #    raise OAuthException('Invalid response from ' + self.name, data)
         return data

@@ -25,9 +25,6 @@ def facebook_authorized(resp):
         flash (u'Access denied.')
         return redirect(url_for('show_reports'))
     
-    print 'in facebook_authorized'
-    print resp.items()
-
     next_url = request.args.get('next') or url_for('show_reports')
     session['facebook_token'] = (resp['access_token'], '')
     me = facebook.get('/me')
@@ -80,12 +77,8 @@ def google_authorized(resp):
     if resp is None:
         flash(u'Access denied.')
         return redirect(url_for('show_reports'))
-    print 'in google_authorized'
-    print resp.items()
     session['google_token'] = resp['access_token']
     session['user_id'] = google.request('https://www.googleapis.com/oauth2/v1/userinfo',data={'access_token':session['google_token']})
-    print 'made request to google api'
-    print session['user_id']
     flash('Signed in as ')
     #session['google_token'] = resp['access_token']
     return redirect(url_for('show_reports'))
