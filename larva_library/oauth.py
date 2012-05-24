@@ -251,12 +251,15 @@ provided, the data is passed as it and the
         headers = dict(headers or {})
         client = self.make_client()
         url = self.expand_url(url)
+        print 'before if method'
         if method == 'GET':
+            print 'if statement'
             assert format == 'urlencoded'
             if not data:
                 url = add_query(url, data)
                 data = ""
         else:
+            print 'else statement'
             if content_type is None:
                 data, content_type = encode_request_data(data, format)
             if content_type is not None:
