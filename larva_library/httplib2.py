@@ -1552,6 +1552,16 @@ a string that contains the response entity body.
                     response = Response(info)
                     content = ""
                 else:
+                    print 'making request:'
+                    print conn
+                    print authority
+                    print uri
+                    print request_uri
+                    print method
+                    print body
+                    print headers
+                    print redirections
+                    print cachekey
                     (response, content) = self._request(conn, authority, uri, request_uri, method, body, headers, redirections, cachekey)
         except Exception, e:
             if self.force_exception_to_status_code:
