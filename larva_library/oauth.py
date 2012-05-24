@@ -225,7 +225,6 @@ to ``'GET'``.
 Usually you don't have to do that but use the :meth:`request`
 method instead.
 """
-        print 'in make_client'
         return oauth2.Client(self._consumer, self.get_request_token())
 
     def request(self, url, data="", headers=None, format='urlencoded',
@@ -249,25 +248,16 @@ provided, the data is passed as it and the
 `format` parameter is ignored.
 :return: an :class:`OAuthResponse` object.
 """
-        print 'calling url ' + url
-        print 'with data: '
         print data.items()
         headers = dict(headers or {})
-        print 'after headers'
         client = self.make_client()
-        print 'after client'
         url = self.expand_url(url)
-        print 'before if method, url: ' + url
         if method == 'GET':
-            print 'if statement'
             assert format == 'urlencoded'
-            print 'after method assert'
             if not data:
-                print 'in if not data'
                 url = add_query(url, data)
                 data = ""
         else:
-            print 'else statement'
             if content_type is None:
                 data, content_type = encode_request_data(data, format)
             if content_type is not None:
@@ -300,18 +290,13 @@ provided, the data is passed as it and the
         return tup
 
     def get_request_token(self):
-        print 'in get_request_token'
         assert self.tokengetter_func is not None, 'missing tokengetter function'
-        print 'past assert'
         rv = self.tokengetter_func()
-        print 'got rv:'
         print rv
         if rv is None:
             rv = session.get(self.name + '_oauthtok')
             if rv is None:
-                print 'in exception: No token available'
                 raise OAuthException('No token available')
-        print 'exit get_request_token'
         return oauth2.Token(*rv)
 
     def free_request_token(self):
