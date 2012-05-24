@@ -299,6 +299,7 @@ provided, the data is passed as it and the
             if rv is None:
                 print 'in exception: No token available'
                 raise OAuthException('No token available')
+        print 'exit get_request_token'
         return oauth2.Token(*rv)
 
     def free_request_token(self):
