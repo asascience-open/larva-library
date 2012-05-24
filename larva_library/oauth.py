@@ -294,6 +294,7 @@ provided, the data is passed as it and the
         if rv is None:
             rv = session.get(self.name + '_oauthtok')
             if rv is None:
+                print 'in exception: No token available'
                 raise OAuthException('No token available')
         return oauth2.Token(*rv)
 
