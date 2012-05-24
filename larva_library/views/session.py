@@ -80,7 +80,7 @@ def google_authorized(resp):
     session['google_token'] = resp['access_token']
     google.access_token = session['google_token']
     google.tokengetter(f=google_token_getter)
-    session['user_id'] = google.request('https://www.googleapis.com/oauth2/v1/userinfo',data={'access_token':session['google_token']})
+    #session['user_id'] = google.request('https://www.googleapis.com/oauth2/v1/userinfo',data={'access_token':session['google_token']})
     flash('Signed in as ')
     #session['google_token'] = resp['access_token']
     return redirect(url_for('show_reports'))
