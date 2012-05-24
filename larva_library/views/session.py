@@ -82,7 +82,6 @@ def google_authorized(resp):
         flash(u'Access denied.')
         return redirect(url_for('show_reports'))
     session['google_token'] = resp['access_token']
-    google.access_token = session['google_token']
     # create request for email
     body = {'access_token': session.get('google_token')}
     req = Http(".cache")
@@ -94,6 +93,3 @@ def google_authorized(resp):
     session['user_id'] = content.get('email')
     flash('Signed in as ' + session.get('user_id'))
     return redirect(url_for('show_reports'))
-
-def google_token_getter():
-    return (google.access_token,google.consumer_secret)
