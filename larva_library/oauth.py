@@ -292,6 +292,7 @@ provided, the data is passed as it and the
     def get_request_token(self):
         print 'in get_request_token'
         assert self.tokengetter_func is not None, 'missing tokengetter function'
+        print 'past assert'
         rv = self.tokengetter_func()
         if rv is None:
             rv = session.get(self.name + '_oauthtok')
