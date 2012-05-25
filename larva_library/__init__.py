@@ -17,14 +17,6 @@ facebook = oauth.remote_app('facebook',
     consumer_secret=app.config.get('FACEBOOK_APP_SECRET'),
     request_token_params={'scope': 'email'}
 )
-twitter = oauth.remote_app('twitter',
-    base_url='https://api.twitter.com/1/',
-    request_token_url='https://api.twitter.com/oauth/request_token',
-    access_token_url='https://api.twitter.com/oauth/access_token',
-    authorize_url='https://api.twitter.com/oauth/authenticate',
-    consumer_key=app.config.get('TWITTER_CONSUMER_KEY'),
-    consumer_secret=app.config.get('TWITTER_CONSUMER_SECRET')
-)
 google = oauth.remote_app('google',
     base_url=None,
     request_token_url=None, #this should only exist for OAuth1.0
