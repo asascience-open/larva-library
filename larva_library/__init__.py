@@ -1,5 +1,5 @@
 from flask import Flask
-from mongokit import Connection, Database
+from flask.ext.mongokit import MongoKit
 from oauth import OAuth
 
 # Create application object
@@ -36,17 +36,8 @@ google = oauth.remote_app('google',
     request_token_params={'response_type':'code','scope':'https://www.googleapis.com/auth/userinfo.email','grant_type':'authorization_code'}
 )
 
-# Create connection to Mongo
-connection = Connection(host=app.config.get('MONGODB_HOST'),
-            			port=app.config.get('MONGODB_PORT'))
-
 # Create the database connection
-db = Database(connection, app.config.get('MONGODB_DATABASE'))
-if app.config.get('MONGODB_USERNAME'):
-	db.authenticate(
-		app.config['MONGODB_USERNAME'],
-		app.config['MONGODB_PASSWORD']		
-	)
+db = MongoKit(app)
 
 # Import everything
 import larva_library.views

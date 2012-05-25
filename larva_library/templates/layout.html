@@ -4,7 +4,7 @@
 <div class=page>
     <h1>Larva Library</h1>
     <ul class=navigation>
-        {% if session['user_id'] %}
+        {% if session['user_email'] %}
             <li><a href="{{ url_for('logout') }}">sign out</a></li>
         {% else %}
             <li><a href="{{ url_for('login_facebook') }}">sign in w/ facebook</a></li>

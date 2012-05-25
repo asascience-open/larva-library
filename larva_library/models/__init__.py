@@ -1,1 +1,1 @@
-from larva_library.models.report import Report
+from larva_library.models.user import User

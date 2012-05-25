@@ -4,6 +4,7 @@ from json import loads
 from werkzeug import url_encode
 from httplib2 import Http
 from flask.wrappers import Request
+from larva_library.models.user import User, find_or_create_by_email
 
 @app.route('/logout')
 def logout():
@@ -12,9 +13,9 @@ def logout():
     session.pop('facebook_token', None)
     session.pop('google_token', None)
     session.pop('user_id', None)
-    session.pop('user_email')
+    session.pop('user_email', None)
     flash('Signed out')
-    return redirect(request.referrer or url_for('show_reports'))
+    return redirect(request.referrer or url_for('index'))
 
 # FACEBOOK
 @app.route('/login_facebook')
@@ -28,13 +29,16 @@ def login_facebook():
 def facebook_authorized(resp):
     if resp is None:
         flash (u'Access denied.')
-        return redirect(url_for('show_reports'))
+        return redirect(url_for('index'))
     
-    next_url = request.args.get('next') or url_for('show_reports')
+    next_url = request.args.get('next') or url_for('index')
     session['facebook_token'] = (resp['access_token'], '')
     me = facebook.get('/me')
-    session['user_id'] = me.data['email']
-    flash('Signed in as ' + session['user_id'])
+
+    user = find_or_create_by_email(me.data['email'])
+    set_user_session(user)
+
+    flash('Signed in as ' + session['user_email'])
     return redirect(next_url)
 
 @facebook.tokengetter
@@ -81,7 +85,7 @@ def login_google():
 def google_authorized(resp):
     if resp is None:
         flash(u'Access denied.')
-        return redirect(url_for('show_reports'))
+        return redirect(url_for('index'))
     session['google_token'] = resp['access_token']
     # create request for email
     body = {'access_token': session.get('google_token')}
@@ -90,8 +94,12 @@ def google_authorized(resp):
     resp, content = req.request('https://www.googleapis.com/oauth2/v1/userinfo?' + url_encode(body))
     # parse JSON into dict
     content = loads(content)
-    # set user id & email
-    session['user_id'] = content.get('email')
-    session['user_email'] = content.get('email')
-    flash('Signed in as ' + session.get('user_id'))
-    return redirect(url_for('show_reports'))
+    # Set session variables
+    user = find_or_create_by_email(content.get('email'))
+    set_user_session(user)
+
+    flash('Signed in as ' + session.get('user_email'))
+    return redirect(url_for('index'))
+
+def set_user_session(user):
+    session['user_email'] = user.email
