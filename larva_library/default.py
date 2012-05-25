@@ -1,10 +1,14 @@
+import os
+
 DEBUG = False
 TESTING = False
 
-SECRET_KEY = 'supersecretkeysupersuper'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
-FACEBOOK_APP_ID = '431140436905641'
-FACEBOOK_APP_SECRET = '312dec58969e07a5c6e29e064107f75e'
+FACEBOOK_APP_ID = os.environ.get("FACEBOOK_APP_ID")
+FACEBOOK_APP_SECRET = os.environ.get("FACEBOOK_APP_SECRET")
 
-GOOGLE_CLIENT_SECRET='0YQgd7QvHLaK3yifE7gs1VDw'
-GOOGLE_CLIENT_ID='637548674641.apps.googleusercontent.com'
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+
+LOG_FILE = bool(os.environ.get("LOG_FILE"))
