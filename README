@@ -1,8 +1,0 @@
-Larva Library
-
-Startup an instance:
-$ heroku create --stack cedar larva_library
-$ heroku config:add APPLICATION_SETTINGS=production.py
-$ heroku addons:add mongolab:starter
-$ git push heroku master
-$ heroku ps:scale web=1
