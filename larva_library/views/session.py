@@ -53,7 +53,7 @@ def login_google():
     return google.authorize(callback=url_for('google_authorized',
         _external=True))
     
-@app.route('/google_auth')
+@app.route('/login/google_authorized')
 @google.authorized_handler
 def google_authorized(resp):
     if resp is None:
