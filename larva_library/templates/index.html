@@ -12,6 +12,7 @@
 	       <li>Species:      {{ species }}</li>
 	       <li>Common Name:  {{ common_name }}</li> 
 	   </ul>
+	   <a href="{{url_for('index')}}">Return To Front</a>
 	{% elif libraries %}
 		Currently Owned Libraries: <br />
 		<ul>
@@ -26,5 +27,6 @@
 				<li class="navigation">{{ result }} <a class="detail" href="{{ url_for( 'detailed_view', library_name=result ) }}">detail</a><a class="edit" href="{{ url_for( 'detailed_view', library_name=result ) }}">edit</a></li>
 			{% endfor %}
 		</ul>
+		<a href="{{url_for('index')}}">Return To Front</a>
 	{% endif %}
 {% endblock %}

@@ -1,13 +1,16 @@
 {% from "render_field.html" import render_field %}
 {% extends "layout.html" %}
 {% block search %}
+{% if form %}
 <form method=post action="{{url_for('library_search')}}">
 	<dl class="edit">
-		Search:
+		Search Parameters:
 		<ul>
 			<li class="navigation">{{ render_field(form.search_name) }}</li>
+			<li class="navigation">{{ render_field(form.user_owned) }}</li>
 			<input type=submit value=Search>
 		</ul>
 	</dl>
 </form>
+{% endif %}
 {% endblock %}

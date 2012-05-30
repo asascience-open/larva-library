@@ -1,6 +1,6 @@
 from flask.ext.mongokit import Document
 from larva_library import db, app
-from wtforms import Form, TextField, validators, IntegerField, Field, FieldList, FormField
+from wtforms import Form, TextField, validators, IntegerField, Field, FieldList, FormField, BooleanField
 from wtforms import widgets
 #import datetime
 #
@@ -65,6 +65,7 @@ class LifestageForm(Form):
 ## forms for library searching
 class LibrarySearch(Form):
     search_name = TextField('Name')
+    user_owned = BooleanField('User Owned Only')
 
 ## forms for library wizard (editing and creating)
 class WizardFormOne(Form):

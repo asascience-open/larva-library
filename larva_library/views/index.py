@@ -9,13 +9,12 @@ def index():
     if request.args.get('results') is not None:
       result = request.args.get('results')
       results = result.split(',')
-      flash(results)
 
       try:
         while results.index(''):
           results.remove('')
       except ValueError:
-        flash(results)
+        app.logger.info('finished parsing search result')
       
       return render_template('index.html', results=results, form=form)
     if session.get('user_email') is not None:

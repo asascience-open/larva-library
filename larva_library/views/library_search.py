@@ -10,7 +10,12 @@ def library_search():
 		flash('Improper search name')
 		return redirect(url_for('index'))
 
-	results = db.Library.find({'Name':form.search_name.data})
+	query = dict()
+	query['Name'] = form.search_name.data
+	if form.user_owned.data == True and session.get('user_email') is not None:
+			query['User'] = session['user_email']
+
+	results = db.Library.find(query)
 
 	result_string=''
 
