@@ -11,11 +11,7 @@
             <li><a href="{{ url_for('login_google') }}">sign in w/ google</a>
         {% endif %}
     </ul>
-    <!-- Searching
-    <ul>
-        <li>Search: </li>
-    </ul>
-    -->
+    {% block search %}{% endblock %}
     {% for message in get_flashed_messages() %}
         <div class=flash>{{ message }}</div>
     {% endfor %}

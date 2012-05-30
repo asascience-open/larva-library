@@ -5,7 +5,6 @@ from flask import request, url_for, redirect, render_template, flash, session
 
 @app.route('/wizard/page/1', methods=['GET','POST'])
 def wizard_page_one():
-    app.logger.info('In wizard_page_one')
     form = WizardFormOne(request.form)
     
     # temporary fix for removing current library in session, to start over
@@ -27,7 +26,6 @@ def wizard_page_one():
 
 @app.route('/wizard/page/2', methods=['GET','POST'])
 def wizard_page_two():
-    app.logger.info('In wizard_page_two')
     form = WizardFormTwo(request.form)
 
     if session.get('current_library') is None:
@@ -47,7 +45,6 @@ def wizard_page_two():
 
 @app.route('/wizard/page/3', methods=['GET','POST'])
 def wizard_page_three():
-    app.logger.info('In wizard_page_three')
     form = WizardFormThree(request.form,min_fields=3)
     
     if session.get('current_library') is None:

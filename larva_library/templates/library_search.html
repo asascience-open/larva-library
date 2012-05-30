@@ -1,0 +1,13 @@
+{% from "render_field.html" import render_field %}
+{% extends "layout.html" %}
+{% block search %}
+<form method=post action="{{url_for('library_search')}}">
+	<dl class="edit">
+		Search:
+		<ul>
+			<li class="navigation">{{ render_field(form.search_name) }}</li>
+			<input type=submit value=Search>
+		</ul>
+	</dl>
+</form>
+{% endblock %}

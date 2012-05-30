@@ -62,7 +62,11 @@ class TagListField(Field):
 class LifestageForm(Form):
     name = TextField('StageName')
 
-## form class
+## forms for library searching
+class LibrarySearch(Form):
+    search_name = TextField('Name')
+
+## forms for library wizard (editing and creating)
 class WizardFormOne(Form):
     lib_name = TextField('Name', [validators.Length(max=128)])
     genus = TextField('Genus')

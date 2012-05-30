@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "library_search.html" %}
 {% block body %}
 	{% if session['user_email'] %}
 	    <body>
@@ -18,6 +18,13 @@
 		   {% for library in libraries %}
 		       <li class="navigation">{{ library.Name }}<a class="detail" href="{{ url_for( 'detailed_view', library_name=library.Name ) }}">detail</a><a class="edit" href="{{ url_for( 'detailed_view', library_name=library.Name ) }}">edit</a></li>
 		   {% endfor %}
+		</ul>
+	{% elif results %}
+		Search Results: <br />
+		<ul>
+			{% for result in results %}
+				<li class="navigation">{{ result }} <a class="detail" href="{{ url_for( 'detailed_view', library_name=result ) }}">detail</a><a class="edit" href="{{ url_for( 'detailed_view', library_name=result ) }}">edit</a></li>
+			{% endfor %}
 		</ul>
 	{% endif %}
 {% endblock %}
