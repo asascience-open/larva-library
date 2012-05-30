@@ -1,0 +1,13 @@
+{% from "render_field.html" import render_field %}
+{% extends "layout.html" %}
+{% block body %}
+<form method=post action="/wizard/page/1">
+  <dl>
+    {{ render_field(form.lib_name) }}
+    {{ render_field(form.genus) }}
+    {{ render_field(form.species) }}
+    {{ render_field(form.common_name) }}
+  </dl>
+  <p><input type=submit value=Next>
+</form>
+{% endblock %}

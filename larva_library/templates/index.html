@@ -1,3 +1,23 @@
 {% extends "layout.html" %}
 {% block body %}
+	{% if session['user_email'] %}
+	    <body>
+	        <p><a href="{{url_for('wizard_page_one')}}">add new entry</a></p>
+	    </body>
+	{% endif %}
+	{% if detail %}
+	   <h1>{{ name }}:</h1>
+	   <ul>
+	       <li>Genus:        {{ genus }}</li>
+	       <li>Species:      {{ species }}</li>
+	       <li>Common Name:  {{ common_name }}</li> 
+	   </ul>
+	{% elif libraries %}
+		Currently Owned Libraries: <br />
+		<ul>
+		   {% for library in libraries %}
+		       <li class="navigation">{{ library.Name }}<a class="detail" href="{{ url_for( 'detailed_view', library_name=library.Name ) }}">detail</a><a class="edit" href="{{ url_for( 'detailed_view', library_name=library.Name ) }}">edit</a></li>
+		   {% endfor %}
+		</ul>
+	{% endif %}
 {% endblock %}

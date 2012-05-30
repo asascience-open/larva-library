@@ -1,0 +1,13 @@
+{% from "render_field.html" import render_field %}
+{% extends "layout.html" %}
+{% block body %}
+<form method=post action="/wizard/page/3">
+  <dl>
+    NOTE: Number of life stages <br />
+    {{ render_field(form.number_of_lifestages) }}
+    NOTE: Each life stage <br />
+    {{ render_field(form.lifestages) }}    
+  </dl>
+  <p><input type=submit value=Save>
+</form>
+{% endblock %}

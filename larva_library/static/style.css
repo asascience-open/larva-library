@@ -10,4 +10,7 @@ li              { margin: 0.8em 1.2em 0em -1em; }
                   padding: 0.8em; background: white; }
 .flash          { background: #CEE5F5; padding: 0.5em;
                   border: 1px solid #AACBE2; }
-.navigation     { margin: 0 0 1em 2em;}
+.navigation     { margin: 0 1em 1em 2em;}
+
+.detail         { padding: 0em 0em 0em 2em }
+.edit           { padding: 0em 0em 0em 0.5em }

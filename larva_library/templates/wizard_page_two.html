@@ -1,0 +1,13 @@
+{% from "render_field.html" import render_field %}
+{% extends "layout.html" %}
+{% block body %}
+<form method=post action="/wizard/page/2">
+  <dl>
+    NOTE: Comma-seperated values for searching/organizing <br />
+    {{ render_field(form.keywords) }}
+    NOTE: Temporary way of inputing coords for global positioning <br />
+    {{ render_field(form.geography) }}    
+  </dl>
+  <p><input type=submit value=Next>
+</form>
+{% endblock %}
