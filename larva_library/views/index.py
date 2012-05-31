@@ -6,6 +6,8 @@ from larva_library.models.library import LibrarySearch
 def index():
     form = LibrarySearch(request.form)
 
+    user = session.get('user_email')
+
     if request.args.get('results') is not None:
       result = request.args.get('results')
       results = result.split(',')
@@ -16,13 +18,16 @@ def index():
       except ValueError:
         app.logger.info('finished parsing search result')
       
-      return render_template('index.html', results=results, form=form)
-    if session.get('user_email') is not None:
-        libraries = list(db.Library.find({'User':session['user_email']}))
-        return render_template('index.html', libraries=libraries, form=form)
-    else:
-        return render_template('index.html', form=form)
+      return render_template('index.html', results=results, form=form, loggedin=user)
 
+    if user is not None:
+        libraries = list(db.Library.find({'User':user}))
+        return render_template('index.html', libraries=libraries, form=form, loggedin=user)
+
+    else:
+        return render_template('index.html', form=form, loggedin=user)
+
+#debug
 @app.route('/remove_libraries')
 def remove_libraries():
     db.drop_collection('libraries')
@@ -47,4 +52,17 @@ def detailed_view(library_name):
                                    species=library['Species'],
                                    common_name=library['Common Name']
                                    )
-    
+#temp
+@app.route('/edit/<library_name>')
+def edit_entry(library_name):
+  if library_name is None:
+    flash('Cannot edit empty entry, try making a new one instead')
+    return redirect(url_for('index'))
+
+  entry = db.Library.find_one({'User':session['user_email'], 'Name':library_name})
+  if entry is None:
+    flash('Cannot find ' + library_name + ' for current user, please make sure you have privileges necessary to edit the entry')
+    return redirect(url_for('index'))
+
+  #Pass along entry as form
+  return redirect(url_for('wizard_page_one', form=entry))

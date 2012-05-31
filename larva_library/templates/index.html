@@ -17,14 +17,14 @@
 		Currently Owned Libraries: <br />
 		<ul>
 		   {% for library in libraries %}
-		       <li class="navigation">{{ library.Name }}<a class="detail" href="{{ url_for( 'detailed_view', library_name=library.Name ) }}">detail</a><a class="edit" href="{{ url_for( 'detailed_view', library_name=library.Name ) }}">edit</a></li>
+		       <li class="navigation">{{ library.Name }}<a class="detail" href="{{ url_for( 'detailed_view', library_name=library.Name ) }}">detail</a><a class="edit" href="{{ url_for( 'edit_entry', library_name=library.Name ) }}">edit</a></li>
 		   {% endfor %}
 		</ul>
 	{% elif results %}
 		Search Results: <br />
 		<ul>
 			{% for result in results %}
-				<li class="navigation">{{ result }} <a class="detail" href="{{ url_for( 'detailed_view', library_name=result ) }}">detail</a><a class="edit" href="{{ url_for( 'detailed_view', library_name=result ) }}">edit</a></li>
+				<li class="navigation">{{ result }} <a class="detail" href="{{ url_for( 'detailed_view', library_name=result ) }}">detail</a><a class="edit" href="{{ url_for( 'edit_entry', library_name=result ) }}">edit</a></li>
 			{% endfor %}
 		</ul>
 		<a href="{{url_for('index')}}">Return To Front</a>
