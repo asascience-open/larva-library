@@ -1,7 +1,7 @@
 {% from "render_field.html" import render_field %}
 {% extends "layout.html" %}
 {% block body %}
-<form method=post action="/wizard/page/3">
+<form method=post action="{{url_for('wizard_page_three')}}">
   <dl>
     NOTE: Number of life stages <br />
     {{ render_field(form.number_of_lifestages) }}

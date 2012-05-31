@@ -7,26 +7,45 @@
 	{% endif %}
 	{% if detail %}
 	   <h1>{{ name }}:</h1>
-	   <ul>
+	   <ul class="navigation">
 	       <li>Genus:        {{ genus }}</li>
 	       <li>Species:      {{ species }}</li>
 	       <li>Common Name:  {{ common_name }}</li> 
 	   </ul>
-	   <a href="{{url_for('index')}}">Return To Front</a>
+	   <a href="{{url_for('index')}}">Index</a>
 	{% elif libraries %}
-		Currently Owned Libraries: <br />
-		<ul>
+		Currently Owned Entries: <br />
+		<table>
 		   {% for library in libraries %}
-		       <li class="navigation">{{ library.Name }}<a class="detail" href="{{ url_for( 'detailed_view', library_name=library.Name ) }}">detail</a><a class="edit" href="{{ url_for( 'edit_entry', library_name=library.Name ) }}">edit</a></li>
+		   <tr>
+		       <td>{{ library.Name }}</td>
+		       <td><a href="{{ url_for( 'detailed_view', library_name=library.Name ) }}">detail</a></td>
+		       <td><a href="{{ url_for( 'edit_entry', library_name=library.Name ) }}">edit</a></td>
+		   </tr>
 		   {% endfor %}
-		</ul>
+		</table
+		<!-- Link to table list -->
+		<br />
+		<a href="{{url_for('list_library')}}">List Entire Library</a>
 	{% elif results %}
 		Search Results: <br />
-		<ul>
+		<table>
 			{% for result in results %}
-				<li class="navigation">{{ result }} <a class="detail" href="{{ url_for( 'detailed_view', library_name=result ) }}">detail</a><a class="edit" href="{{ url_for( 'edit_entry', library_name=result ) }}">edit</a></li>
+			<tr>
+				<td>{{ result }}</td>
+				<td><a href="{{ url_for( 'detailed_view', library_name=result ) }}">detail</a></td>
+				{% if session['user_email'] and session['user_email'] == library.User %}
+		       	   <td><a href="{{ url_for( 'edit_entry', library_name=library.Name ) }}">edit</a></td>
+		       {% endif %}
+			</tr>
 			{% endfor %}
-		</ul>
-		<a href="{{url_for('index')}}">Return To Front</a>
+		</table>
+		<br />
+		<a href="{{url_for('index')}}">Index</a>
+		<!-- Link to table list -->
+		<br />
+		<a href="{{url_for('list_library')}}">List Entire Library</a>
+	{% else %}
+		<a href="{{url_for('list_library')}}">List Entire Library</a>
 	{% endif %}
 {% endblock %}

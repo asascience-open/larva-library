@@ -2,6 +2,7 @@ from flask.ext.mongokit import Document
 from larva_library import db, app
 from wtforms import Form, TextField, validators, IntegerField, Field, FieldList, FormField, BooleanField
 from wtforms import widgets
+from datetime import datetime
 #import datetime
 #
 ##document class
@@ -14,7 +15,7 @@ class Library(Document):
         'Name'       : unicode,
         'Genus'      : unicode,
         'Species'    : unicode,
-        'Common Name': unicode,
+        'Common_Name': unicode,
         'Keywords'   : [unicode],
         'GeoKeywords': [unicode],
         'Geometry'   : unicode,
@@ -22,8 +23,8 @@ class Library(Document):
             'name' : unicode,
             'stage': int
         }],
-        'User'       : unicode
-#        'created_at' : datetime
+        'User'       : unicode,
+        'Created'    : datetime
     }
     
     def __getstate__(self):

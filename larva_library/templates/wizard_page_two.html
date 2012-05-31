@@ -1,7 +1,7 @@
 {% from "render_field.html" import render_field %}
 {% extends "layout.html" %}
 {% block body %}
-<form method=post action="/wizard/page/2">
+<form method=post action="{{url_for('wizard_page_two')}}">
   <dl>
     NOTE: Comma-seperated values for searching/organizing <br />
     {{ render_field(form.keywords) }}
