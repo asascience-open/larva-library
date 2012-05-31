@@ -5,21 +5,13 @@
 	        <p><a href="{{url_for('wizard_page_one')}}">add new entry</a></p>
 	    </body>
 	{% endif %}
-	{% if detail %}
-	   <h1>{{ name }}:</h1>
-	   <ul class="navigation">
-	       <li>Genus:        {{ genus }}</li>
-	       <li>Species:      {{ species }}</li>
-	       <li>Common Name:  {{ common_name }}</li> 
-	   </ul>
-	   <a href="{{url_for('index')}}">Index</a>
-	{% elif libraries %}
+	{% if libraries %}
 		Currently Owned Entries: <br />
 		<table>
 		   {% for library in libraries %}
 		   <tr>
 		       <td>{{ library.Name }}</td>
-		       <td><a href="{{ url_for( 'detailed_view', library_name=library.Name ) }}">detail</a></td>
+		       <td><a href="{{ url_for( 'detail_view', library_entry=library.Name ) }}">detail</a></td>
 		       <td><a href="{{ url_for( 'edit_entry', library_name=library.Name ) }}">edit</a></td>
 		   </tr>
 		   {% endfor %}
@@ -33,10 +25,7 @@
 			{% for result in results %}
 			<tr>
 				<td>{{ result }}</td>
-				<td><a href="{{ url_for( 'detailed_view', library_name=result ) }}">detail</a></td>
-				{% if session['user_email'] and session['user_email'] == library.User %}
-		       	   <td><a href="{{ url_for( 'edit_entry', library_name=library.Name ) }}">edit</a></td>
-		       {% endif %}
+				<td><a href="{{ url_for( 'detail_view', library_entry=result ) }}">detail</a></td>
 			</tr>
 			{% endfor %}
 		</table>

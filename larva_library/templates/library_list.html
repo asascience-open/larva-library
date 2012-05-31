@@ -12,7 +12,7 @@
 					<td>{{ library.Common_Name }}</td>
 					<td>{{ library.Created }}</td>
 					<td>
-						<a href="{{ url_for( 'detailed_view', library_name=library.Name ) }}">detail</a>
+						<a href="{{ url_for( 'detail_view', library_entry=library.Name ) }}">detail</a>
 					{% if session['user_email'] and session['user_email'] == library.User %}
 						<a class="edit" href="{{ url_for( 'edit_entry', library_name=library.Name ) }}">edit</a>
 					{% endif %}

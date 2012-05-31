@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block body %}
+	{% if entry %}
+		<!-- show the entry in a table structure -->
+		<table border="1">
+			<tr><td>
+				Name:
+			</td><td>
+				{{ entry.Name }}
+			</td></tr>
+			<tr><td>
+				Genus:
+			</td><td>
+				{{ entry.Genus }}
+			</td></tr>
+			<tr><td>
+				Species:
+			</td><td>
+				{{ entry.Species }}
+			</td></tr>
+			<tr><td>
+				Common Name:
+			</td><td>
+				{{ entry.Common_Name }}
+			</td></tr>
+		</table>
+		<table border="1">
+			<tr><td>
+				Keywords:
+			</td></tr>
+			<tr>
+				{% for keyword in entry.Keywords %}
+					<td>{{ keyword }}</td>
+				{% endfor %}
+			</tr>
+		</table>
+		<table border="1">
+			<tr><td>
+				Geo-Keywords:
+			</td></tr>
+			<tr>
+				{% for keyword in entry.GeoKeywords %}
+					<td>{{ keyword }}</td>
+				{% endfor %}
+			</tr>
+		</table>
+		<table border="1">
+				<tr><td>
+					Big area for positioning info:
+				</td></tr>
+				<tr><td>
+					{{ entry.Geometry }}
+				</td></tr>
+		</table>
+		<table border="1">
+				<tr><td>
+					Another big area for lifestages info:
+				</td></tr>
+				<tr><td>
+					{{ entry.Lifestages }}
+				</td></tr>
+		</table>
+		<table border="1">
+			<tr><td>
+				Owned By:
+			</td><td>
+				{{ entry.User }}
+			</td></tr>
+			<tr><td>
+				Created:
+			</td><td>
+				{{ entry.Created }}
+			</td></tr>
+		</table>
+	{% endif %}
+	<br />
+	<a href="{{url_for('index')}}">Index</a>
+{% endblock %}

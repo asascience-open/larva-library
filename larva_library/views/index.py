@@ -32,26 +32,7 @@ def index():
 def remove_libraries():
     db.drop_collection('libraries')
     return redirect(url_for('index'))
-
-#temp
-@app.route('/detail/<library_name>')
-def detailed_view(library_name):
-    if library_name is None:
-        flash('Cannot find a library without a name')
-        return redirect(url_for('index'))
-    else:
-        library = db.Library.find_one({'User':session['user_email'],'Name':library_name})
-        if library is None:
-            flash('Cannot find ' + library_name + ' for current user')
-            return redirect(url_for('index'))
-        else:
-            return render_template('index.html',
-                                   detail=True,
-                                   name=library['Name'],
-                                   genus=library['Genus'],
-                                   species=library['Species'],
-                                   common_name=library['Common Name']
-                                   )
+    
 #temp
 @app.route('/edit/<library_name>')
 def edit_entry(library_name):
