@@ -82,13 +82,7 @@ class WizardFormTwo(Form):
     geography = TextField('Geographical Positioning')
     
 class WizardFormThree(Form):
-    number_of_lifestages = IntegerField('Number of Lifestages', [validators.number_range(0, 10, 'Please input a valid number of lifestages, between 0 and 10')])
     # display the number of life stages based on the number input for number_of_lifestages
     lifestages = FieldList(FormField(LifestageForm))
-    
-    def __init__(self, formdata=None, obj=None, prefix="", min_fields=0, **kwargs):
-        super(WizardFormThree, self).__init__(formdata, obj, prefix, **kwargs)
-        lifestages = FieldList(FormField(LifestageForm),min_entries=min_fields)
-
             
     

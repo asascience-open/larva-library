@@ -2,12 +2,20 @@
 {% extends "layout.html" %}
 {% block body %}
 <form method=post action="{{url_for('wizard_page_two')}}">
-  <dl>
-    NOTE: Comma-seperated values for searching/organizing <br />
-    {{ render_field(form.keywords) }}
-    NOTE: Temporary way of inputing coords for global positioning <br />
-    {{ render_field(form.geography) }}    
-  </dl>
+  <table cellspacing="10">
+  	<tr><td>
+    	NOTE: Comma-seperated values for searching/organizing
+	</td></tr>
+	<tr><td>
+    	{{ render_field(form.keywords) }}
+	</td></tr>
+	<tr><td>
+    	NOTE: Temporary way of inputing coords for global positioning
+	</td></tr>
+    <tr><td>
+    	{{ render_field(form.geography) }}
+	</td></tr>
+  </table>
   <p><input type=submit value=Next>
 </form>
 {% endblock %}
