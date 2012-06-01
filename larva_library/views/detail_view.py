@@ -1,16 +1,19 @@
 from flask import redirect, url_for, render_template, flash, session, request
 from larva_library import app, db
+from bson import ObjectId
 
 @app.route('/detail')
 def detail_view():
-	entry_name = request.args.get('entry_name')
-	if entry_name is None:
-		flash('Cannot find an entry without a name')
+	entry_id = request.args.get('entry_id')
+
+	if entry_id is None:
+		flash('Recieved an entry without an id')
 		return redirect(url_for('index'))
-	else:
-	    entry = db.Library.find_one({'User':session['user_email'],'Name':entry_name})
-	    if entry is None:
-	        flash('Cannot find ' + library_name + ' for user ' + session['user_email'])
-	        return redirect(url_for('index'))
-	    else:
-	        return render_template('library_detail.html', entry=entry)
+	
+	entry = db.Library.find_one({'_id':ObjectId(entry_id)})
+
+	if entry is None:
+		flash('Cannot find object ' + str(entry_id))
+		return redirect(url_for('index'))
+
+	return render_template('library_detail.html', entry=entry)
