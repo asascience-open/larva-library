@@ -6,4 +6,6 @@ dist
 build
 
 .env
-log.txt
+*.dif
+*.bak
+*log*
