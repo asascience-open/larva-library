@@ -4,9 +4,9 @@
 {% if form %}
 <form method=post action="{{url_for('library_search')}}">
 	<dl class="edit">
-		Search Parameters:
+		Search Parameters (Comma-delimited):
 		<ul>
-			<li class="navigation">{{ render_field(form.search_name) }}</li>
+			<li class="navigation">{{ render_field(form.search_keywords) }}</li>
 			{% if loggedin %}
 				<li class="navigation">{{ render_field(form.user_owned) }}</li>
 			{% endif %}

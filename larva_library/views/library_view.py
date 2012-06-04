@@ -14,7 +14,7 @@ def detail_view():
     if entry_id is None:
         flash('Recieved an entry without an id')
         return redirect(url_for('index'))
-    
+
     entry = db.Library.find_one({'_id':ObjectId(entry_id)})
 
     if entry is None:
@@ -35,31 +35,33 @@ def detail_view():
 
 @app.route("/library/search", methods=["POST"])
 def library_search():
-	form = LibrarySearch(request.form)
+    form = LibrarySearch(request.form)
 
-	if form.search_name.data is None or form.search_name.data == '':
-		flash('Improper search name')
-		return redirect(url_for('index'))
+    if form.search_keywords.data is None or form.search_keywords.data == '':
+    	flash('Improper search keywords')
+    	return redirect(url_for('index'))
 
-	query = dict()
-	query['Name'] = form.search_name.data
-	if form.user_owned.data == True and session.get('user_email') is not None:
-			query['User'] = session['user_email']
+    query = dict()
+    _keyword_query = dict()
+    _keyword_query['$all'] = form.search_keywords.data.split(',')
+    query['_keywords'] = _keyword_query
+    if form.user_owned.data == True and session.get('user_email') is not None:
+    		query['User'] = session['user_email']
 
-	results = db.Library.find(query)
+    results = db.Library.find(query)
 
-	result_string=''
+    result_string=''
 
-	for result in results:
-		result_string = result_string + result['Name'] + ','
+    for result in results:
+    	result_string = result_string + result['Name'] + ','
 
-	return redirect(url_for('index', results=result_string))
+    return redirect(url_for('index', results=result_string))
 
 @app.route('/library')
 def list_library():
-	# retrieve entire db and pass it to the html
-	libraries = db.Library.find()
-	return render_template('library_list.html', libraries=libraries)
+    # retrieve entire db and pass it to the html
+    libraries = db.Library.find()
+    return render_template('library_list.html', libraries=libraries)
 
 #debug
 @app.route('/library/remove_entries')
@@ -67,30 +69,30 @@ def remove_libraries():
     db.drop_collection('libraries')
     return redirect(url_for('index'))
 
- #temp
+#temp
 @app.route('/library/edit/<library_name>')
 def edit_entry(library_name):
-  if library_name is None:
-    flash('Cannot edit empty entry, try making a new one instead')
-    return redirect(url_for('index'))
+    if library_name is None:
+        flash('Cannot edit empty entry, try making a new one instead')
+        return redirect(url_for('index'))
 
-  entry = db.Library.find_one({'User':session['user_email'], 'Name':library_name})
-  if entry is None:
-    flash('Cannot find ' + library_name + ' for current user, please make sure you have privileges necessary to edit the entry')
-    return redirect(url_for('index'))
+    entry = db.Library.find_one({'User':session['user_email'], 'Name':library_name})
+    if entry is None:
+        flash('Cannot find ' + library_name + ' for current user, please make sure you have privileges necessary to edit the entry')
+        return redirect(url_for('index'))
 
-  #Pass along entry as form
-  return redirect(url_for('wizard_page_one', form=entry))
+    #Pass along entry as form
+    return redirect(url_for('wizard_page_one', form=entry))
 
- ########################################################
- #
- #	Wizard Pages
- #
- ########################################################
+########################################################
+#
+#	Wizard Pages
+#
+########################################################
 @app.route('/library/wizard/page/1', methods=['GET','POST'])
 def wizard_page_one():
     form = WizardFormOne(request.form)
-    
+
     # temporary fix for removing current library in session, to start over
     if session.get('new_entry') is not None:
         session.pop('new_entry')
@@ -102,10 +104,17 @@ def wizard_page_one():
             lib['Genus']= form.genus.data
             lib['Species'] = form.species.data
             lib['Common_Name'] = form.common_name.data
+            # add to our _keywords
+            _keywords = []
+            _keywords.extend(lib['Name'].split(' '))
+            _keywords.extend(lib['Genus'].split(' '))
+            _keywords.extend(lib['Species'].split(' '))
+            _keywords.extend(lib['Common_Name'].split(' '))
+            lib['_keywords'] = _keywords;
             session['new_entry'] = lib
             
         return redirect(url_for('wizard_page_two'))
-    
+
     return render_template('wizard_page_one.html', form=form)
 
 @app.route('/library/wizard/page/2', methods=['GET','POST'])
@@ -139,21 +148,23 @@ def wizard_page_two():
         # throw exception that we did not go in order
         flash('Please start the wizard from the index, page 2')
         return redirect(url_for('index'))
-    
+
     elif request.method == 'POST' and wiz_form.validate():
         lib = session['new_entry']
         lib['Keywords'] = wiz_form.keywords.data
         lib['Geometry'] = geo_positional_data
+        # add the keywords to the internal keywords
+        lib['_keywords'].extend(wiz_form.keywords.data)
         session['new_entry'] = lib
         # copy dict into the Library structure
         return redirect(url_for('wizard_page_three'))
-    
+
     return render_template('wizard_page_two.html', form=wiz_form)
 
 @app.route('/library/wizard/page/3', methods=['GET','POST'])
 def wizard_page_three():
     form = WizardFormThree(request.form)
-    
+
     if session.get('new_entry') is None:
         # throw exception that we did not go in order
         flash('Please start the wizard from the index, page 3')
@@ -174,7 +185,7 @@ def wizard_page_three():
             form.lifestages.append_entry()
 
         session['count'] = count
-    
+
     elif request.method == 'POST' and form.validate():
         lib = session['new_entry']
         lib['LifeStages'] = form.lifestages.data
@@ -183,6 +194,11 @@ def wizard_page_three():
         # save ourself as primary user
         lib['User'] = session['user_email']
         session['new_entry'] = lib
+
+        # ensure index our keywords
+        for key in lib['_keywords']:
+            db.libraries.ensure_index(key)
+
         m_lib = db.Library()
         m_lib.copy_from_dictionary(lib)
         m_lib.save()
@@ -190,11 +206,12 @@ def wizard_page_three():
         if session.get('count') is not None:
             session.pop('count')
 
+        flash('Successfully added entry ' + str(m_lib._id))
+
         return redirect(url_for('index'))
 
     elif session.get('count') is not None:
         session.pop('count')
-    
+
     return render_template('wizard_page_three.html', form=form)
         
-    

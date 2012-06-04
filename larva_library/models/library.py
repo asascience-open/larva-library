@@ -24,7 +24,8 @@ class Library(Document):
             'stage': int
         }],
         'User'       : unicode,
-        'Created'    : datetime
+        'Created'    : datetime,
+        '_keywords'  : [unicode]
     }
     
     def __getstate__(self):
@@ -65,7 +66,7 @@ class LifestageForm(Form):
 
 ## forms for library searching
 class LibrarySearch(Form):
-    search_name = TextField('Name')
+    search_keywords = TextField('Keywords')
     user_owned = BooleanField('User_Owned_Only')
 
 ## forms for library wizard (editing and creating)
