@@ -1,4 +1,34 @@
 {% extends "layout.html" %}
+{% block javascript %}
+<!-- call super() to make sure any other needed javascript is loaded -->
+{{ super() }}
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+	function DisplayMapAndMarkers() {
+		// init map
+		var myOptions = {
+            center    : new google.maps.LatLng(0, 0),
+            zoom      : 1,
+            mapTypeId : google.maps.MapTypeId.ROADMAP
+        };
+        //alert(document.getElementById("map_canvas"));
+        var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+		// gonna try jinja here to get the values
+		var geo_pos_array = new Array();
+		var pos_x, pos_y, mLatLng, mMarker;
+		{% for position in entry.Markers %}
+			pos_x = {{ position[0] }};
+			pos_y = {{ position[1] }};
+			// create the marker
+			mLatLng = new google.maps.LatLng(pos_x, pos_y);
+			mMarker = new google.maps.Marker({
+				position : mLatLng,
+				map 	 : map
+			});
+		{% endfor %}
+	}
+</script>
+{% endblock %}
 {% block page %}
 	{% if entry %}
 		<!-- show the entry in a table structure -->
@@ -49,7 +79,8 @@
 					Big area for positioning info:
 				</td></tr>
 				<tr><td>
-					{{ entry.Geometry }}
+					<div id="map_canvas" style="width:400px; height:350px"></div>
+					<script type="text/javascript">DisplayMapAndMarkers();</script>
 				</td></tr>
 		</table>
 		<table border="1">

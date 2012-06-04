@@ -10,7 +10,7 @@
 		   <tr>
 		       <td>{{ library.Name }}</td>
 		       <td><a href="{{ url_for( 'detail_view', entry_id=library._id ) }}">detail</a></td>
-		       <td><a href="{{ url_for( 'edit_entry', library_name=library.Name ) }}">edit</a></td>
+		       <!-- <td><a href="{blah{ url_for( 'edit_entry', library_name=library.Name ) }blah}">edit</a></td> -->
 		   </tr>
 		   {% endfor %}
 		</table

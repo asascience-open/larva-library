@@ -4,7 +4,34 @@ from larva_library.models.library import LibrarySearch
 from larva_library.models.library import WizardFormOne, WizardFormTwo, WizardFormThree
 from shapely.wkt import dumps, loads
 from shapely.geometry import Point
+from bson import ObjectId
 import datetime
+
+@app.route('/library/detail')
+def detail_view():
+    entry_id = request.args.get('entry_id')
+
+    if entry_id is None:
+        flash('Recieved an entry without an id')
+        return redirect(url_for('index'))
+    
+    entry = db.Library.find_one({'_id':ObjectId(entry_id)})
+
+    if entry is None:
+        flash('Cannot find object ' + str(entry_id))
+        return redirect(url_for('index'))
+
+    # return the positional data into usable points for markers on google maps
+    marker_poisitions = []
+    #test/debug
+    for pos in entry.Geometry:
+        point = loads(pos)
+        position_tuple = (point.x,point.y)
+        marker_poisitions.append(position_tuple)
+
+    entry['Markers'] = marker_poisitions
+
+    return render_template('library_detail.html', entry=entry)
 
 @app.route("/library/search", methods=["POST"])
 def library_search():
@@ -96,6 +123,7 @@ def wizard_page_two():
         geo_array.pop()
         # for each item in the array we need to load it as a point and then print its wkt
         for point in geo_array:
+            geo_positional_data.append(unicode(point))
             # strip any '() '
             point = point.replace('(','')
             point = point.replace(')','')

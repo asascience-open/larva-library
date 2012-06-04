@@ -64,9 +64,10 @@
         // create a deliminated string to parse the positions
         geo_str = '';
         for (i in mapMarkers.markers) {
-            //console.log(mapMarkers.markers[i].getPosition().toString());
             geo_str += mapMarkers.markers[i].getPosition().toString() + "ngp";
         }
+
+        console.log(geo_str);
 
         // console.log(document.getElementById('positionData'));
         // console.log(document.getElementById('positionData').keywords);
