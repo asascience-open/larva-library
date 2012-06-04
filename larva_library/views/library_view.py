@@ -23,7 +23,7 @@ def detail_view():
 
     # return the positional data into usable points for markers on google maps
     marker_poisitions = []
-    #test/debug
+    # load the point data and put the positions into tuples
     for pos in entry.Geometry:
         point = loads(pos)
         position_tuple = (point.x,point.y)

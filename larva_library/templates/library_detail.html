@@ -25,6 +25,12 @@
 				position : mLatLng,
 				map 	 : map
 			});
+			// add listener for click event
+			google.maps.event.addListener(mMarker, 'click', function(event) {
+				// zoom to marker
+				map.setZoom(8);
+				map.panTo(event.latLng);
+			});
 		{% endfor %}
 	}
 </script>
