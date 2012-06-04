@@ -1,21 +1,97 @@
 {% from "render_field.html" import render_field %}
 {% extends "layout.html" %}
-{% block body %}
-<form method=post action="{{url_for('wizard_page_two')}}">
-  <table cellspacing="10">
-  	<tr><td>
-    	NOTE: Comma-seperated values for searching/organizing
-	</td></tr>
-	<tr><td>
-    	{{ render_field(form.keywords) }}
-	</td></tr>
-	<tr><td>
-    	NOTE: Temporary way of inputing coords for global positioning
-	</td></tr>
-    <tr><td>
-    	{{ render_field(form.geography) }}
-	</td></tr>
-  </table>
-  <p><input type=submit value=Next>
-</form>
+{% block javascript %}
+<!-- call super() to make sure any other needed javascript is loaded -->
+{{ super() }}
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+    function MapMarkers() {
+        this.markers = new Array();
+        this.contains = function(markerToFind) {
+            var index = this.markers.indexOf(markerToFind);
+            if( index != -1)
+                return true;
+            return false;
+        }
+        this.removeMarker = function(markerToRemove) {
+            var index = -1;
+            for (i in this.markers) {
+                marker = this.markers[i];
+                if(marker.getPosition() == markerToRemove.getPosition()) {
+                    index = this.markers.indexOf(marker);
+                    break;
+                }
+            }
+            if (index == -1)
+                return false;
+
+            this.markers.splice(index,1);
+            return true;
+        }
+    }
+    // create our array of map markers
+    var mapMarkers = new MapMarkers();
+
+    function initialize() {
+      //alert('In initialize()');
+      var myOptions = {
+          center    : new google.maps.LatLng(0, 0),
+          zoom      : 1,
+          mapTypeId : google.maps.MapTypeId.ROADMAP
+      };
+      //alert(document.getElementById("map_canvas"));
+      var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+
+      // add listener for click event on map
+      google.maps.event.addListener(map, 'click', function(event) {
+            // create a new marker at the location
+            marker = new google.maps.Marker({position : event.latLng, map : map});
+            // add the marker to our array
+            mapMarkers.markers.push(marker);
+
+            // add listener for the marker
+            google.maps.event.addListener(marker, 'click', function(event) {
+                markerToRemove = new google.maps.Marker({position : event.latLng});
+                // remove self from array
+                if (mapMarkers.removeMarker(markerToRemove))
+                    marker.setMap(null);
+            });
+      });
+    }
+
+    function gatherGeoPositions() {
+        mapPosData = [];
+        // get the positions of each of the markers
+        for (i in mapMarkers.markers) {
+            mapPosData.push(mapMarkers.markers[i].getPosition());
+        }
+        // save it to the form
+        alert('saving geo data to form ' + mapPosData.toString());
+        form = document.getElementById("positionData");
+        form.elements.push(mapPosData);
+
+        return true;
+    }
+</script>
+{% endblock %}
+{% block page %}
+    <!-- test: show map -->
+    <form method=post id="positionData" action="{{url_for('wizard_page_two')}}" onsubmit="return gatherGeoPositions()">
+        <table cellspacing="10">
+          	<tr><td>
+            	NOTE: Comma-seperated values for searching/organizing
+        	</td></tr>
+        	<tr><td>
+            	{{ render_field(form.keywords) }}
+        	</td></tr>
+        	<tr><td>
+            	Click on map to place markers. Click on markers to remove.
+        	</td></tr>
+            <tr><td>
+              <div id="map_canvas" style="width:400px; height:350px"></div>
+        	</td></tr>
+        </table>
+        <p><input type=submit value=Next>
+    </form>
+    <script type="text/javascript">initialize();</script>
 {% endblock %}

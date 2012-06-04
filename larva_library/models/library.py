@@ -18,7 +18,7 @@ class Library(Document):
         'Common_Name': unicode,
         'Keywords'   : [unicode],
         'GeoKeywords': [unicode],
-        'Geometry'   : unicode,
+        'Geometry'   : [unicode],
         'Lifestages' : [{
             'name' : unicode,
             'stage': int
@@ -78,8 +78,6 @@ class WizardFormOne(Form):
 class WizardFormTwo(Form):
     # using the taglistfield demostrated from wtforms.simplecodes.com
     keywords = TagListField('Keywords')
-    # temp place holder for doing geographical positioning
-    geography = TextField('Geographical Positioning')
     
 class WizardFormThree(Form):
     # display the number of life stages based on the number input for number_of_lifestages

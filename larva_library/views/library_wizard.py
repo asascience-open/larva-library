@@ -26,22 +26,30 @@ def wizard_page_one():
 
 @app.route('/wizard/page/2', methods=['GET','POST'])
 def wizard_page_two():
-    form = WizardFormTwo(request.form)
+    wiz_form = WizardFormTwo(request.form)
+    if request.form is not None:
+        flash(request.form)
+        flash(request.form.items())
+
+    if request.form.get('geo') is not None:
+        geo_pos = request.form.geo;
+        flash(geo_pos)
+        flash(dir(geo_pos))
+        return redirect(url_for('index'))
 
     if session.get('new_entry') is None:
         # throw exception that we did not go in order
         flash('Please start the wizard from the index, page 2')
         return redirect(url_for('index'))
     
-    elif request.method == 'POST' and form.validate():
+    elif request.method == 'POST' and wiz_form.validate():
         lib = session['new_entry']
-        lib['Keywords'] = form.keywords.data
-        lib['Geography'] = form.geography.data
+        lib['Keywords'] = wiz_form.keywords.data
         session['new_entry'] = lib
         # copy dict into the Library structure
         return redirect(url_for('wizard_page_three'))
     
-    return render_template('wizard_page_two.html', form=form)
+    return render_template('wizard_page_two.html', form=wiz_form)
 
 @app.route('/wizard/page/3', methods=['GET','POST'])
 def wizard_page_three():

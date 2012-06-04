@@ -1,9 +1,7 @@
 {% extends "library_search.html" %}
-{% block body %}
+{% block page %}
 	{% if session['user_email'] %}
-	    <body>
-	        <p><a href="{{url_for('wizard_page_one')}}">add new entry</a></p>
-	    </body>
+	    <p><a href="{{url_for('wizard_page_one')}}">add new entry</a></p>
 	{% endif %}
 	{% if libraries %}
 		Currently Owned Entries: <br />
@@ -11,7 +9,7 @@
 		   {% for library in libraries %}
 		   <tr>
 		       <td>{{ library.Name }}</td>
-		       <td><a href="{{ url_for( 'detail_view', entry_id=library ) }}">detail</a></td>
+		       <td><a href="{{ url_for( 'detail_view', entry_id=library._id ) }}">detail</a></td>
 		       <td><a href="{{ url_for( 'edit_entry', library_name=library.Name ) }}">edit</a></td>
 		   </tr>
 		   {% endfor %}
