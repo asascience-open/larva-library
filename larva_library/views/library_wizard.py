@@ -1,6 +1,8 @@
 from larva_library import db, app
 from larva_library.models.library import WizardFormOne, WizardFormTwo, WizardFormThree
 from flask import request, url_for, redirect, render_template, flash, session
+from shapely.wkt import dumps, loads
+from shapely.geometry import Point
 import datetime
 
 @app.route('/wizard/page/1', methods=['GET','POST'])
@@ -27,15 +29,28 @@ def wizard_page_one():
 @app.route('/wizard/page/2', methods=['GET','POST'])
 def wizard_page_two():
     wiz_form = WizardFormTwo(request.form)
-    if request.form is not None:
-        flash(request.form)
-        flash(request.form.items())
+    # if request.form is not None:
+    #     flash(request.form)
+    #     flash(request.form.items())
+
+    geo_positional_data = []
 
     if request.form.get('geo') is not None:
-        geo_pos = request.form.geo;
-        flash(geo_pos)
-        flash(dir(geo_pos))
-        return redirect(url_for('index'))
+        geo_array = wiz_form.geo.data.split('ngp')
+        # remove last member of the array (it will be empty)
+        geo_array.pop()
+        # for each item in the array we need to load it as a point and then print its wkt
+        for point in geo_array:
+            # strip any '() '
+            point = point.replace('(','')
+            point = point.replace(')','')
+            point = point.replace(' ','')
+            # split into two values
+            point_array = point.split(',')
+            # now create a Point with the two valus
+            temp_point = Point(float(point_array[0]),float(point_array[1]))
+            # add to our data
+            geo_positional_data.append(unicode(temp_point.wkt))
 
     if session.get('new_entry') is None:
         # throw exception that we did not go in order
@@ -45,6 +60,7 @@ def wizard_page_two():
     elif request.method == 'POST' and wiz_form.validate():
         lib = session['new_entry']
         lib['Keywords'] = wiz_form.keywords.data
+        lib['Geometry'] = geo_positional_data
         session['new_entry'] = lib
         # copy dict into the Library structure
         return redirect(url_for('wizard_page_three'))

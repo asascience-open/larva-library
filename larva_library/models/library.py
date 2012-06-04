@@ -1,6 +1,6 @@
 from flask.ext.mongokit import Document
 from larva_library import db, app
-from wtforms import Form, TextField, validators, IntegerField, Field, FieldList, FormField, BooleanField
+from wtforms import Form, TextField, validators, IntegerField, Field, FieldList, FormField, BooleanField, HiddenField
 from wtforms import widgets
 from datetime import datetime
 #import datetime
@@ -66,18 +66,19 @@ class LifestageForm(Form):
 ## forms for library searching
 class LibrarySearch(Form):
     search_name = TextField('Name')
-    user_owned = BooleanField('User Owned Only')
+    user_owned = BooleanField('User_Owned_Only')
 
 ## forms for library wizard (editing and creating)
 class WizardFormOne(Form):
     lib_name = TextField('Name', [validators.Length(max=128)])
     genus = TextField('Genus')
     species = TextField('Species')
-    common_name = TextField('Common Name')
+    common_name = TextField('Common_Name')
     
 class WizardFormTwo(Form):
     # using the taglistfield demostrated from wtforms.simplecodes.com
     keywords = TagListField('Keywords')
+    geo = HiddenField('Geo');
     
 class WizardFormThree(Form):
     # display the number of life stages based on the number input for number_of_lifestages
