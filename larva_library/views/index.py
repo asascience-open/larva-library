@@ -26,24 +26,3 @@ def index():
 
     else:
         return render_template('index.html', form=form, loggedin=user)
-
-#debug
-@app.route('/remove_libraries')
-def remove_libraries():
-    db.drop_collection('libraries')
-    return redirect(url_for('index'))
-    
-#temp
-@app.route('/edit/<library_name>')
-def edit_entry(library_name):
-  if library_name is None:
-    flash('Cannot edit empty entry, try making a new one instead')
-    return redirect(url_for('index'))
-
-  entry = db.Library.find_one({'User':session['user_email'], 'Name':library_name})
-  if entry is None:
-    flash('Cannot find ' + library_name + ' for current user, please make sure you have privileges necessary to edit the entry')
-    return redirect(url_for('index'))
-
-  #Pass along entry as form
-  return redirect(url_for('wizard_page_one', form=entry))
