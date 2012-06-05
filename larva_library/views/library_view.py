@@ -43,12 +43,20 @@ def library_search():
 
     query = dict()
     _keyword_query = dict()
-    _keyword_query['$all'] = form.search_keywords.data.split(',')
-    query['_keywords'] = _keyword_query
+    _keystr = form.search_keywords.data.rstrip(',')
+    query['_keywords'] = {'$all':_keystr.split(',')}
     if form.user_owned.data == True and session.get('user_email') is not None:
     		query['User'] = session['user_email']
 
     results = db.Library.find(query)
+    ##### DEBUG #####
+    # print query
+    # for result in results:
+    #     print result.Genus
+    print results.explain()
+    #################
+    if results.count() == 0:
+        flash('Unable to find entry(ies)')
 
     result_string=''
 
@@ -61,6 +69,13 @@ def library_search():
 def list_library():
     # retrieve entire db and pass it to the html
     libraries = db.Library.find()
+    ##### DEBUG #####
+    # for lib in libraries:
+    #     print lib._keywords
+    # print libraries.explain()
+    #################
+    if libraries.count() == 0:
+        flash('No entries exist in the library')
     return render_template('library_list.html', libraries=libraries)
 
 #debug
@@ -110,7 +125,7 @@ def wizard_page_one():
             _keywords.extend(lib['Genus'].split(' '))
             _keywords.extend(lib['Species'].split(' '))
             _keywords.extend(lib['Common_Name'].split(' '))
-            lib['_keywords'] = _keywords;
+            lib['_keywords'] = _keywords
             session['new_entry'] = lib
             
         return redirect(url_for('wizard_page_two'))
@@ -154,7 +169,9 @@ def wizard_page_two():
         lib['Keywords'] = wiz_form.keywords.data
         lib['Geometry'] = geo_positional_data
         # add the keywords to the internal keywords
-        lib['_keywords'].extend(wiz_form.keywords.data)
+        for kywrd in wiz_form.keywords.data:
+            lib['_keywords'].append(kywrd)
+        
         session['new_entry'] = lib
         # copy dict into the Library structure
         return redirect(url_for('wizard_page_three'))
@@ -195,13 +212,14 @@ def wizard_page_three():
         lib['User'] = session['user_email']
         session['new_entry'] = lib
 
-        # ensure index our keywords
-        for key in lib['_keywords']:
-            db.libraries.ensure_index(key)
-
         m_lib = db.Library()
         m_lib.copy_from_dictionary(lib)
+        # ensure index our keywords
+        db.libraries.ensure_index('_keywords')
         m_lib.save()
+
+        # rebuild the index
+        db.libraries.reindex()
 
         if session.get('count') is not None:
             session.pop('count')

@@ -38,7 +38,6 @@ class Library(Document):
         else:
             for key in dict.keys():
                 if key in self.structure.keys():
-                    app.logger.info('adding key ' + key + ' to Library')
                     self[key] = dict[key]
             return self
     

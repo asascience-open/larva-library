@@ -26,3 +26,12 @@ def index():
 
     else:
         return render_template('index.html', form=form, loggedin=user)
+
+
+#testing
+@app.route('/testing/set/email', methods=['POST'])
+def user_email():
+    if request.form.get('user_email') is not None:
+        session['user_email'] = request.form.get('user_email')
+        flash('TEST: set user_email')
+    return render_template('layout.html')

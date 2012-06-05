@@ -21,10 +21,12 @@
 		Search Results: <br />
 		<table>
 			{% for result in results %}
-			<tr>
-				<td>{{ result }}</td>
-				<td><a href="{{ url_for( 'detail_view', entry_id=result._id ) }}">detail</a></td>
-			</tr>
+				{% if result %}
+					<tr>
+						<td>{{ result }}</td>
+						<td><a href="{{ url_for( 'detail_view', entry_id=result._id ) }}">detail</a></td>
+					</tr>
+				{% endif %}
 			{% endfor %}
 		</table>
 		<br />
