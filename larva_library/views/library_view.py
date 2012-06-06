@@ -158,6 +158,9 @@ def wizard_page_two():
         # add the keywords to the internal keywords
         for kywrd in wiz_form.keywords.data:
             lib['_keywords'].append(kywrd)
+
+        for kywrd in wiz_form.geo_keywords.data:
+            lib['_keywords'].append(kywrd)
         
         session['new_entry'] = lib
         # copy dict into the Library structure
