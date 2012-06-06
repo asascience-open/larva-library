@@ -53,7 +53,7 @@ def library_search():
     # print query
     # for result in results:
     #     print result.Genus
-    print results.explain()
+    #print results.explain()
     #################
     if results.count() == 0:
         flash('Unable to find entry(ies)')
@@ -135,9 +135,6 @@ def wizard_page_one():
 @app.route('/library/wizard/page/2', methods=['GET','POST'])
 def wizard_page_two():
     wiz_form = WizardFormTwo(request.form)
-    # if request.form is not None:
-    #     flash(request.form)
-    #     flash(request.form.items())
 
     geo_positional_data = []
 

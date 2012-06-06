@@ -10,13 +10,8 @@ def index():
 
     if request.args.get('results') is not None:
       result = request.args.get('results')
+      result = result.rstrip(',')
       results = result.split(',')
-
-      try:
-        while results.index(''):
-          results.remove('')
-      except ValueError:
-        app.logger.info('finished parsing search result')
       
       return render_template('index.html', results=results, form=form, loggedin=user)
 
