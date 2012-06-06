@@ -25,6 +25,7 @@ def detail_view():
     marker_poisitions = []
     # load the point data and put the positions into tuples
     for pos in entry.Geometry:
+        #flash(pos)
         point = loads(pos)
         position_tuple = (point.x,point.y)
         marker_poisitions.append(position_tuple)
@@ -133,7 +134,6 @@ def wizard_page_two():
         geo_array.pop()
         # for each item in the array we need to load it as a point and then print its wkt
         for point in geo_array:
-            geo_positional_data.append(unicode(point))
             # strip any '() '
             point = point.replace('(','')
             point = point.replace(')','')
@@ -153,6 +153,7 @@ def wizard_page_two():
     elif request.method == 'POST' and wiz_form.validate():
         lib = session['new_entry']
         lib['Keywords'] = wiz_form.keywords.data
+        lib['GeoKeywords'] = wiz_form.geo_keywords.data
         lib['Geometry'] = geo_positional_data
         # add the keywords to the internal keywords
         for kywrd in wiz_form.keywords.data:

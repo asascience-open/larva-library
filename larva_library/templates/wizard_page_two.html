@@ -88,12 +88,15 @@
         	<tr><td>
             	{{ render_field(form.keywords) }}
         	</td></tr>
+            <tr><td>
+                {{ render_field(form.geo_keywords) }}
+            </td></tr>
         	<tr><td>
             	Click on map to place markers. Click on markers to remove.
         	</td></tr>
             <tr><td>
                 <div id="map_canvas" style="width:400px; height:350px"></div>
-                {{ render_field(form.geo) }}
+                <input id="geo" name="geo" type="hidden" value="">
         	</td></tr>
         </table>
         <p><input type=submit value=Next>

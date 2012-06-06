@@ -79,6 +79,7 @@ class WizardFormTwo(Form):
     # using the taglistfield demostrated from wtforms.simplecodes.com
     keywords = TagListField('Keywords')
     geo = HiddenField('Geo');
+    geo_keywords = TagListField('Goegraphical Keywords')
     
 class WizardFormThree(Form):
     # display the number of life stages based on the number input for number_of_lifestages
