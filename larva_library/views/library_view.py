@@ -49,12 +49,6 @@ def library_search():
     		query['User'] = session['user_email']
 
     results = db.Library.find(query)
-    ##### DEBUG #####
-    # print query
-    # for result in results:
-    #     print result.Genus
-    #print results.explain()
-    #################
     if results.count() == 0:
         flash('Unable to find entry(ies)')
 
@@ -69,11 +63,6 @@ def library_search():
 def list_library():
     # retrieve entire db and pass it to the html
     libraries = db.Library.find()
-    ##### DEBUG #####
-    # for lib in libraries:
-    #     print lib._keywords
-    # print libraries.explain()
-    #################
     if libraries.count() == 0:
         flash('No entries exist in the library')
     return render_template('library_list.html', libraries=libraries)
