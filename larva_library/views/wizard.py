@@ -2,7 +2,6 @@ from flask import url_for, request, redirect, flash, render_template, session
 from larva_library import app, db
 from larva_library.models.library import WizardFormOne, WizardFormTwo, WizardFormThree
 from shapely.geometry import Point
-from bson import ObjectId
 import datetime
 
 @app.route('/library/wizard/page/1', methods=['GET','POST'])
