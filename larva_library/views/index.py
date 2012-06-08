@@ -2,25 +2,23 @@ from flask import render_template, redirect, url_for, session, flash, request
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     form = LibrarySearch(request.form)
+    user = session.get('user_email', None)
+    results = None
+    libraries = None
 
-    user = session.get('user_email')
-
-    if request.args.get('results') is not None:
-      result = request.args.get('results')
+    # A search was submitted
+    if request.method == 'POST':
+      result = request.form.get('search_keywords')
       result = result.rstrip(',')
       results = result.split(',')
-      
-      return render_template('index.html', results=results, form=form, loggedin=user)
 
     if user is not None:
         libraries = list(db.Library.find({'User':user}))
-        return render_template('index.html', libraries=libraries, form=form, loggedin=user)
-
-    else:
-        return render_template('index.html', form=form, loggedin=user)
+    
+    return render_template('index.html', results=results, libraries=libraries, form=form)
 
 
 #testing

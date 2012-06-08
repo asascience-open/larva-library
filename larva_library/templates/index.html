@@ -1,40 +1,60 @@
-{% extends "library_search.html" %}
+{% extends "layout.html" %}
+{% from "render_field.html" import render_field %}
+
 {% block page %}
-	{% if session['user_email'] %}
-	    <p><a href="{{url_for('wizard_page_one')}}">add new entry</a></p>
-	{% endif %}
-	{% if libraries %}
-		Currently Owned Entries: <br />
-		<table>
-		   {% for library in libraries %}
-		   <tr>
-		       <td>{{ library.Name }}</td>
-		       <td><a href="{{ url_for( 'detail_view', entry_id=library._id ) }}">detail</a></td>
-		       <!-- <td><a href="{blah{ url_for( 'edit_entry', library_name=library.Name ) }blah}">edit</a></td> -->
-		   </tr>
-		   {% endfor %}
-		</table
-		<!-- Link to table list -->
-		<br />
-		<a href="{{url_for('list_library')}}">List Entire Library</a>
-	{% elif results %}
-		Search Results: <br />
-		<table>
-			{% for result in results %}
-				{% if result %}
-					<tr>
-						<td>{{ result }}</td>
-						<td><a href="{{ url_for( 'detail_view', entry_id=result._id ) }}">detail</a></td>
-					</tr>
-				{% endif %}
-			{% endfor %}
-		</table>
-		<br />
-		<a href="{{url_for('index')}}">Index</a>
-		<!-- Link to table list -->
-		<br />
-		<a href="{{url_for('list_library')}}">List Entire Library</a>
-	{% else %}
-		<a href="{{url_for('list_library')}}">List Entire Library</a>
-	{% endif %}
+
+    <!-- Search Form-->
+    <form method=post action="{{url_for('library_search')}}">
+        <dl class="edit">
+            Search Parameters (Comma-delimited):
+            <ul>
+                <li class="navigation">{{ render_field(form.search_keywords) }}</li>
+                {% if loggedin %}
+                    <li class="navigation">{{ render_field(form.user_owned) }}</li>
+                {% endif %}
+                <input type=submit value=Search>
+            </ul>
+        </dl>
+    </form>
+
+
+    <!-- Search Results -->
+    {% if results %}
+        Search Results: <br />
+        <table>
+            {% for result in results %}
+                {% if result %}
+                    <tr>
+                        <td>{{ result }}</td>
+                        <td><a href="{{ url_for( 'detail_view', library_id=result._id ) }}">detail</a></td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+        <br />
+    {% endif %}
+
+
+    <!-- Library -->
+    {% if session.get('user_email') %}
+        <p><a href="{{url_for('wizard_page_one')}}">Create new library entry</a></p>
+    {% else %}
+        <p>Please login to create new library entries</p>
+    {% endif %}
+
+    {% if libraries %}
+        Currently Owned Entries: <br />
+        <table>
+           {% for library in libraries %}
+           <tr>
+               <td>{{ library.Name }}</td>
+               <td><a href="{{ url_for( 'detail_view', library_id=library._id ) }}">detail</a></td>
+               <!-- <td><a href="{blah{ url_for( 'edit_entry', library_id=library._id ) }blah}">edit</a></td> -->
+           </tr>
+           {% endfor %}
+        </table>
+    {% endif %}
+
+    <a href="{{url_for('list_library')}}">Browse library</a>
+
 {% endblock %}

@@ -1,13 +1,13 @@
 {% from "render_field.html" import render_field %}
 {% extends "layout.html" %}
 {% block page %}
-	<form method=post action="{{url_for('wizard_page_one')}}">
-	  <table cellspacing="10">
-	    <tr><td>{{ render_field(form.lib_name) }}</td></tr>
-	    <tr><td>{{ render_field(form.genus) }}</td></tr>
-	    <tr><td>{{ render_field(form.species) }}</td></tr>
-	    <tr><td>{{ render_field(form.common_name) }}</td></tr>
-	  </table>
-	  <p><input type=submit value=Next>
-	</form>
+    <form method=post action="{{url_for('wizard_page_one')}}">
+      <table cellspacing="10">
+        <tr><td>{{ render_field(form.lib_name) }}</td></tr>
+        <tr><td>{{ render_field(form.genus) }}</td></tr>
+        <tr><td>{{ render_field(form.species) }}</td></tr>
+        <tr><td>{{ render_field(form.common_name) }}</td></tr>
+      </table>
+      <p><input type=submit value=Next>
+    </form>
 {% endblock %}

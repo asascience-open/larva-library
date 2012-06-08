@@ -1,27 +1,27 @@
 {% extends "layout.html" %}
 {% block page %}
-	{% if libraries %}
-		<!-- display library listings in a table format -->
-		<table border="1">
-				<tr><td>Name:</td><td>Genus:</td><td>Species:</td><td>Common:</td><td>Date Created:</td></tr>
-			{% for library in libraries %}
-				<tr class="table_cell">
-					<td>{{ library.Name }}</td>
-					<td>{{ library.Genus }}</td>
-					<td>{{ library.Species }}</td>
-					<td>{{ library.Common_Name }}</td>
-					<td>{{ library.Created }}</td>
-					<td>
-						<a href="{{ url_for( 'detail_view', entry_id=library._id ) }}">detail</a>
-					<!-- {% if session['user_email'] and session['user_email'] == library.User %}
-						<a class="edit" href="{blah{ url_for( 'edit_entry', entry_id=library ) }blah}">edit</a>
-					{% endif %} -->
-					</td>
-				</tr>
-			{% endfor %}
-		</table>
-	{% else %}
+    {% if libraries %}
+        <!-- display library listings in a table format -->
+        <table border="1">
+                <tr><td>Name:</td><td>Genus:</td><td>Species:</td><td>Common:</td><td>Date Created:</td></tr>
+            {% for library in libraries %}
+                <tr class="table_cell">
+                    <td>{{ library.Name }}</td>
+                    <td>{{ library.Genus }}</td>
+                    <td>{{ library.Species }}</td>
+                    <td>{{ library.Common_Name }}</td>
+                    <td>{{ library.Created }}</td>
+                    <td>
+                        <a href="{{ url_for( 'detail_view', library_id=library._id ) }}">detail</a>
+                    <!-- {% if session['user_email'] and session['user_email'] == library.User %}
+                        <a class="edit" href="{blah{ url_for( 'edit_entry', entry_id=library ) }blah}">edit</a>
+                    {% endif %} -->
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
 
-	{% endif %}
-	<a href="{{url_for('index')}}">Index</a>
+    {% endif %}
+    <a href="{{url_for('index')}}">Home</a>
 {% endblock %}

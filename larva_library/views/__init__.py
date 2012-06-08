@@ -1,4 +1,1 @@
-import larva_library.views.index
-import larva_library.views.user
-import larva_library.views.session
-import larva_library.views.library_view
+from larva_library.views import index, user, session, library, wizard
