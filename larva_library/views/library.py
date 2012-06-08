@@ -50,6 +50,7 @@ def library_search():
     libraries = db.Library.find(query)
     if libraries.count() == 0:
         flash('Search returned 0 results')
+        return redirect(url_for('index'))
 
     return render_template('library_list.html', libraries=libraries)
 
