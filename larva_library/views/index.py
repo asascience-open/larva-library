@@ -6,19 +6,12 @@ from larva_library.models.library import LibrarySearch
 def index():
     form = LibrarySearch(request.form)
     user = session.get('user_email', None)
-    results = None
     libraries = None
-
-    # A search was submitted
-    if request.method == 'POST':
-      result = request.form.get('search_keywords')
-      result = result.rstrip(',')
-      results = result.split(',')
 
     if user is not None:
         libraries = list(db.Library.find({'User':user}))
     
-    return render_template('index.html', results=results, libraries=libraries, form=form)
+    return render_template('index.html', libraries=libraries, form=form)
 
 
 #testing

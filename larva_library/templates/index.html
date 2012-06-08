@@ -17,24 +17,6 @@
         </dl>
     </form>
 
-
-    <!-- Search Results -->
-    {% if results %}
-        Search Results: <br />
-        <table>
-            {% for result in results %}
-                {% if result %}
-                    <tr>
-                        <td>{{ result }}</td>
-                        <td><a href="{{ url_for( 'detail_view', library_id=result._id ) }}">detail</a></td>
-                    </tr>
-                {% endif %}
-            {% endfor %}
-        </table>
-        <br />
-    {% endif %}
-
-
     <!-- Library -->
     {% if session.get('user_email') %}
         <p><a href="{{url_for('wizard_page_one')}}">Create new library entry</a></p>
