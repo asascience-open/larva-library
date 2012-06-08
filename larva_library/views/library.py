@@ -17,17 +17,15 @@ def detail_view(library_id):
         flash('Cannot find object ' + str(library_id))
         return redirect(url_for('index'))
 
-    # return the positional data into usable points for markers on google maps
-    marker_poisitions = []
-    # load the point data and put the positions into tuples
+    marker_positions = []
+    # load the polygon
     if entry.Geometry:
-        for pos in entry.Geometry:
-            #flash(pos)
-            point = loads(pos)
-            position_tuple = (point.x,point.y)
-            marker_poisitions.append(position_tuple)
+        polygon = loads(entry.Geometry)
+        for pt in polygon.exterior.coords:
+            # Google maps is y,x not x,y
+            marker_positions.append((pt[1], pt[0]))
 
-    entry['Markers'] = marker_poisitions
+    entry['markers'] = marker_positions
 
     return render_template('library_detail.html', entry=entry)
 

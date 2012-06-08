@@ -1,7 +1,7 @@
 from flask import url_for, request, redirect, flash, render_template, session
 from larva_library import app, db
 from larva_library.models.library import WizardFormOne, WizardFormTwo, WizardFormThree
-from shapely.geometry import Point
+from shapely.geometry import Polygon
 import datetime
 
 @app.route('/library/wizard/page/1', methods=['GET','POST'])
@@ -36,24 +36,17 @@ def wizard_page_one():
 def wizard_page_two():
     wiz_form = WizardFormTwo(request.form)
 
-    geo_positional_data = []
+    geo_positional_data = None
 
     if request.form.get('geo') is not None:
-        geo_array = wiz_form.geo.data.split('ngp')
-        # remove last member of the array (it will be empty)
-        geo_array.pop()
-        # for each item in the array we need to load it as a point and then print its wkt
-        for point in geo_array:
-            # strip any '() '
-            point = point.replace('(','')
-            point = point.replace(')','')
-            point = point.replace(' ','')
-            # split into two values
-            point_array = point.split(',')
-            # now create a Point with the two valus
-            temp_point = Point(float(point_array[0]),float(point_array[1]))
-            # add to our data
-            geo_positional_data.append(unicode(temp_point.wkt))
+        pts = []
+        geo_string = request.form.get('geo')
+        point_array = geo_string.split('),(')
+        for pt in point_array:
+            pt = pt.split(",")
+            pts.append((float(pt[1].replace(")","")),float(pt[0].replace("(",""))))
+        # Create the polygon
+        geo_positional_data = unicode(Polygon(pts).wkt)
 
     if session.get('new_entry') is None:
         # throw exception that we did not go in order

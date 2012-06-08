@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, session, flash, request
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
 def index():
     form = LibrarySearch(request.form)
     user = session.get('user_email', None)

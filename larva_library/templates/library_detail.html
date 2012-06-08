@@ -12,27 +12,14 @@
                 zoom      : 1,
                 mapTypeId : google.maps.MapTypeId.ROADMAP
             };
-            //alert(document.getElementById("map_canvas"));
             var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-            // gonna try jinja here to get the values
-            var geo_pos_array = new Array();
-            var pos_x, pos_y, mLatLng, mMarker;
-            {% for position in entry.Markers %}
-                pos_x = {{ position[0] }};
-                pos_y = {{ position[1] }};
-                // create the marker
-                mLatLng = new google.maps.LatLng(pos_x, pos_y);
-                mMarker = new google.maps.Marker({
-                    position : mLatLng,
-                    map      : map
-                });
-                // add listener for click event
-                google.maps.event.addListener(mMarker, 'click', function(event) {
-                    // zoom to marker
-                    map.setZoom(8);
-                    map.panTo(event.latLng);
-                });
+            
+            poly = new google.maps.Polygon({ map: map, path: [], strokeColor: "#FF0000", fillColor: "#FF0000", strokeOpacity: 1.0, strokeWeight: 2, fillOpacity: 0.35 });
+
+            {% for position in entry.markers %}
+                poly.getPath().push(new google.maps.LatLng({{position[0]}}, {{position[1]}}));
             {% endfor %}
+            
         }
     </script>
 {% endblock %}

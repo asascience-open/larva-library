@@ -18,7 +18,7 @@ class Library(Document):
         'Common_Name': unicode,
         'Keywords'   : [unicode],
         'GeoKeywords': [unicode],
-        'Geometry'   : [unicode],
+        'Geometry'   : unicode,
         'Lifestages' : [{
             'name' : unicode,
             'stage': int
