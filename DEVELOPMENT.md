@@ -27,7 +27,7 @@ Assumes you have:
 ## Starting a Heroku instance
     Custom buildpack for GEOS: https://github.com/cirlabs/heroku-buildpack-geodjango
 
-    $ heroku create --stack cedar --buildpack http://github.com/cirlabs/heroku-buildpack-geodjango NAME_OF_APP`
+    $ heroku create --stack cedar --buildpack http://github.com/cirlabs/heroku-buildpack-geodjango NAME_OF_APP
 
     $ heroku config:add APPLICATION_SETTINGS=production.py
     $ heroku config:add SECRET_KEY=somethinglongandunique
