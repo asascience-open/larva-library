@@ -1,7 +1,6 @@
 from flask.ext.mongokit import Document
 from larva_library import db, app
-from wtforms import Form, TextField, validators, IntegerField, Field, FieldList, FormField, BooleanField, HiddenField
-from wtforms import widgets
+from wtforms import *
 from datetime import datetime
 #import datetime
 #
@@ -20,8 +19,9 @@ class Library(Document):
         'GeoKeywords': [unicode],
         'Geometry'   : unicode,
         'Lifestages' : [{
-            'name' : unicode,
-            'stage': int
+            'name'      : unicode,
+            'vss'       : float,
+            'duration'  : int
         }],
         'User'       : unicode,
         'Created'    : datetime,
@@ -43,7 +43,7 @@ class Library(Document):
     
 db.register([Library])
 
-# custom field classes       
+# custom field classes
 class TagListField(Field):
     widget = widgets.TextInput()
     
@@ -57,11 +57,7 @@ class TagListField(Field):
         if valuelist:
             self.data = [x.strip() for x in valuelist[0].split(',')]
         else:
-            self.data = [] 
-
-# sub-forms
-class LifestageForm(Form):
-    name = TextField('StageName')
+            self.data = []
 
 ## forms for library searching
 class LibrarySearch(Form):
@@ -69,20 +65,20 @@ class LibrarySearch(Form):
     user_owned = BooleanField('User_Owned_Only')
 
 ## forms for library wizard (editing and creating)
-class WizardFormOne(Form):
-    lib_name = TextField('Name', [validators.Length(max=128)])
+class BaseWizard(Form):
+    name = TextField('Name', [validators.Length(max=128)])
     genus = TextField('Genus')
     species = TextField('Species')
     common_name = TextField('Common_Name')
-    
-class WizardFormTwo(Form):
-    # using the taglistfield demostrated from wtforms.simplecodes.com
     keywords = TagListField('Keywords')
     geo = HiddenField('Geo');
     geo_keywords = TagListField('Goegraphical Keywords')
-    
-class WizardFormThree(Form):
-    # display the number of life stages based on the number input for number_of_lifestages
-    lifestages = FieldList(FormField(LifestageForm))
-            
-    
+
+## forms for library wizard (editing and creating)
+class LifeStageWizard(Form):
+    name = TextField('Name', [validators.Length(max=128)])
+    vss = FloatField('Vertical Swimming Speed (m/s)')
+    duration = IntegerField('Lifestage Duration (days)')
+
+    diel = BooleanField('Diel')
+    taxis = BooleanField('Sensory')

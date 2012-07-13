@@ -9,7 +9,7 @@
             Search Parameters (Comma-delimited):
             <ul>
                 <li class="navigation">{{ render_field(form.search_keywords) }}</li>
-                {% if loggedin %}
+                {% if session.get('user_email') %}
                     <li class="navigation">{{ render_field(form.user_owned) }}</li>
                 {% endif %}
                 <input type=submit value=Search>
@@ -19,7 +19,7 @@
 
     <!-- Library -->
     {% if session.get('user_email') %}
-        <p><a href="{{url_for('wizard_page_one')}}">Create new library entry</a></p>
+        <p><a href="{{url_for('library_wizard')}}">Create new library entry</a></p>
     {% else %}
         <p>Please login to create new library entries</p>
     {% endif %}

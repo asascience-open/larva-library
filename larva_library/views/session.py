@@ -29,8 +29,7 @@ def facebook_authorized(resp):
     if resp is None:
         flash (u'Access denied.')
         return redirect(url_for('index'))
-    
-    next_url = request.args.get('next') or url_for('index')
+
     session['facebook_token'] = (resp['access_token'], '')
     #request 'me' to get user id and email
     me = facebook.get('/me')
@@ -39,6 +38,7 @@ def facebook_authorized(resp):
     set_user_session(user)
 
     flash('Signed in as ' + session['user_email'])
+    next_url = request.args.get('next') or url_for('index')
     return redirect(next_url)
 
 @facebook.tokengetter
@@ -72,7 +72,8 @@ def google_authorized(resp):
     set_user_session(user)
 
     flash('Signed in as ' + session.get('user_email'))
-    return redirect(url_for('index'))
+    next_url = request.referrer or url_for('index')
+    return redirect(next_url)
 
 def set_user_session(user):
     session['user_email'] = user.email

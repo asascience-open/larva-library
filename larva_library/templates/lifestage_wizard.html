@@ -1,0 +1,71 @@
+{% from "render_field.html" import render_field %}
+{% extends "layout.html" %}
+
+{% block css %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('.static', filename='ui/themes/smoothness/jquery-ui.smoothness.css') }}" />
+{% endblock %}
+
+{% block page %}
+
+    <div id="lifestage">
+        <form name="lifestage" id="wrapped" method="post" action="{{url_for('lifestage_wizard', library_id=entry)}}">
+            <div class="step">
+                {{ render_field(form.name) }}<br />
+                {{ render_field(form.vss) }}<br />
+                {{ render_field(form.duration) }}<br />
+                {{ render_field(form.diel) }}<br />
+                {{ render_field(form.taxis) }}<br />
+            </div>
+            <div class="submit step">
+
+            </div>
+            <div class="navigation">
+                <ul class="clearfix">
+                    <li>
+                        <button type="button" name="backward" class="backward">Backward</button>
+                    </li>
+                    <li>
+                        <button type="button" name="forward" class="forward">Forward</button>
+                    </li>
+                    <li>
+                        <button type="submit" name="process" class="submit">Submit</button>
+                    </li>
+                </ul>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+    {{ super() }}
+    <script type="text/javascript" src="{{ url_for('.static', filename='jquery-1.4.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('.static', filename='ui/jquery-ui-1.8.12.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('.static', filename='jquery.form.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('.static', filename='jquery.validate.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('.static', filename='jquery.wizard.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Wizard
+            $("#lifestage").wizard({
+                stepsWrapper: "#wrapped",
+                submit: ".submit",
+                beforeSelect: function( event, state ) {
+                    var inputs = $(this).wizard('state').step.find(':input');
+                    return !inputs.length || !!inputs.valid();
+                }
+            }).validate({
+                errorPlacement: function(error, element) { 
+                    if ( element.is(':radio') || element.is(':checkbox') ) {
+                        error.insertBefore( element.next() );
+                    } else { 
+                        error.insertAfter( element );
+                    }
+                }
+            });
+        });   
+
+    </script>
+{% endblock %}
