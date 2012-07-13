@@ -34,8 +34,8 @@ def library_search():
     form = LibrarySearch(request.form)
 
     if form.search_keywords.data is None or form.search_keywords.data == '':
-    	flash('Please enter a search term')
-    	return redirect(url_for('index'))
+        flash('Please enter a search term')
+        return redirect(url_for('index'))
 
     # Build query
     query = dict()
@@ -43,7 +43,7 @@ def library_search():
     _keystr = form.search_keywords.data.rstrip(',')
     query['_keywords'] = {'$all':_keystr.split(',')}
     if form.user_owned.data == True and session.get('user_email') is not None:
-    		query['User'] = session.get('user_email')
+            query['User'] = session.get('user_email')
 
     libraries = db.Library.find(query)
     if libraries.count() == 0:
