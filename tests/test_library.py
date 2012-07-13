@@ -92,12 +92,12 @@ class LibraryTestCase(unittest.TestCase):
                 search_keywords='doesnotexist'
             ), follow_redirects=True)
         # check out our data to see if we did not find anything, we is expected
-        assert 'Unable to find entry(ies)' in rv.data
+        assert 'Search returned 0 results' in rv.data
         rv = self.app.post('/library/search', data=dict(
                 search_keywords='keyword1,doesexist'
             ), follow_redirects=True)
         # should get something in data if it does exist
-        self.failIf('Unable to find entry(ies)' in rv.data)
+        self.failIf('Search returned 0 results' in rv.data)
 
 if __name__ == '__main__':
     unittest.main()
