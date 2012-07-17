@@ -82,3 +82,6 @@ class LifeStageWizard(Form):
 
     diel = BooleanField('Diel')
     taxis = BooleanField('Sensory')
+
+    diel_data = HiddenField('diel_data')
+    taxis_data = HiddenField('taxis_data')

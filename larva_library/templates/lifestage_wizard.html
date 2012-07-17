@@ -1,4 +1,4 @@
-{% from "render_field.html" import render_field %}
+{% from "macros.html" import render_field, time_listings, timezones %}
 {% extends "layout.html" %}
 
 {% block css %}
@@ -8,16 +8,98 @@
 
 {% block page %}
 
-    <div id="lifestage">
-        <form name="lifestage" id="wrapped" method="post" action="{{url_for('lifestage_wizard', library_id=entry)}}">
-            <div class="step">
+    <div id="form_wrapper">
+        <form name="lifestage" id="lifestage" method="post" action="{{url_for('lifestage_wizard', library_id=entry)}}">
+            <div class="step unidirectional" id="base_step">
                 {{ render_field(form.name) }}<br />
                 {{ render_field(form.vss) }}<br />
                 {{ render_field(form.duration) }}<br />
                 {{ render_field(form.diel) }}<br />
                 {{ render_field(form.taxis) }}<br />
             </div>
-            <div class="submit step">
+            <div class="step" id="diel_step">
+                <h2>Diel</h2>
+
+                <input type="radio" name="diel_type" id="specifictime" value="specifictime" />Specific Time
+                {{ time_listings() }} {{ timezones() }}
+
+                <br />
+
+                <input type="radio" name="diel_type" id="sun" value="cycles" checked="checked" />Sun Cycles
+                <select id="cycles" name="cycles">
+                    <option value="sunrise" selected="selected">Sunrise</ofption>
+                    <option value="sunset">Sunset</option>
+                </select>
+                <input type="radio" name="pmhours" value="plus" checked="checked"/> +
+                <input type="radio" name="pmhours" value="minus"/> -
+                <input id="diel_hours" name="diel_hours" type="text" value="" /> hours
+ 
+                <br />
+                <br />
+
+                <label for="diel_direction">Direction</label>
+                <select id="diel_direction" name="diel_direction">
+                    <option value="descend" selected="selected">Descend</option>
+                    <option value="rise">Rise</option>
+                </select>
+
+                <br />
+                <br />
+
+                <label>Desired Depth</label>
+                <label for="diel_min_depth">min</label>
+                <input id="diel_min_depth" name="diel_min_depth" type="text" value="" />m
+                <label for="diel_max_depth">max</label>
+                <input id="diel_max_depth" name="diel_max_depth" type="text" value="" />m
+
+                <br />
+                <br />
+
+                <button type="button" name="diel_add" id="diel_add">Add</button>
+
+                <h3>Currently configured</h3>
+                <ul id="diel_list">
+                </ul>
+
+                <!-- holds the JSON data for POSTing -->
+                {{ render_field(form.diel_data) }}
+            </div>
+            <div class="step" id="taxis_step">
+                <h2>Taxis</h2>
+
+                <label for="taxis_variable">Variable</label>
+                <select id="taxis_variable">
+                    <option value="sea_water_salinity" selected="selected">Salinity (PSU)</option>
+                    <option value="sea_water_temperature">Temperature (deg C)</option>
+                </select>
+
+                <br />
+                <br />
+
+                <label for="taxis_min">Min</label>
+                <input id="taxis_min" name="taxis_min" type="text" value="" />
+                <label for="taxis_max">Max</label>
+                <input id="taxis_max" name="taxis_max" type="text" value="" />
+
+                <br />
+                <br />
+
+                <label for="taxis_grad">Sensory Gradient +/-</label>
+                <input id="taxis_grad" name="taxis_grad" type="text" value="" />
+
+                <br />
+                <br />
+
+                <button type="button" name="taxis_add" id="taxis_add">Add</button>
+
+                <h3>Currently configured</h3>
+                <ul id="taxis_list">
+                </ul>
+
+                <!-- holds the JSON data for POSTing -->
+                {{ render_field(form.taxis_data) }}
+            </div>
+            <div class="submit step" id="review_step">
 
             </div>
             <div class="navigation">
@@ -47,14 +129,168 @@
     <script type="text/javascript" src="{{ url_for('.static', filename='jquery.wizard.js') }}"></script>
 
     <script type="text/javascript">
+
+        // Array to hold the DielInput elements
+        var diel_inputs = [];
+        var taxis_inputs = [];
+
+        function TaxisInput(variable, min, max, gradient) {
+            this.variable = variable;
+            this.units = "";
+            if (this.variable == "sea_water_temperature") {
+                this.units = "°C";
+            } else if (this.variable == "sea_water_salinity") {
+                this.units = "PSU";
+            }
+            this.min = min;
+            this.max = max;
+            this.gradient = gradient;
+
+            this.toString = function() {
+                return this.variable + ": " + this.min + " -> " + this.max + " " + this.units + " +/- " + this.gradient;
+            }
+
+            this.toData = function() {
+                return {"variable": this.variable, "min": this.min, "max": this.max, "gradient": this.gradient };
+            }
+        }
+
+        function DielInput(diel_type, diel_time, timezone, cycle, plus_or_minus, hours, direction, min, max) {
+            this.diel_type = diel_type;
+            this.diel_time = diel_time;
+            this.timezone = timezone;
+            this.cycle = cycle;
+            this.plus_or_minus = plus_or_minus;
+            this.hours = hours;
+            this.direction = direction;
+            this.min = min;
+            this.max = max;
+
+            this.toString = function() {
+                var str = "";
+                if (this.diel_type == 'specifictime') {
+                    str = "At " + this.diel_time + " GMT" + this.timezone +  ": " + this.direction + " to " + this.min + "m -> " + this.max + "m";
+                } else if (this.diel_type == 'cycles') {
+                    str = "At " + this.cycle + " " + this.plus_or_minus + " " + this.hours + " hours: " + this.direction + " to " + this.min + "m -> " + this.max + "m";
+                }
+                return str;
+            }
+
+            this.toData = function() {
+                var data = {"diel_type": this.diel_type };
+                data['diel_time'] = this.diel_time;
+                data['timezone'] = this.timezone;
+                data['cycle'] = this.cycle;
+                data['plus_or_minus'] = this.plus_or_minus;
+                data['hours'] = this.hours;
+                data['direction'] = this.direction;
+                data['min'] = this.min;
+                data['max'] = this.max;
+                return data;
+            }
+        }
+
+        function dataToObjects() {
+
+            // DIEL
+            diel_data = $("#diel_data").val();
+            diel_inputs = [];
+            if (diel_data != "") {
+                parsed = JSON.parse(diel_data);
+                if ($.isArray(parsed)) {
+                    $.each(parsed, function(i,v) {
+                        diel_inputs.push(getDiel(v));
+                    });
+                } else {
+                    diel_inputs.push(getDiel(parsed));
+                }
+            }
+            function getDiel(obj) {
+                return new DielInput(obj['diel_type'],obj['diel_time'],obj['timezone'],obj['cycle'],obj['plus_or_minus'],obj['hours'],obj['direction'],obj['min'],obj['max']);
+            }
+
+            // TAXIS
+            taxis_data = $("#taxis_data").val();
+            taxis_inputs = [];
+            if (taxis_data != "") {
+                parsed = JSON.parse(taxis_data);
+                if ($.isArray(parsed)) {
+                    $.each(parsed, function(i,v) {
+                        taxis_inputs.push(getTaxis(v));
+                    });
+                } else {
+                    taxis_inputs.push(getTaxis(parsed));
+                }
+            }
+            function getTaxis(obj) {
+                return new TaxisInput(obj['variable'],obj['min'],obj['max'],obj['gradient']);
+            }
+
+        }
+
+        function updateList(list, data, array) {
+            // Clear the current list
+            $("#" + list).empty();
+            var str = "";
+            var d = [];
+            $.each(array, function(i,v) {
+                str = v.toString();
+                d.push(v.toData());
+                $("#" + list)
+                    .append($('<li>')
+                        .append(str)
+                    .append($('<a>')
+                        .attr('href', '#')
+                        .text('Remove')
+                        .click(function(e) { 
+                            array.splice(i,1);
+                            updateList(list, data, array)
+                        })));
+            });
+
+            $("#" + data).val(JSON.stringify(d));
+        }
+
+        function move_or_stay(state, checkbox, current_step) {
+            // Should we be showing the current step?
+             if (!$('#' + checkbox).is(':checked')) {
+                // clear any input in fields
+                $("#" + current_step + " :input").attr("disabled", true);
+
+                // Move on
+                if (state.isMovingForward) {
+                    $("#lifestage").wizard("forward", 1);
+                } else {
+                    $("#lifestage").wizard("backward", 1);
+                }
+            } else {
+                // Enable all of the inputs on this page
+                $("#" + current_step + " :input").removeAttr("disabled");
+            }
+        }
+
         $(document).ready(function() {
+
+            dataToObjects();
+
             // Wizard
             $("#lifestage").wizard({
-                stepsWrapper: "#wrapped",
-                submit: ".submit",
-                beforeSelect: function( event, state ) {
+                beforeForward: function( event, state ) {
                     var inputs = $(this).wizard('state').step.find(':input');
                     return !inputs.length || !!inputs.valid();
+                },
+                afterSelect : function( event, state ) {
+                    // Diel step
+                    if (state.stepIndex == 1) {
+                        move_or_stay(state, "diel", "diel_step");
+                        updateList("diel_list", "diel_data", diel_inputs);
+                    }
+
+                    // Taxis step
+                    if (state.stepIndex == 2) {
+                        move_or_stay(state, "taxis", "taxis_step");
+                        updateList("taxis_list", "taxis_data", taxis_inputs);
+                    }
                 }
             }).validate({
                 errorPlacement: function(error, element) { 
@@ -63,9 +299,93 @@
                     } else { 
                         error.insertAfter( element );
                     }
+                },
+                rules: {
+                    name: {
+                        required: true
+                    },
+                    vss: {
+                        required: true,
+                        number: true
+                    },
+                    duration: {
+                        required: true,
+                        number: true
+                    },
+                    diel_hours: {
+                        required: {
+                            depends: function() {
+                                return $("#sun").is(":checked");
+                            }
+                         },
+                         number: {
+                            depends: function() {
+                                return $("#sun").is(":checked");
+                            }
+                         }
+                    },
+                    diel_min_depth: {
+                        required: true,
+                        number: true
+                    },
+                    diel_max_depth: {
+                        required: true,
+                        number: true
+                    },
+                    taxis_min: {
+                        required: true,
+                        number: true
+                    },
+                    taxis_max: {
+                        required: true,
+                        number: true
+                    },
+                    taxis_grad: {
+                        required: true,
+                        number: true
+                    },
+                },
+                messages: {
+                    name: {
+                        required: "Provide a behavior name"
+                    },
+                    vss: {
+                        required: "Provide a vertical swimming speed"
+                    },
+                    duration: {
+                        required: "Provide a duration"
+                    }
                 }
+            });
+
+            $("#diel_add").click(function(event) {
+                var diel_type = $('input:radio[name=diel_type]:checked').val();
+                var diel_time = $("#times").val();
+                var timezone = $("#timezones").val();
+                var cycle = $("#cycles").val();
+                var plus_or_minus = $('input:radio[name=pmhours]:checked').val();
+                var hours = $("#diel_hours").val();
+                var direction = $("#diel_direction").val();
+                var min = $("#diel_min_depth").val();
+                var max = $("#diel_max_depth").val();
+
+                diel_inputs.push(new DielInput(diel_type,diel_time,timezone,cycle,plus_or_minus,hours,direction,min,max));
+
+                updateList("diel_list", "diel_data", diel_inputs);
+            });
+
+            $("#taxis_add").click(function(event) {
+                var variable = $('#taxis_variable').val();
+                var gradient = $("#taxis_grad").val();
+                var min = $("#taxis_min").val();
+                var max = $("#taxis_max").val();
+
+                taxis_inputs.push(new TaxisInput(variable, min, max, gradient));
+
+                updateList("taxis_list", "taxis_data", taxis_inputs);
             });
         });   
 
     </script>
 {% endblock %}
+
