@@ -315,34 +315,74 @@
                     diel_hours: {
                         required: {
                             depends: function() {
-                                return $("#sun").is(":checked");
+                                return $("#diel").is(":checked") && $("#sun").is(":checked");
                             }
                          },
                          number: {
                             depends: function() {
-                                return $("#sun").is(":checked");
+                                return $("#diel").is(":checked") && $("#sun").is(":checked");
                             }
                          }
                     },
                     diel_min_depth: {
-                        required: true,
-                        number: true
+                        required: {
+                            depends: function() {
+                                return $("#diel").is(":checked");
+                            }
+                         },
+                         number: {
+                            depends: function() {
+                                return $("#diel").is(":checked");
+                            }
+                         }
                     },
                     diel_max_depth: {
-                        required: true,
-                        number: true
+                        required: {
+                            depends: function() {
+                                return $("#diel").is(":checked");
+                            }
+                         },
+                         number: {
+                            depends: function() {
+                                return $("#diel").is(":checked");
+                            }
+                         }
                     },
                     taxis_min: {
-                        required: true,
-                        number: true
+                        required: {
+                            depends: function() {
+                                return $("#taxis").is(":checked");
+                            }
+                         },
+                         number: {
+                            depends: function() {
+                                return $("#taxis").is(":checked");
+                            }
+                         }
                     },
                     taxis_max: {
-                        required: true,
-                        number: true
+                        required: {
+                            depends: function() {
+                                return $("#taxis").is(":checked");
+                            }
+                         },
+                         number: {
+                            depends: function() {
+                                return $("#taxis").is(":checked");
+                            }
+                         }
                     },
                     taxis_grad: {
-                        required: true,
-                        number: true
+                        required: {
+                            depends: function() {
+                                return $("#taxis").is(":checked");
+                            }
+                         },
+                         number: {
+                            depends: function() {
+                                return $("#taxis").is(":checked");
+                            }
+                         }
                     },
                 },
                 messages: {
