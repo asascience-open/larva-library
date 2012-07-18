@@ -18,11 +18,14 @@ def library_wizard():
             pts = []
             geo_string = request.form.get('geo')
             point_array = geo_string.split('),(')
-            for pt in point_array:
-                pt = pt.split(",")
-                pts.append((float(pt[1].replace(")","")),float(pt[0].replace("(",""))))
-            # Create the polygon
-            geo_positional_data = unicode(Polygon(pts).wkt)
+            try:
+                for pt in filter(None, point_array):
+                    pt = pt.split(",")
+                    pts.append((float(pt[1].replace(")","")),float(pt[0].replace("(",""))))
+                # Create the polygon
+                geo_positional_data = unicode(Polygon(pts).wkt)
+            except:
+                app.logger.warning("Could not build Polygon from: %s" % point_array)
 
         lib = dict()
         lib['Name'] = form.name.data
