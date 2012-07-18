@@ -1,10 +1,12 @@
 from flask import url_for, request, redirect, flash, render_template, session
 from larva_library import app, db
 from larva_library.models.library import BaseWizard, LifeStageWizard
+from larva_library.views.utils import login_required
 from shapely.geometry import Polygon
 import datetime
 
 @app.route('/library/wizard', methods=['GET','POST'])
+@login_required
 def library_wizard():
     form = BaseWizard(request.form)
 
@@ -31,7 +33,7 @@ def library_wizard():
         lib['GeoKeywords'] = form.geo_keywords.data
         lib['Geometry'] = geo_positional_data
         lib['Created'] = datetime.datetime.utcnow()
-        lib['User'] = session['user_email']
+        lib['User'] = session['user_email'] # Safe because of @login_required decorator
 
         # add to our _keywords
         _keywords = []
@@ -58,7 +60,14 @@ def library_wizard():
 
 
 @app.route('/library/<ObjectId:library_id>/lifestage_wizard', methods=['GET','POST'])
+@login_required
 def lifestage_wizard(library_id):
+
+    # Be sure the logged in user has access to this library item
+    entry = db.Library.find_one({'_id': library_id})
+    if entry.User != session['user_email']:
+        flash("Not authorized to add lifestages to this library item")
+
     form = LifeStageWizard(request.form)
 
     if request.method == 'POST' and form.validate():
@@ -68,7 +77,6 @@ def lifestage_wizard(library_id):
         lib['vss'] = form.vss.data
         lib['duration'] = form.duration.data
 
-        entry = db.Library.find_one({'_id': library_id})
         entry.Lifestages.append(lib)
         entry.save()
 
