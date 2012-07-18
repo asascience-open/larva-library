@@ -8,8 +8,8 @@
 
 {% block page %}
 
-    <div id="library">
-        <form name="library" id="wrapped" method="post" action="{{url_for('library_wizard')}}">
+    <div id="form_wrapper">
+        <form name="library" id="library" method="post" action="{{url_for('library_wizard')}}">
             <div class="step">
                 {{ render_field(form.name) }}<br />
                 {{ render_field(form.genus) }}<br />
@@ -94,8 +94,6 @@
 
             // Wizard
             $("#library").wizard({
-                stepsWrapper: "#wrapped",
-                submit: ".submit",
                 beforeSelect: function( event, state ) {
                     var inputs = $(this).wizard('state').step.find(':input');
                     return !inputs.length || !!inputs.valid();
@@ -111,6 +109,10 @@
                     } else { 
                         error.insertAfter( element );
                     }
+                },
+                rules: {
+                    name: 'required',
+                    common_name: 'required'
                 }
             });
         });   

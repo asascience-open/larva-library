@@ -66,17 +66,17 @@ class LibrarySearch(Form):
 
 ## forms for library wizard (editing and creating)
 class BaseWizard(Form):
-    name = TextField('Name', [validators.Length(max=128)])
+    name = TextField('Name')
     genus = TextField('Genus')
     species = TextField('Species')
     common_name = TextField('Common_Name')
     keywords = TagListField('Keywords')
     geo = HiddenField('Geo');
-    geo_keywords = TagListField('Goegraphical Keywords')
+    geo_keywords = TagListField('Geographical Keywords')
 
 ## forms for library wizard (editing and creating)
 class LifeStageWizard(Form):
-    name = TextField('Name', [validators.Length(max=128)])
+    name = TextField('Name')
     vss = FloatField('Vertical Swimming Speed (m/s)')
     duration = IntegerField('Lifestage Duration (days)')
 
