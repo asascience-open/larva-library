@@ -59,15 +59,13 @@ def library_search():
     entries = list()
     if session.get('user_email') is not None:
         search = retrieve_entries_for_user(session.get('user_email'), keywords=keywords)
-        if len(search) != 0:
-            for entry in search:
-                entries.append(entry)
+        for entry in search:
+            entries.append(entry)
 
     search = retrieve_public_entries(keywords=keywords)
-    if len(search) != 0:
-        for entry in search:
-            if entry not in entries:
-                entries.append(entry)
+    for entry in search:
+        if entry not in entries:
+            entries.append(entry)
 
     return render_template('library_list.html', libraries=entries)
 
@@ -93,30 +91,39 @@ def list_library():
 
 @app.route('/library/json')
 def list_library_as_json():
-    # retrieve user and public entries; add each entry's json representation
-    user = session.get('user_email', None)
     json = dict()
     entry_list = list()
-    if user is not None:
-        entries = retrieve_entries_for_user(user)
+    pre_searched_list = request.args.get('pre_searched_list', None)
+    if pre_searched_list is None:
+        flash("pre_searched_list is None")
+        # retrieve user and public entries; add each entry's json representation
+        user = session.get('user_email', None)
+        if user is not None:
+            entries = retrieve_entries_for_user(user)
+            for entry in entries:
+                entry_list.append(entry)
+
+        #get the master/public list and add it
+        entries = retrieve_public_entries()
         for entry in entries:
-            entry_list.append(entry)
+            if entry not in entry_list:
+                entry_list.append(entry)
 
-    #get the master/public list and add it
-    entries = retrieve_public_entries()
-    for entry in entries:
-        if entry not in entry_list:
+        if len(entry_list) == 0:
+            flash('could not find any entries to download')
+            return redirect(url_for('index'))
+        
+    else:
+        flash("pre_searched_list is not None")
+        for entry in pre_searched_list:
             entry_list.append(entry)
-
-    if len(entry_list) == 0:
-        flash('could not find any entries to download')
-        return redirect(url_for('index'))
 
     library_list = list()
     for entry in entry_list:
-        library_list.append(entry.to_json())
+        library_list.append(entry)
 
     json['library'] = library_list
+
     return render_template('print_json_rep.html', json=json)
 
 #debug
