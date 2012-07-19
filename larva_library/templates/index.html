@@ -37,6 +37,7 @@
         </table>
     {% endif %}
 
-    <a href="{{url_for('list_library')}}">Browse library</a>
+    <a href="{{url_for('list_library')}}">Browse library</a> <br />
+    <a href="{{url_for('list_library_as_json')}}">Download List</a>
 
 {% endblock %}

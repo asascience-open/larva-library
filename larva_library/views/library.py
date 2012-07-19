@@ -76,6 +76,34 @@ def list_library():
         flash('No entries exist in the library')
     return render_template('library_list.html', libraries=libraries)
 
+@app.route('/library/json')
+def list_library_as_json():
+    # retrieve user and public entries; add each entry's json representation
+    user = session.get('user_email', None)
+    entries = list()
+    if user is not None:
+        entries = list(db.Library.find({'User':user}))
+
+    json = dict()
+    entry_list = []
+
+    if len(entries) != 0:
+        for entry in entries:
+            entry_list.append(entry.to_json())
+
+    #get the master/public list and add it
+    entries = list(db.Library.find({'_status':'public'}))
+    if len(entries) != 0:
+        for entry in entries:
+            entry_list.append(entry.to_json())
+
+    if len(entry_list) == 0:
+        flash('could not find any entries to download')
+        return redirect(url_for('index'))
+
+    json['library'] = entry_list
+    return render_template('print_json_rep.html', json=json)
+
 #debug
 @app.route('/library/remove_entries')
 def remove_libraries():
