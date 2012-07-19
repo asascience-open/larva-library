@@ -23,5 +23,6 @@
     {% else %}
 
     {% endif %}
-    <a href="{{url_for('index')}}">Home</a>
+    <a href="{{url_for('index')}}">Home</a> <br />
+    <a href="{{url_for('list_library_as_json', pre_searched_list=libraries)}}">Download Returned Entries</a>
 {% endblock %}
