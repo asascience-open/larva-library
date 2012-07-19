@@ -7,24 +7,24 @@ from datetime import datetime
 ##document class
 class Library(Document):
     __collection__= 'libraries'
-    required_fields = ['Name']
-    indexes = [{'fields' : 'Name', 'unique' : True}]
+    required_fields = ['name', 'user']
+    indexes = [{'fields' : 'name', 'unique' : True}]
     use_dot_notation = True
     structure = {
-        'Name'       : unicode,
-        'Genus'      : unicode,
-        'Species'    : unicode,
-        'Common_Name': unicode,
-        'Keywords'   : [unicode],
-        'GeoKeywords': [unicode],
-        'Geometry'   : unicode,
-        'Lifestages' : [{
+        'name'       : unicode,
+        'genus'      : unicode,
+        'species'    : unicode,
+        'common_name': unicode,
+        'keywords'   : [unicode],
+        'geo_keywords': [unicode],
+        'geometry'   : unicode,
+        'lifestages' : [{
             'name'      : unicode,
             'vss'       : float,
             'duration'  : int
         }],
-        'User'       : unicode,
-        'Created'    : datetime,
+        'user'       : unicode,
+        'created'    : datetime,
         '_keywords'  : [unicode]
     }
     
@@ -33,7 +33,7 @@ class Library(Document):
         return result
     
     def copy_from_dictionary(self,dict=None):
-        if dict is None or 'Name' not in dict.keys():
+        if dict is None:
             return self
         else:
             for key in dict.keys():
@@ -41,6 +41,16 @@ class Library(Document):
                     self[key] = dict[key]
             return self
     
+    def build_keywords(self):
+        _keywords = []
+        _keywords.extend(self.name.split(' '))
+        _keywords.extend(self.genus.split(' '))
+        _keywords.extend(self.species.split(' '))
+        _keywords.extend(self.common_name.split(' '))
+        _keywords.extend(self.keywords)
+        _keywords.extend(self.geo_keywords)
+        self._keywords = _keywords
+
 db.register([Library])
 
 # custom field classes
@@ -61,7 +71,7 @@ class TagListField(Field):
 
 ## forms for library searching
 class LibrarySearch(Form):
-    search_keywords = TextField('Keywords')
+    search_keywords = TextField('keywords')
     user_owned = BooleanField('User_Owned_Only')
 
 ## forms for library wizard (editing and creating)
@@ -69,7 +79,7 @@ class BaseWizard(Form):
     name = TextField('Name')
     genus = TextField('Genus')
     species = TextField('Species')
-    common_name = TextField('Common_Name')
+    common_name = TextField('Common Name')
     keywords = TagListField('Keywords')
     geo = HiddenField('Geo');
     geo_keywords = TagListField('Geographical Keywords')

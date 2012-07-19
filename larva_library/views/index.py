@@ -9,6 +9,6 @@ def index():
     libraries = None
 
     if user is not None:
-        libraries = list(db.Library.find({'User':user}))
+        libraries = list(db.Library.find({'user':user}))
     
     return render_template('index.html', libraries=libraries, form=form)

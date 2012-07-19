@@ -19,8 +19,8 @@ def detail_view(library_id):
 
     marker_positions = []
     # load the polygon
-    if entry.Geometry:
-        polygon = loads(entry.Geometry)
+    if entry.geometry:
+        polygon = loads(entry.geometry)
         for pt in polygon.exterior.coords:
             # Google maps is y,x not x,y
             marker_positions.append((pt[1], pt[0]))
@@ -43,7 +43,7 @@ def library_search():
     _keystr = form.search_keywords.data.rstrip(',')
     query['_keywords'] = {'$all':_keystr.split(',')}
     if form.user_owned.data == True and session.get('user_email') is not None:
-            query['User'] = session.get('user_email')
+        query['user'] = session.get('user_email')
 
     libraries = db.Library.find(query)
     if libraries.count() == 0:
@@ -65,18 +65,3 @@ def list_library():
 def remove_libraries():
     db.drop_collection('libraries')
     return redirect(url_for('index'))
-
-#temp
-@app.route('/library/<ObjectId:library_id>/edit')
-def edit_entry(library_id):
-    if library_id is None:
-        flash('Cannot edit empty entry, try making a new one instead')
-        return redirect(url_for('index'))
-
-    entry = db.Library.find_one({'User':session.get('user_email', None), '_id':library_id})
-    if entry is None:
-        flash('Cannot find ' + str(library_id) + ' for current user, please make sure you have privileges necessary to edit the entry')
-        return redirect(url_for('index'))
-
-    #Pass along entry as form
-    return redirect(url_for('wizard_page_one', form=entry))
