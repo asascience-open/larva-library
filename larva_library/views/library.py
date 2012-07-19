@@ -53,55 +53,66 @@ def library_search():
         flash('Please enter a search term')
         return redirect(url_for('index'))
 
-    # Build query
-    query = dict()
-    _keyword_query = dict()
+    # Build query; first look for entries that belong to user, then look for entries that are marked public
     _keystr = form.search_keywords.data.rstrip(',')
     query['_keywords'] = {'$all':_keystr.split(',')}
     if form.user_owned.data == True and session.get('user_email') is not None:
         query['user'] = session.get('user_email')
 
-    libraries = db.Library.find(query)
-    if libraries.count() == 0:
-        flash('Search returned 0 results')
-        return redirect(url_for('index'))
+    search = retrieve_public_entries(keywords=keywords)
+    if len(search) != 0:
+        for entry in search:
+            if entry not in entries:
+                entries.append(entry)
 
-    return render_template('library_list.html', libraries=libraries)
+    return render_template('library_list.html', libraries=entries)
 
 @app.route('/library')
 def list_library():
-    # retrieve entire db and pass it to the html
-    libraries = db.Library.find()
-    if libraries.count() == 0:
+    # retrieve entries marked as public and that belong to the user
+    entry_list = list()
+    user = session.get('user_email', None)
+    if user is not None:
+        entries = retrieve_entries_for_user(user)
+        for entry in entries:
+            entry_list.append(entry)
+
+    entries = retrieve_public_entries()
+    for entry in entries:
+        if entry not in entry_list:
+            entry_list.append(entry)
+
+    if len(entry_list) == 0:
         flash('No entries exist in the library')
-    return render_template('library_list.html', libraries=libraries)
+
+    return render_template('library_list.html', libraries=entry_list)
 
 @app.route('/library/json')
 def list_library_as_json():
     # retrieve user and public entries; add each entry's json representation
     user = session.get('user_email', None)
-    entries = list()
-    if user is not None:
-        entries = list(db.Library.find({'User':user}))
-
     json = dict()
-    entry_list = []
-
-    if len(entries) != 0:
+    entry_list = list()
+    if user is not None:
+        entries = retrieve_entries_for_user(user)
         for entry in entries:
-            entry_list.append(entry.to_json())
+            entry_list.append(entry)
 
     #get the master/public list and add it
-    entries = list(db.Library.find({'_status':'public'}))
-    if len(entries) != 0:
-        for entry in entries:
-            entry_list.append(entry.to_json())
+    entries = retrieve_public_entries()
+    for entry in entries:
+        if entry not in entry_list:
+            entry_list.append(entry)
 
     if len(entry_list) == 0:
         flash('could not find any entries to download')
         return redirect(url_for('index'))
 
-    json['library'] = entry_list
+    library_list = list()
+    for entry in entry_list:
+        library_list.append(entry.to_json())
+
+    json['library'] = library_list
     return render_template('print_json_rep.html', json=json)
 
 #debug
