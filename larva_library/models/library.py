@@ -2,6 +2,7 @@ from flask.ext.mongokit import Document
 from larva_library import db, app
 from wtforms import *
 from datetime import datetime
+from json import JSONEncoder
 #import datetime
 #
 ##document class

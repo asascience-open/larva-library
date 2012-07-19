@@ -29,6 +29,22 @@ def detail_view(library_id):
 
     return render_template('library_detail.html', entry=entry)
 
+@app.route("/library/<ObjectId:library_id>/json", methods=['GET'])
+def print_json(library_id):
+    if library_id is None:
+        flash('Recieved an entry without an id')
+        return redirect(url_for('index'))
+
+    entry = db.Library.find_one({'_id': library_id})
+
+    if entry is None:
+        flash('Cannot find object ' + str(library_id))
+        return redirect(url_for('index'))
+
+    json = entry.to_json();
+
+    return render_template('print_json_rep.html', json=json)
+
 @app.route("/library/search", methods=["POST"])
 def library_search():
     form = LibrarySearch(request.form)
