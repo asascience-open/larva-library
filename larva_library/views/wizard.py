@@ -37,6 +37,7 @@ def library_wizard():
         lib['Geometry'] = geo_positional_data
         lib['Created'] = datetime.datetime.utcnow()
         lib['User'] = session['user_email'] # Safe because of @login_required decorator
+        lib['_status'] = u'public' # default status to private
 
         # add to our _keywords
         _keywords = []

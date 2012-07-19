@@ -26,7 +26,8 @@ class Library(Document):
         }],
         'User'       : unicode,
         'Created'    : datetime,
-        '_keywords'  : [unicode]
+        '_keywords'  : [unicode],
+        '_status'    : unicode
     }
     
     def __getstate__(self):
