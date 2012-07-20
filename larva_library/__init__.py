@@ -16,6 +16,9 @@ if app.config.get('LOG_FILE') == True:
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
 
+if app.config['TESTING'] is True:
+    app.config['MONGODB_DATABASE'] = 'fishreport_testing'
+
 oauth = OAuth()
 
 facebook = oauth.remote_app('facebook',
