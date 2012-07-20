@@ -1,6 +1,6 @@
 from flask import url_for, request, redirect, flash, render_template, session
 from larva_library import app, db
-from larva_library.models.library import LibrarySearch
+from larva_library.models.library import LibrarySearch, Library
 from shapely.wkt import loads
 from shapely.geometry import Point
 from bson import ObjectId
@@ -90,9 +90,8 @@ def list_library():
 def list_library_as_json():
     json = dict()
     entry_list = list()
-    pre_searched_list = request.args.get('pre_searched_list', None)
-    if pre_searched_list is None:
-        flash("pre_searched_list is None")
+    library_ids = request.args.get('library_ids', None)
+    if library_ids is None:
         # retrieve user and public entries; add each entry's json representation
         user = session.get('user_email', None)
         if user is not None:
@@ -111,13 +110,22 @@ def list_library_as_json():
             return redirect(url_for('index'))
         
     else:
-        flash("pre_searched_list is not None")
-        for entry in pre_searched_list:
+        library_ids = [x for x in library_ids.split(',') if x]
+        # create a query dict from the ids
+        query = dict()
+        tlist = list()
+
+        for libid in library_ids:
+            tlist.append(dict(_id=ObjectId(libid.encode('ascii','ignore'))))
+
+        query["$or"] = tlist
+        results = db.Library.find(query)
+        for entry in results:
             entry_list.append(entry)
 
     library_list = list()
     for entry in entry_list:
-        library_list.append(entry)
+       library_list.append(entry.to_json())
 
     json['library'] = library_list
 
