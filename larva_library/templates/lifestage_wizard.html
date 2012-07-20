@@ -30,28 +30,15 @@
                     <option value="sunrise" selected="selected">Sunrise</ofption>
                     <option value="sunset">Sunset</option>
                 </select>
-                <input type="radio" name="pmhours" value="plus" checked="checked"/> +
-                <input type="radio" name="pmhours" value="minus"/> -
-                <input id="diel_hours" name="diel_hours" type="text" value="" /> hours
- 
-                <br />
-                <br />
-
-                <label for="diel_direction">Direction</label>
-                <select id="diel_direction" name="diel_direction">
-                    <option value="descend" selected="selected">Descend</option>
-                    <option value="rise">Rise</option>
-                </select>
-
+                <input type="radio" name="pmhours" value="+" checked="checked"/> +
+                <input type="radio" name="pmhours" value="-"/> -
+                {{ render_field(form.diel_hours) }} hours 
                 <br />
                 <br />
 
                 <label>Desired Depth</label>
-                <label for="diel_min_depth">min</label>
-                <input id="diel_min_depth" name="diel_min_depth" type="text" value="" />m
-                <label for="diel_max_depth">max</label>
-                <input id="diel_max_depth" name="diel_max_depth" type="text" value="" />m
-
+                {{ render_field(form.diel_min_depth) }}
+                {{ render_field(form.diel_max_depth) }}
                 <br />
                 <br />
 
@@ -76,17 +63,12 @@
                 <br />
                 <br />
 
-                <label for="taxis_min">Min</label>
-                <input id="taxis_min" name="taxis_min" type="text" value="" />
-                <label for="taxis_max">Max</label>
-                <input id="taxis_max" name="taxis_max" type="text" value="" />
-
+                {{ render_field(form.taxis_min) }}
+                {{ render_field(form.taxis_max) }}
                 <br />
                 <br />
 
-                <label for="taxis_grad">Sensory Gradient +/-</label>
-                <input id="taxis_grad" name="taxis_grad" type="text" value="" />
-
+                {{ render_field(form.taxis_grad) }}
                 <br />
                 <br />
 
@@ -147,31 +129,30 @@
             this.gradient = gradient;
 
             this.toString = function() {
-                return this.variable + ": " + this.min + " -> " + this.max + " " + this.units + " +/- " + this.gradient;
+                return this.variable + " (" + this.units + "): " + this.min + " -> " + this.max + " +/- " + this.gradient;
             }
 
             this.toData = function() {
-                return {"variable": this.variable, "min": this.min, "max": this.max, "gradient": this.gradient };
+                return {"variable": this.variable, "min": this.min, "max": this.max, "gradient": this.gradient, "units": this.units };
             }
         }
 
-        function DielInput(diel_type, diel_time, timezone, cycle, plus_or_minus, hours, direction, min, max) {
+        function DielInput(diel_type, diel_time, timezone, cycle, plus_or_minus, hours, min, max) {
             this.diel_type = diel_type;
             this.diel_time = diel_time;
             this.timezone = timezone;
             this.cycle = cycle;
             this.plus_or_minus = plus_or_minus;
             this.hours = hours;
-            this.direction = direction;
             this.min = min;
             this.max = max;
 
             this.toString = function() {
                 var str = "";
                 if (this.diel_type == 'specifictime') {
-                    str = "At " + this.diel_time + " GMT" + this.timezone +  ": " + this.direction + " to " + this.min + "m -> " + this.max + "m";
+                    str = "At " + this.diel_time + " GMT" + this.timezone +  ": Move towards " + this.min + "m -> " + this.max + "m";
                 } else if (this.diel_type == 'cycles') {
-                    str = "At " + this.cycle + " " + this.plus_or_minus + " " + this.hours + " hours: " + this.direction + " to " + this.min + "m -> " + this.max + "m";
+                    str = "At " + this.cycle + " " + this.plus_or_minus + " " + this.hours + " hours: Move towards " + this.min + "m -> " + this.max + "m";
                 }
                 return str;
             }
@@ -183,7 +164,6 @@
                 data['cycle'] = this.cycle;
                 data['plus_or_minus'] = this.plus_or_minus;
                 data['hours'] = this.hours;
-                data['direction'] = this.direction;
                 data['min'] = this.min;
                 data['max'] = this.max;
                 return data;
@@ -206,7 +186,7 @@
                 }
             }
             function getDiel(obj) {
-                return new DielInput(obj['diel_type'],obj['diel_time'],obj['timezone'],obj['cycle'],obj['plus_or_minus'],obj['hours'],obj['direction'],obj['min'],obj['max']);
+                return new DielInput(obj['diel_type'],obj['diel_time'],obj['timezone'],obj['cycle'],obj['plus_or_minus'],obj['hours'],obj['min'],obj['max']);
             }
 
             // TAXIS
@@ -276,8 +256,11 @@
             // Wizard
             $("#lifestage").wizard({
                 beforeForward: function( event, state ) {
-                    var inputs = $(this).wizard('state').step.find(':input');
-                    return !inputs.length || !!inputs.valid();
+                    // Only check on the first step
+                    if (state.stepIndex == 1) {
+                        var inputs = $(this).wizard('state').step.find(':input');
+                        return !inputs.length || !!inputs.valid();
+                    }
                 },
                 afterSelect : function( event, state ) {
                     // Diel step
@@ -399,30 +382,33 @@
             });
 
             $("#diel_add").click(function(event) {
-                var diel_type = $('input:radio[name=diel_type]:checked').val();
-                var diel_time = $("#times").val();
-                var timezone = $("#timezones").val();
-                var cycle = $("#cycles").val();
-                var plus_or_minus = $('input:radio[name=pmhours]:checked').val();
-                var hours = $("#diel_hours").val();
-                var direction = $("#diel_direction").val();
-                var min = $("#diel_min_depth").val();
-                var max = $("#diel_max_depth").val();
 
-                diel_inputs.push(new DielInput(diel_type,diel_time,timezone,cycle,plus_or_minus,hours,direction,min,max));
-
-                updateList("diel_list", "diel_data", diel_inputs);
+                var inputs = $("#lifestage").wizard('state').step.find(':input');
+                if (inputs.length && !!inputs.valid()) {
+                    var diel_type = $('input:radio[name=diel_type]:checked').val();
+                    var diel_time = $("#times").val();
+                    var timezone = $("#timezones").val();
+                    var cycle = $("#cycles").val();
+                    var plus_or_minus = $('input:radio[name=pmhours]:checked').val();
+                    var hours = $("#diel_hours").val();
+                    var min = $("#diel_min_depth").val();
+                    var max = $("#diel_max_depth").val();
+                    diel_inputs.push(new DielInput(diel_type,diel_time,timezone,cycle,plus_or_minus,hours,min,max));
+                    updateList("diel_list", "diel_data", diel_inputs);
+                }
             });
 
             $("#taxis_add").click(function(event) {
-                var variable = $('#taxis_variable').val();
-                var gradient = $("#taxis_grad").val();
-                var min = $("#taxis_min").val();
-                var max = $("#taxis_max").val();
 
-                taxis_inputs.push(new TaxisInput(variable, min, max, gradient));
-
-                updateList("taxis_list", "taxis_data", taxis_inputs);
+                var inputs = $("#lifestage").wizard('state').step.find(':input');
+                if (inputs.length && !!inputs.valid()) {
+                    var variable = $('#taxis_variable').val();
+                    var gradient = $("#taxis_grad").val();
+                    var min = $("#taxis_min").val();
+                    var max = $("#taxis_max").val();
+                    taxis_inputs.push(new TaxisInput(variable, min, max, gradient));
+                    updateList("taxis_list", "taxis_data", taxis_inputs);
+                }
             });
         });   
 

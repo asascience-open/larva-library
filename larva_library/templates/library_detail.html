@@ -111,9 +111,21 @@
 {% endblock %}
 
 {% macro lifestage_summary(lifestage) -%}
-    <table>
-        <tr><td>{{lifestage.name}}</td></tr>
-        <tr><td>{{lifestage.vss}}</td></tr>
-        <tr><td>{{lifestage.duration}}</td></tr>
+    <br />
+    <table border="1">
+        <tr><td>Name</td><td>{{lifestage.name}}</td></tr>
+        <tr><td>Vertical Swimming Speed (m/s)</td><td>{{lifestage.vss}}</td></tr>
+        <tr><td>Duration (days)</td><td>{{lifestage.duration}}</td></tr>
+        
+        <tr><td>Configured Diel:</td><td /></tr>
+        {%- for dtry in lifestage.diel %}
+            <tr><td>{{dtry}}</td><td /></tr>
+        {% endfor %}
+        
+        <tr><td>Configured Taxis:</td><td /></tr>
+        {%- for ztry in lifestage.taxis %}
+            <tr><td>{{ztry}}</td><td /></tr>
+        {% endfor %}
     </table>
+    <br />
 {%- endmacro %}

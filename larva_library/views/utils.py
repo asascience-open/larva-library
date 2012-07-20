@@ -11,3 +11,12 @@ def login_required(f):
             return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
+
+def str_to_num(string):
+    try:
+        return int(string)
+    except ValueError:
+        try:
+            return float(string)
+        except:
+            return string

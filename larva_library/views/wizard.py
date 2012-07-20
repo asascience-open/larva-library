@@ -1,10 +1,14 @@
 from flask import url_for, request, redirect, flash, render_template, session
 from larva_library import app, db
 from larva_library.models.library import BaseWizard, LifeStageWizard
-from larva_library.views.utils import login_required
+from larva_library.views.utils import login_required, str_to_num
 from shapely.geometry import Polygon
 from shapely.wkt import loads
 import datetime
+import json
+import time
+import pytz
+from dateutil.parser import parse
 
 @app.route('/library/wizard', methods=['GET','POST'])
 @login_required
@@ -113,7 +117,7 @@ def library_edit_wizard(library_id):
 
     return render_template('library_wizard.html', form=form)
 
-@app.route('/library/<ObjectId:library_id>/lifestage_wizard', methods=['GET','POST'])
+@app.route('/library/<ObjectId:library_id>/lifestage', methods=['GET','POST'])
 @login_required
 def lifestage_wizard(library_id):
 
@@ -126,12 +130,52 @@ def lifestage_wizard(library_id):
 
     if request.method == 'POST' and form.validate():
 
-        lib = dict()
-        lib['name'] = form.name.data
-        lib['vss'] = form.vss.data
-        lib['duration'] = form.duration.data
+        lifestage = db.LifeStage()
+        lifestage.name = form.name.data
+        lifestage.vss = form.vss.data
+        lifestage.duration = form.duration.data
+        lifestage.diel = [] 
+        lifestage.taxis = []
 
-        entry.Lifestages.append(lib)
+        # Diel
+        if form.diel_data.data and len(form.diel_data.data) > 0:
+
+            parsed_diel = json.loads(form.diel_data.data)
+            for diel_data in parsed_diel:
+
+                d = db.Diel()
+                d.type = unicode(diel_data['diel_type'])
+                d.min = float(diel_data['min'])
+                d.max = float(diel_data['max'])
+
+                if d.type == u'cycles':
+                    d.cycle = unicode(diel_data['cycle'])
+                    d.plus_or_minus = unicode(diel_data['plus_or_minus'])
+                    d.hours = int(diel_data['hours'])
+                elif d.type == u'specifictime':
+                    t = parse("%s %s" % (diel_data['diel_time'], diel_data['timezone']))
+                    d.time = pytz.utc.normalize(t).replace(tzinfo=None)
+                    
+                d.save()
+                lifestage.diel.append(d)
+            
+        if form.taxis_data.data and len(form.taxis_data.data) > 0:
+
+            parsed_taxis = json.loads(form.taxis_data.data)
+            for taxis_data in parsed_taxis:
+
+                t = db.Taxis()            
+                t.variable = taxis_data['variable']
+                t.units = taxis_data['units']
+                t.min = float(taxis_data['min'])
+                t.max = float(taxis_data['max'])
+                t.gradient = float(taxis_data['gradient'])
+
+                t.save()
+                lifestage.taxis.append(t)
+
+        lifestage.save()
+        entry.lifestages.append(lifestage)
         entry.save()
 
         flash('Created LifeStage')
