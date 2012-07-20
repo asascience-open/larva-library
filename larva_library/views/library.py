@@ -1,9 +1,10 @@
-from flask import url_for, request, redirect, flash, render_template, session
+from flask import url_for, request, redirect, flash, render_template, session, make_response
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch, Library
 from shapely.wkt import loads
 from shapely.geometry import Point
 from bson import ObjectId
+import tempfile
 
 @app.route('/library/<ObjectId:library_id>', methods=['GET'])
 def detail_view(library_id):
@@ -88,7 +89,7 @@ def list_library():
 
 @app.route('/library/json')
 def list_library_as_json():
-    json = dict()
+    larva_map_library_export = dict()
     entry_list = list()
     library_ids = request.args.get('library_ids', None)
     if library_ids is None:
@@ -127,9 +128,19 @@ def list_library_as_json():
     for entry in entry_list:
        library_list.append(entry.to_json())
 
-    json['library'] = library_list
+    larva_map_library_export['library'] = library_list
 
-    return render_template('print_json_rep.html', json=json)
+    fileHndl = tempfile.TemporaryFile()
+    # open(fileHndl.file)
+    json = dir(fileHndl)
+    # response = make_response(fileHndl)
+    response = make_response(render_template('print_json_rep.html', json=json))
+    # response.headers['Content-Type'] = 'application/json'
+    # response.headers['Content-Disposition'] = "attachment; filename='larva_map_library.json'"
+
+    return response
+
+    # return render_template('print_json_rep.html', json=json)
 
 #debug
 @app.route('/library/remove_entries')
