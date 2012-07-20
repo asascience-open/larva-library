@@ -1,4 +1,20 @@
 {% extends "layout.html" %}
+{% block javascript %}
+    {{ super() }}
+    <script type="text/javascript">
+        var global_id_string = '';
+        function BuildIdString() {
+            // build the id string
+            {% for library in libraries %}
+                global_id_string += "{{ library._id }},";
+            {% endfor %}
+            document.write(global_id_string);
+        }
+        function AppendIdsToHref(link) {
+            link.href += "?library_ids=" + global_id_string;
+        }
+    </script>
+{% endblock %}
 {% block page %}
     {% if libraries %}
         <!-- display library listings in a table format -->
@@ -23,6 +39,7 @@
     {% else %}
 
     {% endif %}
+    <script type="text/javascript">BuildIdString();</script>
     <a href="{{url_for('index')}}">Home</a> <br />
-    <a href="{{url_for('list_library_as_json', pre_searched_list=libraries)}}">Download Returned Entries</a>
+    <a href="{{url_for('list_library_as_json')}}" onclick=AppendIdsToHref(this)>Download Returned Entries</a>
 {% endblock %}
