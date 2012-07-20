@@ -6,3 +6,4 @@ gunicorn==0.13.4
 mongokit==0.8
 Shapely==1.2.14
 pytz==2012c
+python-dateutil==2.1
