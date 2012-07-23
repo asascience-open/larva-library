@@ -90,7 +90,8 @@
 
     <a href="{{url_for('list_library')}}">Browse library</a> <br />
     {% if libraries %}
-      <a href="{{url_for('json_service')}}" onclick=AppendIdsToHref(this)>Download List</a>
+        {% set user = session.get('user_email').split('@', 1)[0] %}
+      <a href="{{url_for('json_service')}}?filename={{user}}_entries&" onclick=AppendIdsToHref(this)>Download List</a>
     {% endif %}
 
 {% endblock %}
