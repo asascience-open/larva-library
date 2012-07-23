@@ -4,7 +4,6 @@ from larva_library.models.library import LibrarySearch, Library
 from utils import retrieve_by_id, retrieve_by_terms, retrieve_all
 from shapely.wkt import loads
 from shapely.geometry import Point
-from bson import ObjectId
 import StringIO
 
 @app.route('/library/<ObjectId:library_id>', methods=['GET'])
