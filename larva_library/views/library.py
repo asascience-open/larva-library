@@ -19,8 +19,8 @@ def detail_view(library_id):
 
     marker_positions = []
     # load the polygon
-    if entry.Geometry:
-        polygon = loads(entry.Geometry)
+    if entry.geometry:
+        polygon = loads(entry.geometry)
         for pt in polygon.exterior.coords:
             # Google maps is y,x not x,y
             marker_positions.append((pt[1], pt[0]))

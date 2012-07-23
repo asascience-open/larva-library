@@ -23,27 +23,32 @@
 
 {% block page %}
     {% if entry %}
+
+        {% if session.get('user_email', None) == entry.user %}
+            <a class="edit" href="{{ url_for( 'library_edit_wizard', library_id=entry._id ) }}">edit</a>
+        {% endif %}
+
         <!-- show the entry in a table structure -->
         <table border="1">
             <tr><td>
                 Name:
             </td><td>
-                {{ entry.Name }}
+                {{ entry.name }}
             </td></tr>
             <tr><td>
                 Genus:
             </td><td>
-                {{ entry.Genus }}
+                {{ entry.genus }}
             </td></tr>
             <tr><td>
                 Species:
             </td><td>
-                {{ entry.Species }}
+                {{ entry.species }}
             </td></tr>
             <tr><td>
                 Common Name:
             </td><td>
-                {{ entry.Common_Name }}
+                {{ entry.common_name }}
             </td></tr>
         </table>
         <table border="1">
@@ -51,7 +56,7 @@
                 Keywords:
             </td></tr>
             <tr>
-                {% for keyword in entry.Keywords %}
+                {% for keyword in entry.keywords %}
                     <td>{{ keyword }}</td>
                 {% endfor %}
             </tr>
@@ -61,7 +66,7 @@
                 Geo-Keywords:
             </td></tr>
             <tr>
-                {% for keyword in entry.GeoKeywords %}
+                {% for keyword in entry.geo_keywords %}
                     <td>{{ keyword }}</td>
                 {% endfor %}
             </tr>
@@ -77,12 +82,12 @@
             <tr><td>
                 Owned By:
             </td><td>
-                {{ entry.User }}
+                {{ entry.user }}
             </td></tr>
             <tr><td>
                 Created:
             </td><td>
-                {{ entry.Created }}
+                {{ entry.created }}
             </td></tr>
         </table>
 
@@ -91,7 +96,7 @@
                 Lifestages
             </td></tr>
             <tr><td>
-                {% for lifestage in entry.Lifestages %}
+                {% for lifestage in entry.lifestages %}
                     {{ lifestage_summary(lifestage) }}
                 {% endfor %}
             </td></tr>
@@ -107,9 +112,21 @@
 {% endblock %}
 
 {% macro lifestage_summary(lifestage) -%}
-    <table>
-        <tr><td>{{lifestage.name}}</td></tr>
-        <tr><td>{{lifestage.vss}}</td></tr>
-        <tr><td>{{lifestage.duration}}</td></tr>
+    <br />
+    <table border="1">
+        <tr><td>Name</td><td>{{lifestage.name}}</td></tr>
+        <tr><td>Vertical Swimming Speed (m/s)</td><td>{{lifestage.vss}}</td></tr>
+        <tr><td>Duration (days)</td><td>{{lifestage.duration}}</td></tr>
+        
+        <tr><td>Configured Diel:</td><td /></tr>
+        {%- for dtry in lifestage.diel %}
+            <tr><td>{{dtry}}</td><td /></tr>
+        {% endfor %}
+        
+        <tr><td>Configured Taxis:</td><td /></tr>
+        {%- for ztry in lifestage.taxis %}
+            <tr><td>{{ztry}}</td><td /></tr>
+        {% endfor %}
     </table>
+    <br />
 {%- endmacro %}

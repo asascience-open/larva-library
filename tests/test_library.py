@@ -9,11 +9,6 @@ class LibraryTestCase(unittest.TestCase):
         with self.app.session_transaction() as sess:
             sess['user_email'] = u'testing@larvalibrary.com'
 
-    def tearDown(self):
-        # clear our working db
-        #self.app.get('/library/remove_entries', follow_redirects=True)
-        pass
-
     def test_index(self):
         # make sure we can talk to index
         rv = self.app.get('/')
@@ -22,7 +17,7 @@ class LibraryTestCase(unittest.TestCase):
     def test_retrieve_db(self):
         # lets see if we can talk to the database
         rv = self.app.get('/library')
-        self.failIf('No entries exist in the library' in rv.data)
+        self.assertEqual(200, rv.status_code)
 
     def test_search_db(self):
         # try various searches
@@ -36,4 +31,4 @@ class LibraryTestCase(unittest.TestCase):
                 search_keywords='keyword1,doesexist'
             ), follow_redirects=True)
         # should get something in data if it does exist
-        self.failIf('Search returned 0 results' in rv.data)
+        assert 'Search returned 0 results' not in rv.data

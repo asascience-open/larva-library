@@ -9,7 +9,7 @@
 {% block page %}
 
     <div id="form_wrapper">
-        <form name="library" id="library" method="post" action="{{url_for('library_wizard')}}">
+        <form name="library" id="library" method="post" action="{{ request.path }}">
             <div class="step">
                 {{ render_field(form.name) }}<br />
                 {{ render_field(form.genus) }}<br />
@@ -75,22 +75,50 @@
             };
             var map = new google.maps.Map(document.getElementById('map_canvas'), myOptions);
             var poly = new google.maps.Polyline({ map: map, path: [], strokeColor: "#FF0000", strokeOpacity: 1.0, strokeWeight: 2, fillOpacity: 0.35, editable: true  });
-            var isClosed = false;
-            google.maps.event.addListener(poly, 'click', function (clickEvent) {
-                if (isClosed)
-                    return;
-                isClosed = true;
-                poly.getPath().push(clickEvent.latLng);
+
+            // Catch the editing events
+            google.maps.event.addListener(poly.getPath(), 'set_at', function () {
+                $('#geo').val(poly.getPath().getArray());
+            });
+            google.maps.event.addListener(poly.getPath(), 'insert_at', function () {
+                $('#geo').val(poly.getPath().getArray());
+            });
+            google.maps.event.addListener(poly.getPath(), 'remove_at', function () {
+                $('#geo').val(poly.getPath().getArray());
+            });
+
+            {% if request.path == '/library/wizard' %}
+                var isClosed = false;
+
+                google.maps.event.addListener(poly, 'click', function (clickEvent) {
+                    if (isClosed)
+                        return;
+                    isClosed = true;
+                    poly.getPath().push(clickEvent.latLng);
+                    path = poly.getPath();
+                    poly.setMap(null);
+                    poly = new google.maps.Polygon({ map: map, path: path, strokeColor: "#FF0000", fillColor: "#FF0000", strokeOpacity: 1.0, strokeWeight: 2, fillOpacity: 0.35, editable: true  });
+
+                    $('#geo').val(poly.getPath().getArray());
+                });
+
+                google.maps.event.addListener(map, 'click', function (clickEvent) {
+                    if (isClosed)
+                        return;
+                    poly.getPath().push(clickEvent.latLng);
+                });
+
+            {% else %}
+
+                {% for position in form.markers %}
+                    poly.getPath().push(new google.maps.LatLng({{position[0]}}, {{position[1]}}));
+                {% endfor %}
                 path = poly.getPath();
                 poly.setMap(null);
                 poly = new google.maps.Polygon({ map: map, path: path, strokeColor: "#FF0000", fillColor: "#FF0000", strokeOpacity: 1.0, strokeWeight: 2, fillOpacity: 0.35, editable: true  });
                 $('#geo').val(poly.getPath().getArray());
-            });
-            google.maps.event.addListener(map, 'click', function (clickEvent) {
-                if (isClosed)
-                    return;
-                poly.getPath().push(clickEvent.latLng);
-            });
+                
+            {% endif %}
 
             // Wizard
             $("#library").wizard({

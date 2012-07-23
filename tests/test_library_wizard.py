@@ -25,11 +25,6 @@ class LibraryWizardTestCase(unittest.TestCase):
         with self.app.session_transaction() as sess:
             sess['user_email'] = u'testing@larvalibrary.com'
 
-    def tearDown(self):
-        # clear our working db
-        #self.app.get('/library/remove_entries', follow_redirects=True)
-        pass
-
     def test_add_entries(self):
         # add an entry following all redirects
         # set false user_session
