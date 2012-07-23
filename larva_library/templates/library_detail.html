@@ -107,6 +107,7 @@
 
     {% endif %}
     <br />
+    <a href="{{url_for('print_json', library_id=entry._id)}}">Download For External Use</a> <br />
     <a href="{{url_for('index')}}">Home</a>
 {% endblock %}
 
