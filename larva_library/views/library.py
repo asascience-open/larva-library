@@ -128,11 +128,12 @@ def list_library_as_json():
         for entry in results:
             entry_list.append(entry)
 
+    # collect all of the json entries into one list
     library_list = list()
     for entry in entry_list:
        library_list.append(entry.to_json())
 
-    json_result['library'] = library_list
+    json_result['library_results'] = library_list
 
     #create a string stream to act as a temporary file for downloading the json
     stringStream = StringIO.StringIO()
