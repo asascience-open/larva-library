@@ -1,6 +1,7 @@
 from flask import url_for, request, redirect, flash, render_template, session, send_file
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch, Library
+from utils import retrieve_public_entries, retrieve_entries_for_user, retrieve_by_id, retrieve_by_terms, retrieve_all
 from shapely.wkt import loads
 from shapely.geometry import Point
 from bson import ObjectId
@@ -29,22 +30,6 @@ def detail_view(library_id):
     entry['markers'] = marker_positions
 
     return render_template('library_detail.html', entry=entry)
-
-@app.route("/library/<ObjectId:library_id>/json", methods=['GET'])
-def print_json(library_id):
-    if library_id is None:
-        flash('Recieved an entry without an id')
-        return redirect(url_for('index'))
-
-    entry = db.Library.find_one({'_id': library_id})
-
-    if entry is None:
-        flash('Cannot find object ' + str(library_id))
-        return redirect(url_for('index'))
-
-    url = url_for('list_library_as_json') + '?library_ids=' + entry._id.__str__() + ',';
-
-    return redirect(url)
 
 @app.route("/library/search", methods=["POST"])
 def library_search():
