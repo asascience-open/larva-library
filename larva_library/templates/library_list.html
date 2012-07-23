@@ -74,5 +74,7 @@
     {% endif %}
     <script type="text/javascript">BuildIdString();</script>
     <a href="{{url_for('index')}}">Home</a> <br />
-    <a href="{{url_for('json_service')}}" onclick=AppendIdsToHref(this)>Download Returned Entries</a>
+    {% if filename %}
+        <a href="{{url_for('json_service')}}?filename={{filename}}" onclick=AppendIdsToHref(this)>Download Returned Entries</a>
+    {% endif %}
 {% endblock %}

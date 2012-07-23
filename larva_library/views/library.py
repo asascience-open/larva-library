@@ -50,7 +50,7 @@ def library_search():
         flash("Could not find any entries with the specified search criteria")
         return redirect(url_for('index'))
 
-    return render_template('library_list.html', libraries=entries)
+    return render_template('library_list.html', libraries=entries, filename="search_result_"+keywords.replace(',',''))
 
 @app.route('/library')
 def list_library():
@@ -63,7 +63,7 @@ def list_library():
     if len(entry_list) == 0:
         flash('No entries exist in the library')
 
-    return render_template('library_list.html', libraries=entry_list)
+    return render_template('library_list.html', libraries=entry_list, filename="library_list")
 
 #debug
 @app.route('/library/remove_entries')
@@ -97,6 +97,10 @@ def json_service():
     email = request.args.get("email")
     terms = request.args.get("terms")
     user_only = request.args.get("user_owned_only", default=False)
+    file_name = request.args.get("filename")
+
+    if file_name is None:
+        file_name = "library_search"
 
     if id_list is not None:
         library_list = retrieve_by_id(id_list, email)
@@ -123,4 +127,6 @@ def json_service():
     # ensure that the stream starts at the beginning for the read to file
     stringStream.seek(0)
 
-    return send_file(stringStream, attachment_filename="library_search.json", as_attachment=True)
+    file_name += ".json"
+
+    return send_file(stringStream, attachment_filename=file_name, as_attachment=True)
