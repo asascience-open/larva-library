@@ -4,7 +4,6 @@ from larva_library.models.library import LibrarySearch, Library
 from utils import retrieve_by_id, retrieve_by_terms, retrieve_all
 from shapely.wkt import loads
 from shapely.geometry import Point
-from bson import ObjectId
 import StringIO
 
 @app.route('/library/<ObjectId:library_id>', methods=['GET'])
@@ -43,9 +42,9 @@ def library_search():
     keywords = form.search_keywords.data
     entries = list()
     if session.get('user_email') is not None:
-        entries = retrieve_by_terms(keywords, email=session.get('user_email'), user_only=form.user_owned)
+        entries = retrieve_by_terms(keywords, email=session.get('user_email'), user_only=form.user_owned.data)
     else:
-        entries = retrieve_by_terms(keywords, user_only=form.user_owned)
+        entries = retrieve_by_terms(keywords, user_only=form.user_owned.data)
 
     if len(entries) == 0:
         flash("Could not find any entries with the specified search criteria")

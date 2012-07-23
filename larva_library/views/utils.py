@@ -1,6 +1,7 @@
 from functools import wraps
 from flask import request, redirect, url_for, session, flash
 from larva_library import db
+from bson import ObjectId
 
 def login_required(f):
     @wraps(f)
@@ -24,7 +25,7 @@ def str_to_num(string):
 
 def retrieve_public_entries(keywords=None):
     query = dict()
-    query['_status'] = 'public'
+    query['_status'] = unicode('public')
     if keywords is not None:
         query['_keywords'] = keywords
 
