@@ -1,5 +1,6 @@
 from functools import wraps
 from flask import request, redirect, url_for, session, flash
+from larva_library import db
 
 def login_required(f):
     @wraps(f)
@@ -69,7 +70,7 @@ def retrieve_by_terms(terms, email=None, user_only=False):
     else:
         # terms should be a comma deliminated string; remove any trailing commas
         terms = terms.rstrip(',')
-        keywords = {'$all':_keystr.split(',')}
+        keywords = {'$all':terms.split(',')}
 
         if email is not None:
             search_result = retrieve_entries_for_user(email, keywords=keywords)

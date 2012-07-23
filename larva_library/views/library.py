@@ -1,7 +1,7 @@
 from flask import url_for, request, redirect, flash, render_template, session, send_file
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch, Library
-from utils import retrieve_public_entries, retrieve_entries_for_user, retrieve_by_id, retrieve_by_terms, retrieve_all
+from utils import retrieve_by_id, retrieve_by_terms, retrieve_all
 from shapely.wkt import loads
 from shapely.geometry import Point
 from bson import ObjectId
@@ -53,6 +53,7 @@ def library_search():
 
     if len(entries) == 0:
         flash("Could not find any entries with the specified search criteria")
+        return redirect(url_for('index'))
 
     return render_template('library_list.html', libraries=entries)
 
@@ -61,19 +62,8 @@ def list_library():
     # retrieve entries marked as public and that belong to the user
     entry_list = list()
     user = session.get('user_email', None)
-    if user is not None:
-        entries = retrieve_entries_for_user(user)
-        for entry in entries:
-            entry_list.append(entry)
 
-    if len(entry_list) == 0:
-        flash('No entries copied from user')
-
-    entries = retrieve_public_entries()
-    count = entries.count()
-    for entry in entries:
-        if entry not in entry_list:
-            entry_list.append(entry)
+    entry_list = retrieve_all(user)
 
     if len(entry_list) == 0:
         flash('No entries exist in the library')
