@@ -39,16 +39,12 @@ def library_search():
         return redirect(url_for('index'))
 
     # Build query; first look for entries that belong to user, then look for entries that are marked public
-    _keystr = form.search_keywords.data.rstrip(',')
-    query['_keywords'] = {'$all':_keystr.split(',')}
-    if form.user_owned.data == True and session.get('user_email') is not None:
-        query['user'] = session.get('user_email')
-
-    if form.user_owned is not True:
-        search = retrieve_public_entries(keywords=keywords)
-        for entry in search:
-            if entry not in entries:
-                entries.append(entry)
+    keywords = form.search_keywords.data
+    entries = list()
+    if session.get('user_email') is not None:
+        entries = retrieve_by_terms(keywords, email=session.get('user_email'), user_only=form.user_owned.data)
+    else:
+        entries = retrieve_by_terms(keywords, user_only=form.user_owned.data)
 
     if len(entries) == 0:
         flash("Could not find any entries with the specified search criteria")
