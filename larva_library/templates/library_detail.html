@@ -18,6 +18,14 @@
                 poly.getPath().push(new google.maps.LatLng({{position[0]}}, {{position[1]}}));
             {% endfor %}
         }
+
+        function AddLibraryIdToQuery(link, lib_id) {
+            console.log("receieved: " + lib_id);
+            if (link.href.search("[?]") > 0)
+                link.href += "&library_ids=" + lib_id;
+            else
+                link.href += "?library_ids=" + lib_id;
+        }
     </script>
 {% endblock %}
 
@@ -107,7 +115,7 @@
 
     {% endif %}
     <br />
-    <a href="{{url_for('print_json', library_id=entry._id)}}">Download For External Use</a> <br />
+    <a href="{{url_for('larva_json_service')}}" onclick=AddLibraryIdToQuery(this,"{{entry._id}}")>Download For External Use</a> <br />
     <a href="{{url_for('index')}}">Home</a>
 {% endblock %}
 

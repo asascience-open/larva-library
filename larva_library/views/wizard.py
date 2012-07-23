@@ -39,7 +39,7 @@ def library_wizard():
         lib['geometry'] = geo_positional_data
         lib['created'] = datetime.datetime.utcnow()
         lib['user'] = session['user_email'] # Safe because of @login_required decorator
-        lib['_status'] = u'private' # default entries to being marked private
+        lib['_status'] = u'public' # default entries to being marked private
 
         entry.copy_from_dictionary(lib)
         entry.build_keywords()
