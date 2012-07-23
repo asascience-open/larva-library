@@ -74,5 +74,5 @@
     {% endif %}
     <script type="text/javascript">BuildIdString();</script>
     <a href="{{url_for('index')}}">Home</a> <br />
-    <a href="{{url_for('list_library_as_json')}}" onclick=AppendIdsToHref(this)>Download Returned Entries</a>
+    <a href="{{url_for('larva_json_service')}}" onclick=AppendIdsToHref(this)>Download Returned Entries</a>
 {% endblock %}

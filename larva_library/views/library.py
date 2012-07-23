@@ -4,7 +4,6 @@ from larva_library.models.library import LibrarySearch, Library
 from shapely.wkt import loads
 from shapely.geometry import Point
 from bson import ObjectId
-import tempfile
 import StringIO
 
 @app.route('/library/<ObjectId:library_id>', methods=['GET'])
@@ -64,10 +63,11 @@ def library_search():
         for entry in search:
             entries.append(entry)
 
-    search = retrieve_public_entries(keywords=keywords)
-    for entry in search:
-        if entry not in entries:
-            entries.append(entry)
+    if form.user_owned is not True:
+        search = retrieve_public_entries(keywords=keywords)
+        for entry in search:
+            if entry not in entries:
+                entries.append(entry)
 
     if len(entries) == 0:
         flash("Could not find any entries with the specified search criteria")
@@ -97,58 +97,6 @@ def list_library():
         flash('No entries exist in the library')
 
     return render_template('library_list.html', libraries=entry_list)
-
-@app.route('/library/json')
-def list_library_as_json():
-    json_result = dict()
-    entry_list = list()
-    library_ids = request.args.get('library_ids', None)
-    if library_ids is None:
-        # retrieve user and public entries; add each entry's json representation
-        user = session.get('user_email', None)
-        if user is not None:
-            entries = retrieve_entries_for_user(user)
-            for entry in entries:
-                entry_list.append(entry)
-
-        #get the master/public list and add it
-        entries = retrieve_public_entries()
-        for entry in entries:
-            if entry not in entry_list:
-                entry_list.append(entry)
-
-        if len(entry_list) == 0:
-            flash('could not find any entries to download')
-            return redirect(url_for('index'))
-        
-    else:
-        library_ids = [x for x in library_ids.split(',') if x]
-        # create a query dict from the ids
-        query = dict()
-        tlist = list()
-
-        for libid in library_ids:
-            tlist.append(dict(_id=ObjectId(libid.encode('ascii','ignore'))))
-
-        query["$or"] = tlist
-        results = db.Library.find(query)
-        for entry in results:
-            entry_list.append(entry)
-
-    # collect all of the json entries into one list
-    library_list = list()
-    for entry in entry_list:
-       library_list.append(entry.to_json())
-
-    json_result['library_results'] = library_list
-
-    #create a string stream to act as a temporary file for downloading the json
-    stringStream = StringIO.StringIO()
-    stringStream.write(json_result)
-    # ensure that the stream starts at the beginning for the read to file
-    stringStream.seek(0)
-
-    return send_file(stringStream, attachment_filename="library_search.json", as_attachment=True)
 
 #debug
 @app.route('/library/remove_entries')
