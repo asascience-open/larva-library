@@ -1,10 +1,11 @@
-from flask import url_for, request, redirect, flash, render_template, session, make_response
+from flask import url_for, request, redirect, flash, render_template, session, send_file
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch, Library
 from shapely.wkt import loads
 from shapely.geometry import Point
 from bson import ObjectId
 import tempfile
+import StringIO
 
 @app.route('/library/<ObjectId:library_id>', methods=['GET'])
 def detail_view(library_id):
@@ -92,7 +93,7 @@ def list_library():
 
 @app.route('/library/json')
 def list_library_as_json():
-    larva_map_library_export = dict()
+    json_result = dict()
     entry_list = list()
     library_ids = request.args.get('library_ids', None)
     if library_ids is None:
@@ -131,19 +132,15 @@ def list_library_as_json():
     for entry in entry_list:
        library_list.append(entry.to_json())
 
-    larva_map_library_export['library'] = library_list
+    json_result['library'] = library_list
 
-    fileHndl = tempfile.TemporaryFile()
-    # open(fileHndl.file)
-    json = dir(fileHndl)
-    # response = make_response(fileHndl)
-    response = make_response(render_template('print_json_rep.html', json=json))
-    # response.headers['Content-Type'] = 'application/json'
-    # response.headers['Content-Disposition'] = "attachment; filename='larva_map_library.json'"
+    #create a string stream to act as a temporary file for downloading the json
+    stringStream = StringIO.StringIO()
+    stringStream.write(json_result)
+    # ensure that the stream starts at the beginning for the read to file
+    stringStream.seek(0)
 
-    return response
-
-    # return render_template('print_json_rep.html', json=json)
+    return send_file(stringStream, attachment_filename="library_search.json", as_attachment=True)
 
 #debug
 @app.route('/library/remove_entries')
