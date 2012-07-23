@@ -1,6 +1,7 @@
 from flask import url_for, request, redirect, flash, render_template, session, send_file
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch, Library
+from utils import retrieve_public_entries, retrieve_entries_for_user, retrieve_by_id, retrieve_by_terms, retrieve_all
 from shapely.wkt import loads
 from shapely.geometry import Point
 from bson import ObjectId
@@ -29,22 +30,6 @@ def detail_view(library_id):
     entry['markers'] = marker_positions
 
     return render_template('library_detail.html', entry=entry)
-
-@app.route("/library/<ObjectId:library_id>/json", methods=['GET'])
-def print_json(library_id):
-    if library_id is None:
-        flash('Recieved an entry without an id')
-        return redirect(url_for('index'))
-
-    entry = db.Library.find_one({'_id': library_id})
-
-    if entry is None:
-        flash('Cannot find object ' + str(library_id))
-        return redirect(url_for('index'))
-
-    url = url_for('list_library_as_json') + '?library_ids=' + entry._id.__str__() + ',';
-
-    return redirect(url)
 
 @app.route("/library/search", methods=["POST"])
 def library_search():
@@ -119,19 +104,41 @@ def edit_entry(library_id):
     #Pass along entry as form
     return redirect(url_for('wizard_page_one', form=entry))
 
-#non-route functions
-def retrieve_public_entries(keywords=None):
-    query = dict()
-    query['_status'] = 'public'
-    if keywords is not None:
-        query['_keywords'] = keywords
+@app.route('/library.json', methods=['GET'])
+def larva_json_service():
+    # overhaul: query vars to look for library_ids, terms, email, user_owned_only
+    json_result = dict()
+    library_list = list()
+    entry_json_list = list()
 
-    return db.Library.find(query)
+    id_list = request.args.get("library_ids")
+    email = request.args.get("email")
+    terms = request.args.get("terms")
+    user_only = request.args.get("user_owned_only", default=False)
 
-def retrieve_entries_for_user(user_id, keywords=None):
-    query = dict()
-    query['user'] = user_id
-    if keywords is not None:
-        query['_keywords'] = keywords
+    if id_list is not None:
+        library_list = retrieve_by_id(id_list, email)
 
-    return db.Library.find(query)
+    elif terms is not None:
+        library_list = retrieve_by_terms(terms, email, user_only)
+
+    else:
+        library_list = retrieve_all(email)
+
+    if len(library_list) == 0:
+        flash("Unable to find any entries matching criterion, please try again")
+        return redirect(url_for('index.html'))
+
+    # collect all of the json entries into one list
+    for entry in library_list:
+       entry_json_list.append(entry.to_json())
+
+    json_result['library_results'] = entry_json_list
+
+    #create a string stream to act as a temporary file for downloading the json
+    stringStream = StringIO.StringIO()
+    stringStream.write(json_result)
+    # ensure that the stream starts at the beginning for the read to file
+    stringStream.seek(0)
+
+    return send_file(stringStream, attachment_filename="library_search.json", as_attachment=True)
