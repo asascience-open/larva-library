@@ -45,8 +45,7 @@
                 <button type="button" name="diel_add" id="diel_add">Add</button>
 
                 <h3>Currently configured</h3>
-                <ul id="diel_list">
-                </ul>
+                <ul id="diel_list"></ul>
 
                 <!-- holds the JSON data for POSTing -->
                 {{ render_field(form.diel_data) }}
@@ -75,14 +74,14 @@
                 <button type="button" name="taxis_add" id="taxis_add">Add</button>
 
                 <h3>Currently configured</h3>
-                <ul id="taxis_list">
-                </ul>
+                <ul id="taxis_list"></ul>
 
                 <!-- holds the JSON data for POSTing -->
                 {{ render_field(form.taxis_data) }}
             </div>
             <div class="submit step" id="review_step">
-
+                <h2>Review</h2>
+                <ul id="review_list"></ul>
             </div>
             <div class="navigation">
                 <ul class="clearfix">
@@ -249,6 +248,35 @@
             }
         }
 
+        function fieldString(name) {
+            return $("<li>").append($("label[for='" + name + "']").first().text() + ": " + $("input[name='" + name + "']").val());
+        }
+
+        function reviewFieldList(title, list) {
+            $("#review_list").append("<h3>" + title + "</h3>");
+            $("#review_list").append("<ul>");
+            if (list.length > 0) {
+                $.each(list, function(i,v) {
+                    $("#review_list").append($("<li>").append(v.toString()));
+                });
+            } else {
+                $("#review_list").append($("<li>").append("None"));
+            }
+            $("#review_list").append("</ul>");
+        }
+
+        function updateReview() {
+            $("#review_list").html("");
+            $("#review_list")
+                .append(fieldString('name'))
+                .append(fieldString('vss'))
+                .append(fieldString('duration'));
+            // Diel
+            reviewFieldList("Diel", diel_inputs);
+            // Taxis
+            reviewFieldList("Taxis", taxis_inputs);
+        }
+
         $(document).ready(function() {
 
             dataToObjects();
@@ -263,6 +291,7 @@
                     }
                 },
                 afterSelect : function( event, state ) {
+
                     // Diel step
                     if (state.stepIndex == 1) {
                         move_or_stay(state, "diel", "diel_step");
@@ -273,6 +302,11 @@
                     if (state.stepIndex == 2) {
                         move_or_stay(state, "taxis", "taxis_step");
                         updateList("taxis_list", "taxis_data", taxis_inputs);
+                    }
+
+                    // Review step
+                    if (state.stepIndex == 3) {
+                        updateReview();
                     }
                 }
             }).validate({
