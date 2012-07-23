@@ -43,9 +43,9 @@ def print_json(library_id):
         flash('Cannot find object ' + str(library_id))
         return redirect(url_for('index'))
 
-    json = entry.to_json();
+    url = url_for('list_library_as_json') + '?library_ids=' + entry._id.__str__() + ',';
 
-    return render_template('print_json_rep.html', json=json)
+    return redirect(url)
 
 @app.route("/library/search", methods=["POST"])
 def library_search():
@@ -66,6 +66,9 @@ def library_search():
         if entry not in entries:
             entries.append(entry)
 
+    if len(entries) == 0:
+        flash("Could not find any entries with the specified search criteria")
+
     return render_template('library_list.html', libraries=entries)
 
 @app.route('/library')
@@ -78,7 +81,11 @@ def list_library():
         for entry in entries:
             entry_list.append(entry)
 
+    if len(entry_list) == 0:
+        flash('No entries copied from user')
+
     entries = retrieve_public_entries()
+    count = entries.count()
     for entry in entries:
         if entry not in entry_list:
             entry_list.append(entry)
