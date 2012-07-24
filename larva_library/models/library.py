@@ -72,6 +72,7 @@ class Library(Document):
         'lifestages'    : [LifeStage],
         'user'          : unicode,
         'created'       : datetime,
+        '_status'       : unicode,
         '_keywords'     : [unicode]
     }
     
