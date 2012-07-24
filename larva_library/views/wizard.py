@@ -65,7 +65,7 @@ def library_edit_wizard(library_id):
         return redirect(url_for('index'))
 
     # Permissions
-    if entry.user != session['user_email']:
+    if session.get('user_email', None) != entry.user:
         flash('%s does not have permission to edit this entry')
         return redirect(url_for('index'))
 

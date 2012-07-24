@@ -2,54 +2,6 @@
 {% from "macros.html" import render_field %}
 {% block javascript %}
     {{ super() }}
-    <script type="text/javascript">
-        var global_id_string = '';
-        function BuildIdString() {
-            // build the id string
-            {% if libraries %}
-              {% for library in libraries %}
-                  global_id_string += "{{ library._id }},";
-              {% endfor %}
-              console.log(global_id_string);
-            {% endif %}
-        }
-        function AppendIdsToHref(link) {
-            console.log("In AppendIdsToHref: " + link.href);
-            var hrefString = new String(link.href);
-            // look to see if the href already has query
-            var queryIndex = hrefString.search("[?]");
-            if (queryIndex >= 0) {
-                // now check to see if the href has a "library_ids" string
-                if (link.href.search("library_ids") < 0) {
-                    // does not have a library_ids query, add one at the end (make sure to check for a trailing '&')
-                    if (link.href.charAt(link.href.length-1) != '&') {
-                        link.href += '&';
-                    }
-                    // add our query
-                    link.href += "library_ids=" + global_id_string;
-                } else {
-                    // does have library_ids, we need to remove the current string and add our new one
-                    var startIndex = link.href.search("library_ids");
-                    var query_fragment = link.href.substring(startIndex);
-                    // split on '&'
-                    var query_fractures = new Array();
-                    query_fractures = query_fragment.split('&');
-                    // operate on the 0th index (should be safe to just use 0)
-                    query_fractures[0] = "library_ids=" + global_id_string;
-                    // recombine the fractures into a fragment
-                    query_fragment = query_fractures.join('&');
-                    // add in the fragment back onto the string at the startIndex
-                    hrefString = link.href.slice(0,startIndex);
-                    hrefString += query_fragment;
-                    // have our updated href, set it
-                    link.href = hrefString;
-                }
-            } else {
-                link.href += "?library_ids=" + global_id_string;
-            }
-            console.log("Exiting with href: " + link.href);
-        }
-    </script>
 {% endblock %}
 {% block page %}
 
@@ -81,17 +33,11 @@
            <tr>
                <td>{{ library.name }}</td>
                <td><a href="{{ url_for( 'detail_view', library_id=library._id ) }}">detail</a></td>
-               <!-- <td><a href="{blah{ url_for( 'edit_entry', library_id=library._id ) }blah}">edit</a></td> -->
            </tr>
            {% endfor %}
         </table>
-        <script type="text/javascript">BuildIdString();</script>
     {% endif %}
 
-    <a href="{{url_for('list_library')}}">Browse library</a> <br />
-    {% if libraries %}
-        {% set user = session.get('user_email').split('@', 1)[0] %}
-      <a href="{{url_for('json_service')}}?filename={{user}}_entries&" onclick=AppendIdsToHref(this)>Download List</a>
-    {% endif %}
+    <a href="{{url_for('list_library')}}">Browse library</a>
 
 {% endblock %}
