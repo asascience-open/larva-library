@@ -25,7 +25,7 @@ def str_to_num(string):
 
 def retrieve_public_entries(keywords=None):
     query = dict()
-    query['_status'] = unicode('public')
+    query['status'] = unicode('public')
     if keywords is not None:
         query['_keywords'] = keywords
 

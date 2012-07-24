@@ -72,7 +72,7 @@ class Library(Document):
         'lifestages'    : [LifeStage],
         'user'          : unicode,
         'created'       : datetime,
-        '_status'       : unicode,
+        'status'        : unicode,
         '_keywords'     : [unicode]
     }
     
@@ -98,6 +98,7 @@ class Library(Document):
         _keywords.extend(self.keywords)
         _keywords.extend(self.geo_keywords)
         self._keywords = _keywords
+        
 db.register([Library])
 
 # custom field classes
@@ -130,6 +131,7 @@ class BaseWizard(Form):
     keywords = TagListField('Keywords')
     geo = HiddenField('Geo');
     geo_keywords = TagListField('Geographical Keywords')
+    status = SelectField('Permissions', choices=[('private', 'Private'), ('public', 'Public'), ('review', 'Under Review')])
 
 ## forms for library wizard (editing and creating)
 class LifeStageWizard(Form):
