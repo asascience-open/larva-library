@@ -1,9 +1,10 @@
 from flask import url_for, request, redirect, flash, render_template, session, send_file
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch, Library
-from utils import retrieve_by_id, retrieve_by_terms, retrieve_all
+from utils import retrieve_by_id, retrieve_by_terms, retrieve_all, import_entry, login_required
 from shapely.wkt import loads
 from shapely.geometry import Point
+from ast import literal_eval
 import StringIO
 
 @app.route('/library/<ObjectId:library_id>', methods=['GET'])
@@ -85,6 +86,33 @@ def edit_entry(library_id):
 
     #Pass along entry as form
     return redirect(url_for('wizard_page_one', form=entry))
+
+@app.route('/library/import', methods=['GET','POST'])
+@login_required
+def import_library():
+    # using login decorator
+    if request.method == 'POST':
+        jsonfile_storage = request.files.get('jsonfile')
+        stringStream = jsonfile_storage.stream
+        stringStream.seek(0)
+        entry_dict = literal_eval(stringStream.getvalue())
+        entry_list = entry_dict.get('library_results')
+
+        if entry_list is None:
+            flash("invalid file uploaded, please try again")
+            return redirect(url_for('index'))
+
+        # iterate through the entry list and add the entry; note: entries at this point are strings, we need to pass in dicts
+        for entry in entry_list:
+            import_entry(literal_eval(entry), session['user_email'])
+
+        # rebuild the indexes
+        db.libraries.reindex()
+
+        return redirect(url_for('index'))
+
+    return render_template('library_import.html')
+
 
 @app.route('/library.json', methods=['GET'])
 def json_service():

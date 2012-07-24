@@ -2,6 +2,7 @@ from mongokit import Document, DocumentMigration
 from larva_library import db, app
 from wtforms import *
 from datetime import datetime
+import ast
 
 class Diel(Document):
     __collection__= 'diel'
@@ -53,6 +54,19 @@ class LifeStage(Document):
         'diel'      : [Diel],
         'taxis'     : [Taxis],
     }
+
+    def copy_from_dictionary(self,dict_cp=None):
+        if dict_cp is None:
+            return self
+        else:
+            for key in dict_cp.keys():
+                if key in self.structure.keys():
+                    if isinstance(dict_cp[key], str):
+                        self[key] = unicode(dict_cp[key])
+                    else:
+                        self[key] = dict_cp[key]
+            return self
+
 db.register([LifeStage])
 
 class Library(Document):
@@ -86,7 +100,13 @@ class Library(Document):
         else:
             for key in dict.keys():
                 if key in self.structure.keys():
-                    self[key] = dict[key]
+                    if isinstance(dict[key], str):
+                        self[key] = unicode(dict[key])
+                    elif isinstance(dict[key], list):
+                        if len(dict[key]) > 0 and isinstance(dict[key][0], str):
+                            dict[key] = [ item.encode('utf_8') for item in dict[key] ]
+                    else:
+                        self[key] = dict[key]
             return self
     
     def build_keywords(self):

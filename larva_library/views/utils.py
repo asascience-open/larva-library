@@ -2,6 +2,7 @@ from functools import wraps
 from flask import request, redirect, url_for, session, flash
 from larva_library import db
 from bson import ObjectId
+import datetime
 
 def login_required(f):
     @wraps(f)
@@ -103,3 +104,58 @@ def retrieve_all(email=None, user_only=False):
                 entry_list.append(entry)
 
     return entry_list
+
+def import_entry(entry, user):
+    # assume entry is a dict
+    if not isinstance(entry, dict):
+        # not a dict, exit
+        return
+
+    # clean up before inserting; remove generated keys, change user, _status and created to reflect new ownership
+    if '_id' in entry:
+        del entry['_id']
+
+    if '_keywords' in entry:
+        del entry['_keywords']
+
+    entry['user'] = unicode(user)
+    entry['_status'] = unicode('private')
+    entry['created'] = datetime.datetime.utcnow()
+
+    # need to pull out the life stages and re-add them as well
+    lifestages = list()
+    if 'lifestages' in entry:
+        lifestages = entry['lifestages']
+        del entry['lifestages']
+
+    lib_entry = db.Library()
+    lib_entry.copy_from_dictionary(entry)
+    lib_entry.build_keywords()
+    db.libraries.ensure_index('_keywords')
+
+    # import each of the lifestages and append them to the entry
+    for lifestage in lifestages:
+        import_lifestage(lifestage, lib_entry)
+
+    # save the entry
+    lib_entry.save()
+
+    return
+
+def import_lifestage(lifestage, entry):
+    # make sure both are not none:
+    if lifestage is None or entry is None or not isinstance(lifestage, dict):
+        return
+
+    # clean up the lifestage:
+    if '_id' in lifestage:
+        del lifestage['_id']
+
+    # create the lifestage in the database, then append it to the entry
+    lib_lifestage = db.LifeStage()
+    lib_lifestage.copy_from_dictionary(lifestage)
+    # save and append
+    lib_lifestage.save()
+    entry.lifestages.append(lib_lifestage)
+
+    return

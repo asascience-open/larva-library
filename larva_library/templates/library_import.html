@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block page %}
+	<form method=post enctype=multipart/form-data action="{{ url_for('import_library') }}" >
+		<input type="file" name="jsonfile" />
+		<input type="submit" value="upload" />
+	</form>
+{% endblock %}
