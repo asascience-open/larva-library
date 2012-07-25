@@ -46,15 +46,15 @@ def library_search():
 
     if form.search_keywords.data is None or form.search_keywords.data == '':
         flash('Please enter a search term')
-        return redirect(url_for('index'))
+        return render_template('index.html', form=form)
 
     # Build query; first look for entries that belong to user, then look for entries that are marked public
     keywords = form.search_keywords.data
     entries = retrieve_by_terms(keywords, email=session.get('user_email', None), owned=form.user_owned.data)
 
     if len(entries) == 0:
-        flash("Could not find any entries with the specified search criteria")
-        return redirect(url_for('index'))
+        flash("Searching for '%s' returned 0 results" % keywords)
+        return render_template('index.html', form=form)
 
     return render_template('library_list.html', libraries=entries)
 
