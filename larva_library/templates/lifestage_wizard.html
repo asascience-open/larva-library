@@ -9,7 +9,7 @@
 {% block page %}
 
     <div id="form_wrapper">
-        <form name="lifestage" id="lifestage" method="post" action="{{url_for('lifestage_wizard', library_id=entry)}}">
+        <form name="lifestage" id="lifestage" method="post" action="{{ request.path }}">
             <div class="step unidirectional" id="base_step">
                 {{ render_field(form.name) }}<br />
                 {{ render_field(form.vss) }}<br />
@@ -168,6 +168,7 @@
         function dataToObjects() {
 
             // DIEL
+            alert($("#diel_data").val());
             diel_data = $("#diel_data").val();
             diel_inputs = [];
             if (diel_data != "") {

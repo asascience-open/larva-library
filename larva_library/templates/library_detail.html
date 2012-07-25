@@ -102,7 +102,7 @@
             </td></tr>
             <tr><td>
                 {% for lifestage in entry.lifestages %}
-                    {{ lifestage_summary(lifestage) }}
+                    {{ lifestage_summary(lifestage, entry._id) }}
                 {% endfor %}
             </td></tr>
             <tr><td>
@@ -116,8 +116,17 @@
     <a href="{{url_for('index')}}">Home</a>
 {% endblock %}
 
-{% macro lifestage_summary(lifestage) -%}
+{% macro lifestage_summary(lifestage, library_id) -%}
     <br />
+
+    <table border="1">
+        <tr>
+            <td><a href="{{url_for('clone_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Clone</a></td>
+            <td><a href="{{url_for('edit_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Edit</a></td>
+            <td><a href="{{url_for('delete_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Delete</a></td>
+        </tr>
+    </table>
+
     <table border="1">
         <tr><td>Name</td><td>{{lifestage.name}}</td></tr>
         <tr><td>Vertical Swimming Speed (m/s)</td><td>{{lifestage.vss}}</td></tr>
