@@ -8,7 +8,6 @@
     <!-- Search Form-->
     <form method=post action="{{url_for('library_search')}}">
         <dl class="edit">
-            Search Parameters (Comma-delimited):
             <ul>
                 <li class="navigation">{{ render_field(form.search_keywords) }}</li>
                 {% if session.get('user_email') %}

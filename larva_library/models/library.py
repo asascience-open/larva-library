@@ -119,7 +119,7 @@ class TagListField(Field):
 
 ## forms for library searching
 class LibrarySearch(Form):
-    search_keywords = TextField('keywords')
+    search_keywords = TextField('Search Parameters (Comma-delimited)')
     user_owned = BooleanField('User Owned Only')
 
 ## forms for library wizard (editing and creating)
