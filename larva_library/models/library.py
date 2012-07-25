@@ -147,6 +147,8 @@ class LifeStageWizard(Form):
     diel_max_depth = FloatField("Max", [validators.optional()])
     diel_data = HiddenField('diel_data')
 
+
+    variable = SelectField('Variable', choices=[('sea_water_salinity', 'Salinity (PSU)'), ('sea_water_temperature', 'Temperature (deg C)')])
     taxis_min = FloatField("Min", [validators.optional()])
     taxis_max = FloatField("Max", [validators.optional()])
     taxis_grad = FloatField("Sensory Gradient +/-", [validators.optional()])

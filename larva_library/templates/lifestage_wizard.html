@@ -53,11 +53,7 @@
             <div class="step" id="taxis_step">
                 <h2>Taxis</h2>
 
-                <label for="taxis_variable">Variable</label>
-                <select id="taxis_variable">
-                    <option value="sea_water_salinity" selected="selected">Salinity (PSU)</option>
-                    <option value="sea_water_temperature">Temperature (deg C)</option>
-                </select>
+                {{ render_field(form.variable) }}
 
                 <br />
                 <br />
@@ -436,7 +432,7 @@
 
                 var inputs = $("#lifestage").wizard('state').step.find(':input');
                 if (inputs.length && !!inputs.valid()) {
-                    var variable = $('#taxis_variable').val();
+                    var variable = $('#variable').val();
                     var gradient = $("#taxis_grad").val();
                     var min = $("#taxis_min").val();
                     var max = $("#taxis_max").val();
