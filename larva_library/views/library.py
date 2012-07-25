@@ -6,6 +6,7 @@ from shapely.wkt import loads
 from shapely.geometry import Point
 from ast import literal_eval
 import StringIO
+import json
 
 @app.route('/library/<ObjectId:library_id>', methods=['GET'])
 def detail_view(library_id):
@@ -104,7 +105,7 @@ def import_library():
 
         # iterate through the entry list and add the entry; note: entries at this point are strings, we need to pass in dicts
         for entry in entry_list:
-            import_entry(literal_eval(entry), session['user_email'])
+            import_entry(json.loads(entry), session['user_email'])
 
         # rebuild the indexes
         db.libraries.reindex()

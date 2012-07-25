@@ -95,9 +95,7 @@ class Library(Document):
         return result
     
     def copy_from_dictionary(self,dict=None):
-        if dict is None:
-            return self
-        else:
+        if dict is not None:
             for key in dict.keys():
                 if key in self.structure.keys():
                     if isinstance(dict[key], str):
@@ -107,7 +105,14 @@ class Library(Document):
                             dict[key] = [ item.encode('utf_8') for item in dict[key] ]
                     else:
                         self[key] = dict[key]
-            return self
+        return self
+
+    def validate(self, *args, **kwargs):
+        query = {'user': self['user'], 'name': self['name']}
+        entry = db.Library.find_one(query)
+        if entry is not None:
+            return False
+        super(Library, self).validate(*args, **kwargs)
     
     def build_keywords(self):
         _keywords = []
@@ -118,6 +123,7 @@ class Library(Document):
         _keywords.extend(self.keywords)
         _keywords.extend(self.geo_keywords)
         self._keywords = _keywords
+
 db.register([Library])
 
 # custom field classes

@@ -44,13 +44,17 @@ def library_wizard():
         entry.copy_from_dictionary(lib)
         entry.build_keywords()
         db.libraries.ensure_index('_keywords')
-        entry.save()
+        # return render_template('print_json.html', json=entry.validate().__str__())
+        if entry.validate() is not False:
+            entry.save()
 
-        # rebuild the indexes
-        db.libraries.reindex()
-            
-        flash('Created library entry %s' % str(entry._id))
-        return redirect(url_for('detail_view', library_id=entry._id ))
+            # rebuild the indexes
+            db.libraries.reindex()
+                
+            flash('Created library entry %s' % str(entry._id))
+            return redirect(url_for('detail_view', library_id=entry._id ))
+        else:
+            flash('Entry %s already exists for %s, cannot have entries with duplicate names.' % (entry.name, entry.user))
 
     return render_template('library_wizard.html', form=form)
 
