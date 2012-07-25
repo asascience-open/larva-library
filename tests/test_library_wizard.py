@@ -44,6 +44,8 @@ class LibraryWizardTestCase(unittest.TestCase):
             keywords = random_keyword_string(random.randint(5,7))
             geo_keywords = random_keyword_string(random.randint(5,7))
 
+            status = 'public'
+
             geo = "(51.8279954420803, -150.12374999999997),(37.150279946816994, -142.74093749999997),(53.32335189700258, -136.41281249999997),(53.7412635745501, -143.79562499999997),(51.8279954420803, -150.12374999999997)"
 
             # create the entry with several calls
@@ -55,6 +57,7 @@ class LibraryWizardTestCase(unittest.TestCase):
                     keywords=keywords,
                     geo_keywords=geo_keywords,
                     geo=geo,
+                    status=status
                 ), follow_redirects=True)
 
             assert 'Created library entry' in rv.data
