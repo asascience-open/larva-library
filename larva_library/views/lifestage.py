@@ -23,7 +23,7 @@ def clone_lifestage(library_id, lifestage_id):
     for lifestage in entry.lifestages:
         if lifestage['_id'] == lifestage_id:
             # Populate newlifestage
-            newlifestage = db.LifeStage()
+            newlifestage = lifestage.clone()
             newlifestage.save()
             # Add copy of 'lifestage' to library.lifestages
             entry.lifestages.append(newlifestage)

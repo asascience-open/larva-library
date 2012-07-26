@@ -82,48 +82,50 @@ def retrieve_all(email=None, owned=False):
     return entry_list
 
 def import_entry(entry, user):
+    lib_entry = db.Library.from_json(entry)
+    app.logger.info(lib_entry)
     # assume entry is a dict
-    if not isinstance(entry, dict):
-        # not a dict, exit
-        flash('entry received was not a dictionary')
-        return
+    # if not isinstance(entry, dict):
+    #     # not a dict, exit
+    #     flash('entry received was not a dictionary')
+    #     return
 
-    # clean up before inserting; remove generated keys, change user, _status and created to reflect new ownership
-    if '_id' in entry:
-        del entry['_id']
+    # # clean up before inserting; remove generated keys, change user, _status and created to reflect new ownership
+    # if '_id' in entry:
+    #     del entry['_id']
 
-    if '_keywords' in entry:
-        del entry['_keywords']
+    # if '_keywords' in entry:
+    #     del entry['_keywords']
 
-    entry['user'] = unicode(user)
-    entry['status'] = unicode('private')
-    entry['created'] = datetime.datetime.utcnow()
+    # entry['user'] = unicode(user)
+    # entry['status'] = unicode('private')
+    # entry['created'] = datetime.datetime.utcnow()
 
-    # need to pull out the life stages and re-add them as well
-    lifestages = list()
-    if 'lifestages' in entry:
-        lifestages = entry['lifestages']
-        del entry['lifestages']
+    # # need to pull out the life stages and re-add them as well
+    # lifestages = list()
+    # if 'lifestages' in entry:
+    #     lifestages = entry['lifestages']
+    #     del entry['lifestages']
 
-    lib_entry = db.Library()
-    lib_entry.copy_from_dictionary(entry)
-    lib_entry.build_keywords()
+    # lib_entry = db.Library()
+    # lib_entry.copy_from_dictionary(entry)
+    # lib_entry.build_keywords()
 
-    # validate that the entry isn't already in the db
-    name = lib_entry['name']
-    name_id = 0
-    while lib_entry.validate() is False:
-        name_id += 1
-        lib_entry['name'] = unicode(str(name) + str(name_id))
+    # # validate that the entry isn't already in the db
+    # name = lib_entry['name']
+    # name_id = 0
+    # while lib_entry.validate() is False:
+    #     name_id += 1
+    #     lib_entry['name'] = unicode(str(name) + str(name_id))
 
-    db.libraries.ensure_index('_keywords')
+    # db.libraries.ensure_index('_keywords')
 
-    # import each of the lifestages and append them to the entry
-    for lifestage in lifestages:
-        import_lifestage(lifestage, lib_entry)
+    # # import each of the lifestages and append them to the entry
+    # for lifestage in lifestages:
+    #     import_lifestage(lifestage, lib_entry)
 
-    # save the entry
-    lib_entry.save()
+    # # save the entry
+    # lib_entry.save()
 
     return
 
