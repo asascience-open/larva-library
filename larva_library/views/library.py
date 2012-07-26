@@ -1,6 +1,6 @@
 from flask import url_for, request, redirect, flash, render_template, session, send_file, make_response, jsonify
 from larva_library import app, db
-from larva_library.models.library import LibrarySearch, Library
+from larva_library.models.library import LibrarySearch, Library, BaseWizard
 from utils import retrieve_by_terms, retrieve_all, login_required
 from shapely.wkt import loads
 from shapely.geometry import Point
