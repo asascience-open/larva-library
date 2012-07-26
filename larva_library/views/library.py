@@ -38,7 +38,7 @@ def detail_view(library_id):
 @app.route('/library/<ObjectId:library_id>.json', methods=['GET'])
 def json_view(library_id):
     entry = db.Library.find_one({'_id': library_id})
-    return jsonify({"results" : json.loads(entry.to_json()) })
+    return jsonify({"results" : [json.loads(entry.to_json())] })
 
 @app.route("/library/search", methods=["POST", "GET"])
 def library_search():
