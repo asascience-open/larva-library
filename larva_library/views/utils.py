@@ -96,7 +96,7 @@ def import_entry(entry, user):
         del entry['_keywords']
 
     entry['user'] = unicode(user)
-    entry['_status'] = unicode('private')
+    entry['status'] = unicode('private')
     entry['created'] = datetime.datetime.utcnow()
 
     # need to pull out the life stages and re-add them as well

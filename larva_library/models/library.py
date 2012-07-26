@@ -31,6 +31,11 @@ class Diel(Document):
         data['max'] = self.max
         return str(data)
 
+    def clone(self):
+        clone = deepcopy(self)
+        remove_id(clone)
+        return clone
+
     def __str__(self):
         if self.type == "cycles":
             return "At %s %s%i hour(s): Move towards %dm -> %dm" % (self.cycle, self.plus_or_minus, self.hours, self.min, self.max)
@@ -63,6 +68,11 @@ class Taxis(Document):
         data['gradient'] = self.gradient
         return str(data)
 
+    def clone(self):
+        clone = deepcopy(self)
+        remove_id(clone)
+        return clone
+
     def __str__(self):
         return "%s (%s): %d -> %d +/- %d" % (self.variable, self.units, self.min, self.max, self.gradient)
 db.register([Taxis])
@@ -90,6 +100,11 @@ class LifeStage(Document):
                     else:
                         self[key] = dict_cp[key]
             return self
+
+    def clone(self):
+        clone = deepcopy(self)
+        remove_id(clone)
+        return clone
 
 db.register([LifeStage])
 
