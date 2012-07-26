@@ -109,7 +109,11 @@ def edit_lifestage(library_id, lifestage_id):
                     d.hours = int(diel_data['hours'])
                 elif d.type == u'specifictime':
                     t = parse("%s %s" % (diel_data['diel_time'], diel_data['timezone']))
-                    d.time = pytz.utc.normalize(t).replace(tzinfo=None)
+                    try:
+                        d.time = pytz.utc.normalize(t).replace(tzinfo=None)
+                    except:
+                        # already in GMT
+                        d.time = t
                     
                 d.save()
                 lifestage.diel.append(d)
@@ -146,12 +150,12 @@ def edit_lifestage(library_id, lifestage_id):
         diels = []
         for diel in lifestage.diel:
             diels.append(diel.to_data())
-        form.diel_data.data = diels
+        form.diel_data.data = json.dumps(diels)
         
         taxis = []
         for tx in lifestage.taxis:
             taxis.append(tx.to_data())
-        form.taxis_data.data = taxis
+        form.taxis_data.data = json.dumps(taxis)
 
     return render_template('lifestage_wizard.html', form=form)
 

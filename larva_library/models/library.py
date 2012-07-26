@@ -18,14 +18,18 @@ class Diel(Document):
     def to_data(self):
         data = {}
         data['diel_type'] = self.type
-        data['diel_time'] = self.time.strftime("%H")
-        data['timezone'] = self.time.strftime("%z")
+        try:
+            data['diel_time'] = self.time.strftime("%H") + ":00"
+            data['timezone'] = self.time.strftime("%z")
+        except:
+            data['diel_time'] = None
+            data['timezone'] = None
         data['cycle'] = self.cycle;
         data['plus_or_minus'] = self.plus_or_minus
         data['hours'] = self.hours
         data['min'] = self.min
         data['max'] = self.max
-        return str(data)
+        return data
 
     def __str__(self):
         if self.type == "cycles":
@@ -57,7 +61,7 @@ class Taxis(Document):
         data['min'] = self.min
         data['max'] = self.max
         data['gradient'] = self.gradient
-        return str(data)
+        return data
 
     def __str__(self):
         return "%s (%s): %d -> %d +/- %d" % (self.variable, self.units, self.min, self.max, self.gradient)
@@ -169,7 +173,7 @@ class LifeStageWizard(Form):
     diel_data = HiddenField('diel_data')
 
 
-    variable = SelectField('Variable', choices=[('sea_water_salinity', 'Salinity (PSU)'), ('sea_water_temperature', 'Temperature (deg C)')])
+    variable = SelectField('Variable', [validators.optional()], choices=[('sea_water_salinity', 'Salinity (PSU)'), ('sea_water_temperature', 'Temperature (deg C)')])
     taxis_min = FloatField("Min", [validators.optional()])
     taxis_max = FloatField("Max", [validators.optional()])
     taxis_grad = FloatField("Sensory Gradient +/-", [validators.optional()])
