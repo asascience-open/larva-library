@@ -16,6 +16,18 @@ class Diel(Document):
         'min'           : float,
         'max'           : float
     }
+    def to_data(self):
+        data = {}
+        data['diel_type'] = self.type
+        data['diel_time'] = self.time.strftime("%H")
+        data['timezone'] = self.time.strftime("%z")
+        data['cycle'] = self.cycle;
+        data['plus_or_minus'] = self.plus_or_minus
+        data['hours'] = self.hours
+        data['min'] = self.min
+        data['max'] = self.max
+        return str(data)
+
     def __str__(self):
         if self.type == "cycles":
             return "At %s %s%i hour(s): Move towards %dm -> %dm" % (self.cycle, self.plus_or_minus, self.hours, self.min, self.max)
@@ -39,6 +51,15 @@ class Taxis(Document):
         'max'           : float,
         'gradient'      : float
     }
+    def to_data(self):
+        data = {}
+        data['variable'] = self.variable
+        data['units'] = self.units
+        data['min'] = self.min
+        data['max'] = self.max
+        data['gradient'] = self.gradient
+        return str(data)
+
     def __str__(self):
         return "%s (%s): %d -> %d +/- %d" % (self.variable, self.units, self.min, self.max, self.gradient)
 db.register([Taxis])
@@ -86,7 +107,7 @@ class Library(Document):
         'lifestages'    : [LifeStage],
         'user'          : unicode,
         'created'       : datetime,
-        '_status'       : unicode,
+        'status'        : unicode,
         '_keywords'     : [unicode]
     }
     
@@ -123,7 +144,7 @@ class Library(Document):
         _keywords.extend(self.keywords)
         _keywords.extend(self.geo_keywords)
         self._keywords = _keywords
-
+        
 db.register([Library])
 
 # custom field classes
@@ -144,8 +165,8 @@ class TagListField(Field):
 
 ## forms for library searching
 class LibrarySearch(Form):
-    search_keywords = TextField('keywords')
-    user_owned = BooleanField('User_Owned_Only')
+    search_keywords = TextField('Search Parameters (Comma-delimited)')
+    user_owned = BooleanField('User Owned Only')
 
 ## forms for library wizard (editing and creating)
 class BaseWizard(Form):
@@ -156,6 +177,7 @@ class BaseWizard(Form):
     keywords = TagListField('Keywords')
     geo = HiddenField('Geo');
     geo_keywords = TagListField('Geographical Keywords')
+    status = SelectField('Permissions', choices=[('private', 'Private'), ('public', 'Public'), ('review', 'Under Review')])
 
 ## forms for library wizard (editing and creating)
 class LifeStageWizard(Form):
@@ -171,6 +193,8 @@ class LifeStageWizard(Form):
     diel_max_depth = FloatField("Max", [validators.optional()])
     diel_data = HiddenField('diel_data')
 
+
+    variable = SelectField('Variable', choices=[('sea_water_salinity', 'Salinity (PSU)'), ('sea_water_temperature', 'Temperature (deg C)')])
     taxis_min = FloatField("Min", [validators.optional()])
     taxis_max = FloatField("Max", [validators.optional()])
     taxis_grad = FloatField("Sensory Gradient +/-", [validators.optional()])

@@ -1,6 +1,6 @@
 import os
 # set os environs
-os.environ['APPLICATION_SETTINGS'] = 'development.py'
+os.environ['APPLICATION_SETTINGS'] = 'testing.py'
 os.environ['SECRET_KEY'] = 'shhdonttellanyone'
 os.environ['GOOGLE_CLIENT_SECRET'] = 'fakeituntilyoumakeit'
 os.environ['GOOGLE_CLIENT_ID'] = 'fakeitifyoudontbelong'

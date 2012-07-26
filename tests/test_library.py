@@ -25,10 +25,10 @@ class LibraryTestCase(unittest.TestCase):
                 search_keywords='doesnotexist'
             ), follow_redirects=True)
         # check out our data to see if we did not find anything, we is expected
-        assert 'Search returned 0 results' in rv.data
+        assert "Searching for &#39;doesnotexist&#39; returned 0 results" in rv.data
 
         rv = self.app.post('/library/search', data=dict(
                 search_keywords='keyword1,doesexist'
             ), follow_redirects=True)
         # should get something in data if it does exist
-        assert 'Search returned 0 results' not in rv.data
+        assert "Searching for &#39;keyword,doesexist&#39; returned 0 results" not in rv.data

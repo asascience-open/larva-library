@@ -18,14 +18,6 @@
                 poly.getPath().push(new google.maps.LatLng({{position[0]}}, {{position[1]}}));
             {% endfor %}
         }
-
-        function AddLibraryIdToQuery(link, lib_id) {
-            console.log("receieved: " + lib_id);
-            if (link.href.search("[?]") > 0)
-                link.href += "&library_ids=" + lib_id;
-            else
-                link.href += "?library_ids=" + lib_id;
-        }
     </script>
 {% endblock %}
 
@@ -97,6 +89,11 @@
             </td><td>
                 {{ entry.created }}
             </td></tr>
+            <tr><td>
+                Permissions:
+            </td><td>
+                {{ entry.status }}
+            </td></tr>
         </table>
 
         <table border="1">
@@ -105,7 +102,7 @@
             </td></tr>
             <tr><td>
                 {% for lifestage in entry.lifestages %}
-                    {{ lifestage_summary(lifestage) }}
+                    {{ lifestage_summary(lifestage, entry._id) }}
                 {% endfor %}
             </td></tr>
             <tr><td>
@@ -115,12 +112,21 @@
 
     {% endif %}
     <br />
-    <a href="{{url_for('json_service')}}?filename=entry_{{entry._id}}" onclick=AddLibraryIdToQuery(this,"{{entry._id}}")>Download For External Use</a> <br />
+    <a href="{{url_for('json_view', library_id=entry._id)}}">Download For External Use</a> <br />
     <a href="{{url_for('index')}}">Home</a>
 {% endblock %}
 
-{% macro lifestage_summary(lifestage) -%}
+{% macro lifestage_summary(lifestage, library_id) -%}
     <br />
+
+    <table border="1">
+        <tr>
+            <td><a href="{{url_for('clone_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Clone</a></td>
+            <td><a href="{{url_for('edit_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Edit</a></td>
+            <td><a href="{{url_for('delete_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Delete</a></td>
+        </tr>
+    </table>
+
     <table border="1">
         <tr><td>Name</td><td>{{lifestage.name}}</td></tr>
         <tr><td>Vertical Swimming Speed (m/s)</td><td>{{lifestage.vss}}</td></tr>

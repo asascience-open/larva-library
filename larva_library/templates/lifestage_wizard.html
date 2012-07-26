@@ -9,7 +9,7 @@
 {% block page %}
 
     <div id="form_wrapper">
-        <form name="lifestage" id="lifestage" method="post" action="{{url_for('lifestage_wizard', library_id=entry)}}">
+        <form name="lifestage" id="lifestage" method="post" action="{{ request.path }}">
             <div class="step unidirectional" id="base_step">
                 {{ render_field(form.name) }}<br />
                 {{ render_field(form.vss) }}<br />
@@ -53,11 +53,7 @@
             <div class="step" id="taxis_step">
                 <h2>Taxis</h2>
 
-                <label for="taxis_variable">Variable</label>
-                <select id="taxis_variable">
-                    <option value="sea_water_salinity" selected="selected">Salinity (PSU)</option>
-                    <option value="sea_water_temperature">Temperature (deg C)</option>
-                </select>
+                {{ render_field(form.variable) }}
 
                 <br />
                 <br />
@@ -172,6 +168,7 @@
         function dataToObjects() {
 
             // DIEL
+            alert($("#diel_data").val());
             diel_data = $("#diel_data").val();
             diel_inputs = [];
             if (diel_data != "") {
@@ -436,7 +433,7 @@
 
                 var inputs = $("#lifestage").wizard('state').step.find(':input');
                 if (inputs.length && !!inputs.valid()) {
-                    var variable = $('#taxis_variable').val();
+                    var variable = $('#variable').val();
                     var gradient = $("#taxis_grad").val();
                     var min = $("#taxis_min").val();
                     var max = $("#taxis_max").val();

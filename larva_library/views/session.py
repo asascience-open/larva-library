@@ -10,7 +10,6 @@ from larva_library.models.user import User, find_or_create_by_email
 def logout():
     session.pop('facebook_token', None)
     session.pop('google_token', None)
-    session.pop('user_id', None)
     session.pop('user_email', None)
 
     flash('Signed out')
