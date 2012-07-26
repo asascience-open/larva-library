@@ -87,11 +87,21 @@ def edit_lifestage(library_id, lifestage_id):
 
         lifestage = db.LifeStage()
         lifestage.name = form.name.data
-        lifestage.vss = form.vss.data
         lifestage.duration = form.duration.data
         lifestage.notes = form.notes.data
         lifestage.diel = [] 
         lifestage.taxis = []
+        lifestage.capability = None
+
+        # Capability
+        if form.capability.data:
+            c = db.Capability()
+            c.vss = float(form.vss.data)
+            c.variance = float(form.variance.data)
+            c.swim_turning = form.swim_turning.data
+            c.nonswim_turning = form.nonswim_turning.data
+            c.save()
+            lifestage.capability = c
 
         # Diel
         if form.diel_data.data and len(form.diel_data.data) > 0:
@@ -158,6 +168,11 @@ def edit_lifestage(library_id, lifestage_id):
             taxis.append(tx.to_data())
         form.taxis_data.data = json.dumps(taxis)
 
+        form.vss.data = lifestage.capability.vss
+        form.variance.data = lifestage.capability.variance
+        form.swim_turning.data = lifestage.capability.swim_turning
+        form.nonswim_turning.data = lifestage.capability.nonswim_turning
+
     return render_template('lifestage_wizard.html', form=form)
 
 
@@ -176,11 +191,21 @@ def lifestage_wizard(library_id):
 
         lifestage = db.LifeStage()
         lifestage.name = form.name.data
-        lifestage.vss = form.vss.data
         lifestage.duration = form.duration.data
         lifestage.notes = form.notes.data
         lifestage.diel = [] 
         lifestage.taxis = []
+        lifestage.capability = None
+
+        # Capability
+        if form.capability.data:
+            c = db.Capability()
+            c.vss = float(form.vss.data)
+            c.variance = float(form.variance.data)
+            c.swim_turning = form.swim_turning.data
+            c.nonswim_turning = form.nonswim_turning.data
+            c.save()
+            lifestage.capability = c
 
         # Diel
         if form.diel_data.data and len(form.diel_data.data) > 0:
