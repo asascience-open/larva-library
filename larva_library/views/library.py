@@ -71,7 +71,33 @@ def library_json_search():
     entries = [json.loads(js.to_json()) for js in results]
 
     return jsonify({"results" : entries})
-    
+
+@app.route("/library/<ObjectId:library_id>.clone", methods=["GET"])
+@login_required
+def library_clone(library_id):
+
+    entry = db.Library.find_one({'_id': library_id})
+    entry_clone = entry.clone()
+    app.logger.info(entry_clone)
+    # make sure name and user are unique pair
+    entry_clone['user'] = unicode(session['user_email'])
+    name_num = 1
+    name = entry_clone['name']
+    while db.Library.find_one({'name': entry_clone['name'], 'user': entry_clone['user']}) is not None:
+        entry_clone['name'] = unicode(('%s%d') % (name, name_num))
+        name_num += 1
+
+    for lifestage in entry_clone['lifestages']:
+        for diel in lifestage['diel']:
+            app.logger.info(dir(diel))
+            diel.save()
+        for taxis in lifestage['taxis']:
+            taxis.save()
+        lifestage.save()
+
+    entry_clone.save()
+
+    return redirect(url_for('detail_view', library_id=entry_clone._id))
 
 @app.route('/library')
 def list_library():

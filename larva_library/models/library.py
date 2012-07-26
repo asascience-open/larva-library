@@ -2,7 +2,8 @@ from mongokit import Document, DocumentMigration
 from larva_library import db, app
 from wtforms import *
 from datetime import datetime
-import ast
+from copy import deepcopy
+import json
 
 class Diel(Document):
     __collection__= 'diel'
@@ -19,8 +20,10 @@ class Diel(Document):
     def to_data(self):
         data = {}
         data['diel_type'] = self.type
-        data['diel_time'] = self.time.strftime("%H")
-        data['timezone'] = self.time.strftime("%z")
+        if self.time is not None:
+            data['diel_time'] = self.time.strftime("%H")
+            data['timezone'] = self.time.strftime("%z")
+
         data['cycle'] = self.cycle;
         data['plus_or_minus'] = self.plus_or_minus
         data['hours'] = self.hours
@@ -128,6 +131,11 @@ class Library(Document):
                         self[key] = dict[key]
         return self
 
+    def clone(self):
+        clone = deepcopy(self)
+        remove_id(clone)
+        return clone
+
     def validate(self, *args, **kwargs):
         query = {'user': self['user'], 'name': self['name']}
         entry = db.Library.find_one(query)
@@ -144,7 +152,7 @@ class Library(Document):
         _keywords.extend(self.keywords)
         _keywords.extend(self.geo_keywords)
         self._keywords = _keywords
-        
+
 db.register([Library])
 
 # custom field classes
@@ -199,3 +207,18 @@ class LifeStageWizard(Form):
     taxis_max = FloatField("Max", [validators.optional()])
     taxis_grad = FloatField("Sensory Gradient +/-", [validators.optional()])
     taxis_data = HiddenField('taxis_data')
+
+def remove_id(item=None):
+    if item is not None:
+        if isinstance(item, list):
+            for sub in item:
+                remove_id(sub)
+        elif isinstance(item, dict):
+            for key in item.keys():
+                remove_id(item[key])
+
+        if isinstance(item, Document):
+            if item.get('_id') is not None:
+                del item['_id']
+
+    return
