@@ -50,6 +50,11 @@
             </td><td>
                 {{ entry.common_name }}
             </td></tr>
+            <tr><td>
+                Notes:
+            </td><td>
+                {{ entry.notes }}
+            </td></tr>
         </table>
         <table border="1">
             <tr><td>
@@ -131,6 +136,7 @@
         <tr><td>Name</td><td>{{lifestage.name}}</td></tr>
         <tr><td>Vertical Swimming Speed (m/s)</td><td>{{lifestage.vss}}</td></tr>
         <tr><td>Duration (days)</td><td>{{lifestage.duration}}</td></tr>
+        <tr><td>Notes</td><td>{{lifestage.notes}}</td></tr>
         
         <tr><td>Configured Diel:</td><td /></tr>
         {%- for dtry in lifestage.diel %}

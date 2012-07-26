@@ -77,6 +77,7 @@ class LifeStage(Document):
         'duration'  : int,
         'diel'      : [Diel],
         'taxis'     : [Taxis],
+        'notes'     : unicode
     }
 db.register([LifeStage])
 
@@ -98,6 +99,7 @@ class Library(Document):
         'user'          : unicode,
         'created'       : datetime,
         'status'        : unicode,
+        'notes'         : unicode,
         '_keywords'     : [unicode]
     }
     
@@ -157,12 +159,14 @@ class BaseWizard(Form):
     geo = HiddenField('Geo');
     geo_keywords = TagListField('Geographical Keywords')
     status = SelectField('Permissions', choices=[('private', 'Private'), ('public', 'Public'), ('review', 'Under Review')])
+    notes = TextAreaField('Notes')
 
 ## forms for library wizard (editing and creating)
 class LifeStageWizard(Form):
     name = TextField('Name')
     vss = FloatField('Vertical Swimming Speed (m/s)')
     duration = IntegerField('Lifestage Duration (days)')
+    notes = TextAreaField('Notes')
 
     diel = BooleanField('Diel')
     taxis = BooleanField('Sensory')

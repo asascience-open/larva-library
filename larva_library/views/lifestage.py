@@ -89,6 +89,7 @@ def edit_lifestage(library_id, lifestage_id):
         lifestage.name = form.name.data
         lifestage.vss = form.vss.data
         lifestage.duration = form.duration.data
+        lifestage.notes = form.notes.data
         lifestage.diel = [] 
         lifestage.taxis = []
 
@@ -177,6 +178,7 @@ def lifestage_wizard(library_id):
         lifestage.name = form.name.data
         lifestage.vss = form.vss.data
         lifestage.duration = form.duration.data
+        lifestage.notes = form.notes.data
         lifestage.diel = [] 
         lifestage.taxis = []
 
