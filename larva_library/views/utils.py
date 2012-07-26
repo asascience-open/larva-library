@@ -1,8 +1,11 @@
 from functools import wraps
 from flask import request, redirect, url_for, session, flash
-from larva_library import db
+from larva_library import db, app
+from larva_library.models.library import Library, LifeStage, Diel, Taxis, remove_id
 from bson import ObjectId
+from mongokit import Document
 import datetime
+import json
 
 def login_required(f):
     @wraps(f)
@@ -81,9 +84,50 @@ def retrieve_all(email=None, owned=False):
 
     return entry_list
 
+def copy_value(key, item=None):
+    if isinstance(item, list) and len(item):
+        n_list = [ copy_value(key, sub) for sub in item ]
+        return n_list
+    elif isinstance(item, dict):
+        # check for a recognized key
+        doc = dict()
+        # app.logger.info("key is %s" % key)
+        if key == "library":
+            doc = Library()
+            doc['collection'] = Library.__collection__
+        elif str(key) == "lifestages":
+            doc = LifeStage()
+            doc['collection'] = LifeStage.__collection__
+            app.logger.info(doc.__dict__)
+        elif str(key) == "diel":
+            doc = Diel()
+            doc['collection'] = Diel.__collection__
+        elif str(key) == "taxis":
+            doc = Taxis()
+            doc['collection'] = Taxis.__collection__
+        for skey in item.keys():
+            doc[skey] = copy_value(skey, item[skey])
+
+        if isinstance(doc, Document) and not isinstance(doc, Library):
+            remove_id(doc)
+            doc.save()
+
+        return doc
+
+    return item
+
 def import_entry(entry, user):
-    lib_entry = db.Library.from_json(entry)
-    app.logger.info(lib_entry)
+    entry_dict = json.loads(entry)
+
+    n_lib = copy_value("library", entry_dict)
+
+    # remove ids
+    remove_id(n_lib)
+    del n_lib['_keywords']
+    n_lib['user'] = user
+    n_lib.build_keywords()
+    db.libraries.ensure_index('_keywords')
+    n_lib.save()
     # assume entry is a dict
     # if not isinstance(entry, dict):
     #     # not a dict, exit
