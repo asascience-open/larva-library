@@ -137,6 +137,7 @@ def import_library():
                 lifestages.append(ls)
 
             js['lifestages'] = []
+            js['user'] = session['user_email']
             js.pop("_id")
             new = db.Library.from_json(json.dumps(js))
             new.lifestages = lifestages
