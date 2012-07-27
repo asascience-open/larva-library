@@ -1,15 +1,14 @@
 from flask import url_for, request, redirect, flash, render_template, session, send_file, make_response, jsonify
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch, Library, BaseWizard
-from utils import retrieve_by_terms, retrieve_all, login_required
+from utils import retrieve_by_terms, retrieve_all, login_required, import_entry
 from shapely.wkt import loads
 from shapely.geometry import Point
+from dateutil.parser import parse
 import json
 import datetime
 import time
 import pytz
-from dateutil.parser import parse
-
 
 @app.route('/library/<ObjectId:library_id>', methods=['GET'])
 def detail_view(library_id):
@@ -72,7 +71,48 @@ def library_json_search():
     entries = [json.loads(js.to_json()) for js in results]
 
     return jsonify({"results" : entries})
-    
+
+@app.route("/library/<ObjectId:library_id>.clone", methods=["GET"])
+@login_required
+def library_clone(library_id):
+
+    entry = db.Library.find_one({'_id': library_id})
+    entry_clone = entry.clone()
+    # make sure name and user are unique pair
+    entry_clone['user'] = unicode(session['user_email'])
+    entry_clone.ensure_unique()
+    entry_clone.build_keywords()
+    db.libraries.reindex()
+    entry_clone.save()
+
+    return redirect(url_for('detail_view', library_id=entry_clone._id))
+
+@app.route('/library/import', methods=['GET','POST'])
+@login_required
+def import_library():
+    # using login decorator
+    if request.method == 'POST':
+        jsonfile_storage = request.files.get('jsonfile')
+        stringStream = jsonfile_storage.stream
+        stringStream.seek(0)
+        entry_dict = json.loads(stringStream.getvalue().replace("\'", "\""))
+        entry_list = entry_dict.values()[0] # assume the higher level dictionary only has one key
+
+        if entry_list is None:
+            flash("invalid file uploaded, please try again")
+            return redirect(url_for('index'))
+
+        # iterate through the entry list and add the entry; note: entries at this point are strings, we need to pass in dicts
+        for entry in entry_list:
+            # app.logger.info(json.dumps(entry))
+            import_entry(json.dumps(entry), session['user_email'])
+
+        # rebuild the indexes
+        db.libraries.reindex()
+
+        return redirect(url_for('index'))
+
+    return render_template('library_import.html')
 
 @app.route('/library')
 def list_library():
@@ -119,15 +159,18 @@ def library_wizard():
         lib['user'] = session['user_email'] # Safe because of @login_required decorator
 
         entry.copy_from_dictionary(lib)
-        entry.build_keywords()
-        db.libraries.ensure_index('_keywords')
-        entry.save()
+        if entry.local_validate() is False:
+            flash('%s already exists, please change the name to submit' % (entry.name))
+        else:
+            entry.build_keywords()
+            db.libraries.ensure_index('_keywords')
+            entry.save()
 
-        # rebuild the indexes
-        db.libraries.reindex()
-            
-        flash('Created library entry %s' % str(entry._id))
-        return redirect(url_for('detail_view', library_id=entry._id ))
+            # rebuild the indexes
+            db.libraries.reindex()
+                
+            flash('Created library entry %s' % str(entry._id))
+            return redirect(url_for('detail_view', library_id=entry._id ))
 
     return render_template('library_wizard.html', form=form)
 
