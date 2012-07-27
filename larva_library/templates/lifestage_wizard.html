@@ -346,6 +346,9 @@
                     }
                 }
             }).validate({
+                onkeyup: false,
+                onfocusout: false,
+                onsubmit: true,
                 errorPlacement: function(error, element) { 
                     if ( element.is(':radio') || element.is(':checkbox') ) {
                         error.insertBefore( element.next() );
@@ -363,7 +366,7 @@
                                 return $("#capability").is(":checked");
                             }
                         },
-                         number: {
+                        number: {
                             depends: function() {
                                 return $("#capability").is(":checked");
                             }
@@ -375,7 +378,7 @@
                                 return $("#capability").is(":checked");
                             }
                         },
-                         number: {
+                        number: {
                             depends: function() {
                                 return $("#capability").is(":checked");
                             }
@@ -405,7 +408,7 @@
                                 return $("#diel").is(":checked") && $("#sun").is(":checked");
                             }
                         },
-                         number: {
+                        number: {
                             depends: function() {
                                 return $("#diel").is(":checked") && $("#sun").is(":checked");
                             }
@@ -417,10 +420,13 @@
                                 return $("#diel").is(":checked");
                             }
                         },
-                         number: {
+                        number: {
                             depends: function() {
                                 return $("#diel").is(":checked");
                             }
+                        },
+                        max: function() {
+                            return $("#diel_max_depth").val();
                         }
                     },
                     diel_max_depth: {
@@ -429,10 +435,13 @@
                                 return $("#diel").is(":checked");
                             }
                         },
-                         number: {
+                        number: {
                             depends: function() {
                                 return $("#diel").is(":checked");
                             }
+                        },
+                        min: function() {
+                            return $("#diel_min_depth").val();
                         }
                     },
                     taxis_min: {
@@ -441,10 +450,13 @@
                                 return $("#taxis").is(":checked");
                             }
                         },
-                         number: {
+                        number: {
                             depends: function() {
                                 return $("#taxis").is(":checked");
                             }
+                        },
+                        max: function() {
+                            return $("#taxis_max").val();
                         }
                     },
                     taxis_max: {
@@ -453,10 +465,13 @@
                                 return $("#taxis").is(":checked");
                             }
                         },
-                         number: {
+                        number: {
                             depends: function() {
                                 return $("#taxis").is(":checked");
                             }
+                        },
+                        min: function() {
+                            return $("#taxis_min").val();
                         }
                     },
                     taxis_grad: {
@@ -465,11 +480,12 @@
                                 return $("#taxis").is(":checked");
                             }
                         },
-                         number: {
+                        number: {
                             depends: function() {
                                 return $("#taxis").is(":checked");
                             }
                         }
+                    },
                     }
                 },
                 messages: {
@@ -481,6 +497,18 @@
                     },
                     duration: {
                         required: "Provide a duration"
+                    },
+                    taxis_max: {
+                        min: "Min must be less than max"
+                    },
+                    taxis_min: {
+                        max: "Max must be more than min"
+                    },
+                    diel_max_depth: {
+                        min: "Min depth must be less than max depth"
+                    },
+                    diel_min_depth: {
+                        max: "Max depth must be more than min depth"
                     }
                 }
             });
