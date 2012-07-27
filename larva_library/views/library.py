@@ -1,6 +1,6 @@
 from flask import url_for, request, redirect, flash, render_template, session, send_file, make_response, jsonify
 from larva_library import app, db
-from larva_library.models.library import LibrarySearch, Library
+from larva_library.models.library import LibrarySearch, Library, BaseWizard
 from utils import retrieve_by_terms, retrieve_all, login_required, import_entry
 from shapely.wkt import loads
 from shapely.geometry import Point
@@ -81,15 +81,8 @@ def library_clone(library_id):
     # make sure name and user are unique pair
     entry_clone['user'] = unicode(session['user_email'])
     entry_clone.ensure_unique()
-
-    for lifestage in entry_clone['lifestages']:
-        for diel in lifestage['diel']:
-            app.logger.info(dir(diel))
-            diel.save()
-        for taxis in lifestage['taxis']:
-            taxis.save()
-        lifestage.save()
-
+    entry_clone.build_keywords()
+    db.libraries.reindex()
     entry_clone.save()
 
     return redirect(url_for('detail_view', library_id=entry_clone._id))
@@ -166,8 +159,8 @@ def library_wizard():
         lib['user'] = session['user_email'] # Safe because of @login_required decorator
 
         entry.copy_from_dictionary(lib)
-        if entry.ensure_unique() is False:
-            flash('%s already exists, please change the name to submit') % (entry['name'])
+        if entry.local_validate() is False:
+            flash('%s already exists, please change the name to submit' % (entry.name))
         else:
             entry.build_keywords()
             db.libraries.ensure_index('_keywords')

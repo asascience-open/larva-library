@@ -1,1 +1,1 @@
-from larva_library.views import index, user, session, library, wizard, utils, lifestage
+from larva_library.views import index, user, session, library, utils, lifestage

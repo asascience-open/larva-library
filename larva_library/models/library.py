@@ -36,6 +36,13 @@ class Diel(Document):
         remove_id(clone)
         return clone
 
+    def save(self):
+        # verify that we don't hav any excess items not in structure
+        excess_list = [ key for key in self.keys() if key not in self.structure.keys() ]
+        for item in excess_list:
+            del self[item]
+        super(Diel, self).save()
+
     def __str__(self):
         if self.type == "cycles":
             return "At %s %s%i hour(s): Move towards %dm -> %dm" % (self.cycle, self.plus_or_minus, self.hours, self.min, self.max)
@@ -72,6 +79,13 @@ class Taxis(Document):
         clone = deepcopy(self)
         remove_id(clone)
         return clone
+
+    def save(self):
+        # verify that we don't hav any excess items not in structure
+        excess_list = [ key for key in self.keys() if key not in self.structure.keys() ]
+        for item in excess_list:
+            del self[item]
+        super(Taxis, self).save()
 
     def __str__(self):
         return "%s (%s): %d -> %d +/- %d" % (self.variable, self.units, self.min, self.max, self.gradient)
@@ -175,6 +189,11 @@ class Library(Document):
         # save lifestages
         for lifestage in self.lifestages:
             lifestage.save()
+        # verify that we don't hav any excess items not in structure
+        excess_list = [ key for key in self.keys() if key not in self.structure.keys() ]
+        for item in excess_list:
+            del self[item]
+
         super(Library, self).save()
 
     def local_validate(self):
