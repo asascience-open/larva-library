@@ -1,7 +1,6 @@
 from functools import wraps
 from flask import request, redirect, url_for, session, flash
 from larva_library import db, app
-from larva_library.models.library import remove_id
 import datetime
 import json
 
@@ -81,45 +80,3 @@ def retrieve_all(email=None, owned=False):
                 entry_list.append(entry)
 
     return entry_list
-
-def copy_value(key, item=None):
-    if isinstance(item, list) and len(item):
-        n_list = [ copy_value(key, sub) for sub in item ]
-        return n_list
-    elif isinstance(item, dict):
-        # check for a recognized key
-        doc = dict()
-        # app.logger.info("key is %s" % key)
-        if key == "library":
-            doc = db.Library()
-        elif str(key) == "lifestages":
-            doc = db.LifeStage()
-        elif str(key) == "diel":
-            doc = db.Diel()
-        elif str(key) == "taxis":
-            doc = db.Taxis()
-        for skey in item.keys():
-            doc[skey] = copy_value(skey, item[skey])
-
-        return doc
-
-    return item
-
-def import_entry(entry, user):
-    entry_dict = json.loads(entry)
-
-    n_lib = copy_value("library", entry_dict)
-
-    # remove ids
-    remove_id(n_lib)
-    n_lib['user'] = user
-    n_lib['created'] = datetime.datetime.utcnow()
-    # make sure we have a unique user/name pait
-    n_lib.build_keywords()
-    n_lib.ensure_unique()
-    # rebuild keywords again to make sure they are correct
-    n_lib.build_keywords()
-    db.libraries.ensure_index('_keywords')
-    n_lib.save()
-
-    return

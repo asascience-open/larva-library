@@ -23,7 +23,8 @@ def clone_lifestage(library_id, lifestage_id):
     for lifestage in entry.lifestages:
         if lifestage['_id'] == lifestage_id:
             # Populate newlifestage
-            newlifestage = lifestage.clone()
+            newlifestage = lifestage.__deepcopy__()
+            newlifestage.pop("_id")
             newlifestage.save()
             # Add copy of 'lifestage' to library.lifestages
             entry.lifestages.append(newlifestage)
@@ -42,7 +43,7 @@ def delete_lifestage(library_id, lifestage_id):
     # Be sure the logged in user has access to this library item
     entry = db.Library.find_one({'_id': library_id})
     if entry.user != session['user_email']:
-        flash("Not authorized to clone lifestages for this library item")
+        flash("Not authorized to delete lifestages for this library item")
 
     entry = db.Library.find_one({'_id': library_id})
     for lifestage in entry.lifestages:

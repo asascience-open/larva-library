@@ -44,18 +44,6 @@ class Diel(Document):
         data['max'] = self.max
         return data
 
-    def clone(self):
-        clone = deepcopy(self)
-        remove_id(clone)
-        return clone
-
-    def save(self):
-        # verify that we don't hav any excess items not in structure
-        excess_list = [ key for key in self.keys() if key not in self.structure.keys() and key != '_id' ]
-        for item in excess_list:
-            del self[item]
-        super(Diel, self).save()
-
     def __str__(self):
         if self.type == "cycles":
             return "At %s %s%i hour(s): Move towards %dm -> %dm" % (self.cycle, self.plus_or_minus, self.hours, self.min, self.max)
@@ -88,18 +76,6 @@ class Taxis(Document):
         data['gradient'] = self.gradient
         return data
 
-    def clone(self):
-        clone = deepcopy(self)
-        remove_id(clone)
-        return clone
-
-    def save(self):
-        # verify that we don't hav any excess items not in structure
-        excess_list = [ key for key in self.keys() if key not in self.structure.keys() and key != '_id' ]
-        for item in excess_list:
-            del self[item]
-        super(Taxis, self).save()
-
     def __str__(self):
         return "%s (%s): %d -> %d +/- %d" % (self.variable, self.units, self.min, self.max, self.gradient)
 db.register([Taxis])
@@ -116,37 +92,6 @@ class LifeStage(Document):
         'capability': Capability,
         'notes'     : unicode
     }
-
-    def copy_from_dictionary(self,dict_cp=None):
-        if dict_cp is None:
-            return self
-        else:
-            for key in dict_cp.keys():
-                if key in self.structure.keys():
-                    if isinstance(dict_cp[key], str):
-                        self[key] = unicode(dict_cp[key])
-                    else:
-                        self[key] = dict_cp[key]
-            return self
-
-    def save(self):
-        # sav sub-documents
-        for diel in self.diel:
-            diel.save()
-        for taxis in self.taxis:
-            taxis.save()
-        # verify that we don't hav any excess items not in structure
-        excess_list = [ key for key in self.keys() if key not in self.structure.keys() and key != '_id' ]
-        for item in excess_list:
-            del self[item]
-
-        super(LifeStage, self).save()
-
-    def clone(self):
-        clone = deepcopy(self)
-        remove_id(clone)
-        return clone
-
 db.register([LifeStage])
 
 class Library(Document):
@@ -171,23 +116,6 @@ class Library(Document):
         '_keywords'     : [unicode]
     }
     
-    def __getstate__(self):
-        result = self
-        return result
-    
-    def copy_from_dictionary(self,dict=None):
-        if dict is not None:
-            for key in dict.keys():
-                if key in self.structure.keys():
-                    if isinstance(dict[key], str):
-                        self[key] = unicode(dict[key])
-                    elif isinstance(dict[key], list):
-                        if len(dict[key]) > 0 and isinstance(dict[key][0], str):
-                            dict[key] = [ item.encode('utf_8') for item in dict[key] ]
-                    else:
-                        self[key] = dict[key]
-        return self
-
     def ensure_unique(self):
         name = self['name']
         name_num = 1
@@ -195,29 +123,19 @@ class Library(Document):
             self['name'] = ("%s%d") % (name, name_num)
             name_num += 1
 
-    def clone(self):
-        clone = deepcopy(self)
-        remove_id(clone)
-        return clone
-
-    def save(self):
-        # save lifestages
-        for lifestage in self.lifestages:
-            lifestage.save()
-        # verify that we don't hav any excess items not in structure
-        excess_list = [ key for key in self.keys() if key not in self.structure.keys() and key != '_id' ]
-        for item in excess_list:
-            del self[item]
-
-        super(Library, self).save()
-
     def local_validate(self):
         # this will not call the super.validate()
         # this version is necessary because super.validate() requires that the document has an _id, which isn't necessarily true
         query = {'user': self['user'], 'name': self['name']}
         entry = db.Library.find_one(query)
         if entry is not None:
-            return False
+            try:
+                if entry['_id'] != self['_id']:
+                    return False
+            except:
+                return False
+        return True
+
 
     def validate(self, *args, **kwargs):
         query = {'user': self['user'], 'name': self['name']}
@@ -298,18 +216,3 @@ class LifeStageWizard(Form):
     taxis_max = FloatField("Max", [validators.optional()])
     taxis_grad = FloatField("Sensory Gradient +/-", [validators.optional()])
     taxis_data = HiddenField('taxis_data')
-
-def remove_id(item=None):
-    if item is not None:
-        if isinstance(item, list):
-            for sub in item:
-                remove_id(sub)
-        elif isinstance(item, dict):
-            for key in item.keys():
-                remove_id(item[key])
-
-        if isinstance(item, Document):
-            if item.get('_id') is not None:
-                del item['_id']
-
-    return

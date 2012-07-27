@@ -1,9 +1,9 @@
 from flask import url_for, request, redirect, flash, render_template, session, send_file, make_response, jsonify
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch, Library, BaseWizard
-from utils import retrieve_by_terms, retrieve_all, login_required, import_entry
+from utils import retrieve_by_terms, retrieve_all, login_required
 from shapely.wkt import loads
-from shapely.geometry import Point
+from shapely.geometry import Point, Polygon
 from dateutil.parser import parse
 import json
 import datetime
@@ -72,20 +72,6 @@ def library_json_search():
 
     return jsonify({"results" : entries})
 
-@app.route("/library/<ObjectId:library_id>.clone", methods=["GET"])
-@login_required
-def library_clone(library_id):
-
-    entry = db.Library.find_one({'_id': library_id})
-    entry_clone = entry.clone()
-    # make sure name and user are unique pair
-    entry_clone['user'] = unicode(session['user_email'])
-    entry_clone.ensure_unique()
-    entry_clone.build_keywords()
-    db.libraries.reindex()
-    entry_clone.save()
-
-    return redirect(url_for('detail_view', library_id=entry_clone._id))
 
 @app.route('/library/import', methods=['GET','POST'])
 @login_required
@@ -95,22 +81,76 @@ def import_library():
         jsonfile_storage = request.files.get('jsonfile')
         stringStream = jsonfile_storage.stream
         stringStream.seek(0)
-        entry_dict = json.loads(stringStream.getvalue().replace("\'", "\""))
-        entry_list = entry_dict.values()[0] # assume the higher level dictionary only has one key
+        try:
+            entry_dict = json.loads(stringStream.getvalue())
+            entry_list = entry_dict.values()[0] # assume the higher level dictionary only has one key
+        except:
+            flash("Must upload a valid library file, please try again")
+            return render_template('library_import.html')
 
         if entry_list is None:
-            flash("invalid file uploaded, please try again")
-            return redirect(url_for('index'))
+            flash("Must upload a valid library file, please try again")
+            return render_template('library_import.html')
 
-        # iterate through the entry list and add the entry; note: entries at this point are strings, we need to pass in dicts
         for entry in entry_list:
-            # app.logger.info(json.dumps(entry))
-            import_entry(json.dumps(entry), session['user_email'])
 
-        # rebuild the indexes
-        db.libraries.reindex()
+            js = json.loads(json.dumps(entry))
 
-        return redirect(url_for('index'))
+            lifestages = []
+
+            for lifestage in js.get('lifestages', []):
+
+                diels = []
+                taxis = []
+                capability = None
+
+                for diel in lifestage.get('diel', []):
+                    diel.pop("_id")
+                    d = db.Diel.from_json(json.dumps(diel))
+                    d.save()
+                    diels.append(d)
+                lifestage['diel'] = []
+
+                for tx in lifestage.get('taxis', []):
+                    tx.pop("_id")
+                    t = db.Taxis.from_json(json.dumps(tx))
+                    t.save()
+                    taxis.append(t)
+                lifestage['taxis'] = []
+
+                c = lifestage.get('capability', None)
+                if c is not None:
+                    c.pop("_id")
+                    capability = db.Capability.from_json(json.dumps(c))
+                    capability.save()
+                    lifestage['capability'] = None
+
+                lifestage.pop("_id")
+                lifestage.pop("_collection")
+                lifestage.pop("_database")
+
+                ls = db.LifeStage.from_json(json.dumps(lifestage))
+                ls.diel = diels
+                ls.taxis = taxis
+                ls.capability = capability
+                ls.save()
+                lifestages.append(ls)
+
+            js['lifestages'] = []
+            js.pop("_id")
+            new = db.Library.from_json(json.dumps(js))
+            new.lifestages = lifestages
+            new.save()
+
+        if len(entry_list) == 1:
+            flash("Library item imported")
+            return redirect(url_for('detail_view', library_id=new._id ))
+        elif len(entry_list > 1):
+            flash("%s library items imported" % len(entry_list))
+            return redirect(url_for('index'))
+        else:
+            flash("No library items found in import, please try again")
+            return redirect(url_for('index'))
 
     return render_template('library_import.html')
 
@@ -140,27 +180,26 @@ def library_wizard():
         if request.form.get('geo') is not None:
             pts = []
             geo_string = request.form.get('geo')
+            geo_string = geo_string.lstrip('(').rstrip(')')
             point_array = geo_string.split('),(')
             try:
                 for pt in filter(None, point_array):
-                    pt = pt.split(",")
-                    pts.append((float(pt[1].replace(")","")),float(pt[0].replace("(",""))))
-                # Create the polygon
+                    pt = pt.split(',')
+                    pts.append((float(pt[1].strip()),float(pt[0].strip())))
+                # Create the polygonts)
                 geo_positional_data = unicode(Polygon(pts).wkt)
             except:
-                app.logger.warning("Could not build Polygon from: %s" % point_array)
+                app.logger.warning("Could not build Polygon from: %s" % pts)
 
         entry = db.Library()
         form.populate_obj(entry)
 
-        lib = dict()
-        lib['geometry'] = geo_positional_data
-        lib['created'] = datetime.datetime.utcnow()
-        lib['user'] = session['user_email'] # Safe because of @login_required decorator
+        entry['geometry'] = geo_positional_data
+        entry['created'] = datetime.datetime.utcnow()
+        entry['user'] = session['user_email'] # Safe because of @login_required decorator
 
-        entry.copy_from_dictionary(lib)
         if entry.local_validate() is False:
-            flash('%s already exists, please change the name to submit' % (entry.name))
+            flash('Library with a name: %s and creator: %s already exists, please change the name to create' % (entry.name, entry.user))
         else:
             entry.build_keywords()
             db.libraries.ensure_index('_keywords')
@@ -201,31 +240,33 @@ def library_edit_wizard(library_id):
         if request.form.get('geo') is not None:
             pts = []
             geo_string = request.form.get('geo')
+            geo_string = geo_string.lstrip('(').rstrip(')')
             point_array = geo_string.split('),(')
             try:
                 for pt in filter(None, point_array):
-                    pt = pt.split(",")
-                    pts.append((float(pt[1].replace(")","")),float(pt[0].replace("(",""))))
+                    pt = pt.split(',')
+                    pts.append((float(pt[1].strip()),float(pt[0].strip())))
                 # Create the polygon
                 geo_positional_data = unicode(Polygon(pts).wkt)
             except:
-                app.logger.warning("Could not build Polygon from: %s" % point_array)
+                app.logger.warning("Could not build Polygon from: %s" % pts)
 
-        lib = dict()
-        lib['geometry'] = geo_positional_data
-        lib['created'] = datetime.datetime.utcnow()
-        lib['user'] = session['user_email'] # Safe because of @login_required decorator
+        entry['geometry'] = geo_positional_data
+        entry['created'] = datetime.datetime.utcnow()
+        entry['user'] = session['user_email'] # Safe because of @login_required decorator
 
-        entry.copy_from_dictionary(lib)
-        entry.build_keywords()
-        db.libraries.ensure_index('_keywords')
-        entry.save()
+        if entry.local_validate() is False:
+            flash('Library with a name: %s and creator: %s already exists, please change the name to edit' % (entry.name, entry.user))
+        else:
+            entry.build_keywords()
+            db.libraries.ensure_index('_keywords')
+            entry.save()
 
-        # rebuild the indexes
-        db.libraries.reindex()
-            
-        flash('Edited library entry %s' % str(entry._id))
-        return redirect(url_for('detail_view', library_id=entry._id ))
+            # rebuild the indexes
+            db.libraries.reindex()
+                
+            flash('Edited library entry %s' % str(entry._id))
+            return redirect(url_for('detail_view', library_id=entry._id ))
     else:
         marker_positions = []
         # load the polygon

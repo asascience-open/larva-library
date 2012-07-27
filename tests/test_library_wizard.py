@@ -31,6 +31,7 @@ class LibraryWizardTestCase(unittest.TestCase):
         # create x_entries
         x_entries = random.randint(20,30)
         genus_set = ['genusA','genusB','genusC','genusD']
+
         for i in range(0,x_entries):
             # setup our entries
             lib_name = 'name'+str(i)
@@ -45,6 +46,7 @@ class LibraryWizardTestCase(unittest.TestCase):
             geo_keywords = random_keyword_string(random.randint(5,7))
 
             status = 'public'
+            notes = 'hello'
 
             geo = "(51.8279954420803, -150.12374999999997),(37.150279946816994, -142.74093749999997),(53.32335189700258, -136.41281249999997),(53.7412635745501, -143.79562499999997),(51.8279954420803, -150.12374999999997)"
 
@@ -57,7 +59,8 @@ class LibraryWizardTestCase(unittest.TestCase):
                     keywords=keywords,
                     geo_keywords=geo_keywords,
                     geo=geo,
-                    status=status
+                    status=status,
+                    notes=notes
                 ), follow_redirects=True)
 
             assert 'Created library entry' in rv.data
