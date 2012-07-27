@@ -135,7 +135,7 @@ class Library(Document):
         _keywords.extend(self.common_name.split(' '))
         _keywords.extend(self.keywords)
         _keywords.extend(self.geo_keywords)
-        self._keywords = _keywords
+        self._keywords = list(set(keywords))
         
 db.register([Library])
 
