@@ -22,13 +22,40 @@ def clone_lifestage(library_id, lifestage_id):
     # Iterate over lifestages and match on the ID
     for lifestage in entry.lifestages:
         if lifestage['_id'] == lifestage_id:
+
+            diels = []
+            taxis = []
+            capability = None
+
+            for diel in lifestage.diel:
+                diel.pop("_id")
+                did = db.diel.insert(diel)
+                newdid = db.Diel.find_one({'_id': did})
+                diels.append(newdid)
+
+            for tx in lifestage.taxis:  
+                tx.pop("_id")
+                tid = db.taxis.insert(tx)
+                taxis.append(db.Taxis.find_one({'_id': tid}))
+
+            c = lifestage.get('capability', None)
+            if c is not None:
+                c.pop("_id")
+                cid = db.capability.insert(c)
+                capability = db.Capability.find_one({'_id': cid})
+
             # Populate newlifestage
-            newlifestage = lifestage.__deepcopy__()
-            newlifestage.pop("_id")
+            newlifestage = db.LifeStage()
+            newlifestage.name = lifestage.name
+            newlifestage.duration = lifestage.duration
+            newlifestage.notes = lifestage.notes
+            newlifestage.diel = diels
+            newlifestage.taxis = taxis
+            newlifestage.capability = capability
             newlifestage.save()
-            # Add copy of 'lifestage' to library.lifestages
             entry.lifestages.append(newlifestage)
             entry.save()
+            
             flash('Cloned LifeStage')
             return redirect(url_for('detail_view', library_id=entry._id ))
 
@@ -48,8 +75,23 @@ def delete_lifestage(library_id, lifestage_id):
     entry = db.Library.find_one({'_id': library_id})
     for lifestage in entry.lifestages:
         if lifestage['_id'] == lifestage_id:
+
             entry.lifestages.remove(lifestage)
             entry.save()
+
+            for d in lifestage.diel:
+                d.delete()
+            for t in lifestage.taxis:
+                t.delete()
+
+            if lifestage.capability is not None:
+                lifestage.capability.delete()
+
+            lifestage.capability = None
+            lifestage.diel = []
+            lifestage.taxis = []
+            lifestage.delete()
+
             flash('Deleted LifeStage')
             return redirect(url_for('detail_view', library_id=entry._id ))
 
