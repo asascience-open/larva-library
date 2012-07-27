@@ -50,6 +50,11 @@
             </td><td>
                 {{ entry.common_name }}
             </td></tr>
+            <tr><td>
+                Notes:
+            </td><td>
+                {{ entry.notes }}
+            </td></tr>
         </table>
         <table border="1">
             <tr><td>
@@ -129,18 +134,43 @@
 
     <table border="1">
         <tr><td>Name</td><td>{{lifestage.name}}</td></tr>
-        <tr><td>Vertical Swimming Speed (m/s)</td><td>{{lifestage.vss}}</td></tr>
         <tr><td>Duration (days)</td><td>{{lifestage.duration}}</td></tr>
+        <tr><td>Notes</td><td>{{lifestage.notes}}</td></tr>
         
-        <tr><td>Configured Diel:</td><td /></tr>
+        <tr><td>Configured Diel:</td>
+        {% if lifestage.diel[0] is defined %}
+            <td />
+        {% else %}
+            <td>None</td>
+        {% endif %}
+        </tr>
         {%- for dtry in lifestage.diel %}
             <tr><td>{{dtry}}</td><td /></tr>
         {% endfor %}
         
-        <tr><td>Configured Taxis:</td><td /></tr>
+        <tr><td>Configured Taxis:</td>
+        {% if lifestage.taxis[0] is defined %}
+            <td />
+        {% else %}
+            <td>None</td>
+        {% endif %}
+        </tr>
         {%- for ztry in lifestage.taxis %}
             <tr><td>{{ztry}}</td><td /></tr>
         {% endfor %}
+
+
+        <tr><td>Configured Capabilities:</td>
+        {% if lifestage.capability.vss is defined %}
+            <td /></tr>
+            <tr><td>Vertical Swimming Speed (m/s)</td><td>{{lifestage.capability.vss}}</td></tr>
+            <tr><td>Swimming Speed Variance (m/s)</td><td>{{lifestage.capability.variance}}</td></tr>
+            <tr><td>Swimming turning direction</td><td>{{lifestage.capability.swim_turning}}</td></tr>
+            <tr><td>Non-swimming turning direction</td><td>{{lifestage.capability.nonswim_turning}}</td></tr>
+        {% else %}
+            <td>None</td></tr>
+        {% endif %}
+
     </table>
     <br />
 {%- endmacro %}

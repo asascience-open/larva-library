@@ -5,6 +5,17 @@ from datetime import datetime
 from copy import deepcopy
 import json
 
+class Capability(Document):
+    __collection__ = 'capability'
+    use_dot_notation = True
+    structure = {
+        'vss'               : float,
+        'variance'          : float,
+        'swim_turning'      : unicode,
+        'nonswim_turning'   : unicode
+    }
+db.register([Capability])
+
 class Diel(Document):
     __collection__= 'diel'
     use_dot_notation = True
@@ -20,16 +31,18 @@ class Diel(Document):
     def to_data(self):
         data = {}
         data['diel_type'] = self.type
-        if self.time is not None:
-            data['diel_time'] = self.time.strftime("%H")
+        try:
+            data['diel_time'] = self.time.strftime("%H") + ":00"
             data['timezone'] = self.time.strftime("%z")
-
+        except:
+            data['diel_time'] = None
+            data['timezone'] = None
         data['cycle'] = self.cycle;
         data['plus_or_minus'] = self.plus_or_minus
         data['hours'] = self.hours
         data['min'] = self.min
         data['max'] = self.max
-        return str(data)
+        return data
 
     def clone(self):
         clone = deepcopy(self)
@@ -73,7 +86,7 @@ class Taxis(Document):
         data['min'] = self.min
         data['max'] = self.max
         data['gradient'] = self.gradient
-        return str(data)
+        return data
 
     def clone(self):
         clone = deepcopy(self)
@@ -97,10 +110,11 @@ class LifeStage(Document):
     use_autorefs = True
     structure = {
         'name'      : unicode,
-        'vss'       : float,
         'duration'  : int,
         'diel'      : [Diel],
         'taxis'     : [Taxis],
+        'capability': Capability,
+        'notes'     : unicode
     }
 
     def copy_from_dictionary(self,dict_cp=None):
@@ -153,6 +167,7 @@ class Library(Document):
         'user'          : unicode,
         'created'       : datetime,
         'status'        : unicode,
+        'notes'         : unicode,
         '_keywords'     : [unicode]
     }
     
@@ -219,8 +234,7 @@ class Library(Document):
         _keywords.extend(self.common_name.split(' '))
         _keywords.extend(self.keywords)
         _keywords.extend(self.geo_keywords)
-        self._keywords = _keywords
-
+        self._keywords = list(set(keywords))
 db.register([Library])
 
 # custom field classes
@@ -254,23 +268,32 @@ class BaseWizard(Form):
     geo = HiddenField('Geo');
     geo_keywords = TagListField('Geographical Keywords')
     status = SelectField('Permissions', choices=[('private', 'Private'), ('public', 'Public'), ('review', 'Under Review')])
+    notes = TextAreaField('Notes')
 
 ## forms for library wizard (editing and creating)
 class LifeStageWizard(Form):
     name = TextField('Name')
-    vss = FloatField('Vertical Swimming Speed (m/s)')
     duration = IntegerField('Lifestage Duration (days)')
+    notes = TextAreaField('Notes')
 
     diel = BooleanField('Diel')
     taxis = BooleanField('Sensory')
+    capability = BooleanField('Capability')
 
+    # Diel
     diel_hours = FloatField("", [validators.optional()])
     diel_min_depth = FloatField("Min", [validators.optional()])
     diel_max_depth = FloatField("Max", [validators.optional()])
     diel_data = HiddenField('diel_data')
 
+    # Capability
+    vss = FloatField('Vertical Swimming Speed (m/s)')
+    variance = FloatField('Swimming Speed Variance (m/s)', default=0)
+    swim_turning = RadioField("", [validators.optional()], choices=[('reverse', 'Reverses swimming direction'), ('random', 'Random selection of swimming direction')])
+    nonswim_turning = RadioField("", [validators.optional()], choices=[('random', 'Random selection of swimming direction'), ('downward', 'Always swim downward'), ('upward', 'Always swim updard')])
 
-    variable = SelectField('Variable', choices=[('sea_water_salinity', 'Salinity (PSU)'), ('sea_water_temperature', 'Temperature (deg C)')])
+    # Taxis
+    variable = SelectField('Variable', [validators.optional()], choices=[('sea_water_salinity', 'Salinity (PSU)'), ('sea_water_temperature', 'Temperature (deg C)')])
     taxis_min = FloatField("Min", [validators.optional()])
     taxis_max = FloatField("Max", [validators.optional()])
     taxis_grad = FloatField("Sensory Gradient +/-", [validators.optional()])

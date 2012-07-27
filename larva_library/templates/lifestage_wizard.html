@@ -12,10 +12,11 @@
         <form name="lifestage" id="lifestage" method="post" action="{{ request.path }}">
             <div class="step unidirectional" id="base_step">
                 {{ render_field(form.name) }}<br />
-                {{ render_field(form.vss) }}<br />
                 {{ render_field(form.duration) }}<br />
+                {{ render_field(form.notes) }}<br />
                 {{ render_field(form.diel) }}<br />
                 {{ render_field(form.taxis) }}<br />
+                {{ render_field(form.capability) }}<br />
             </div>
             <div class="step" id="diel_step">
                 <h2>Diel</h2>
@@ -50,6 +51,7 @@
                 <!-- holds the JSON data for POSTing -->
                 {{ render_field(form.diel_data) }}
             </div>
+            
             <div class="step" id="taxis_step">
                 <h2>Taxis</h2>
 
@@ -75,6 +77,17 @@
                 <!-- holds the JSON data for POSTing -->
                 {{ render_field(form.taxis_data) }}
             </div>
+
+            <div class="step" id="cap_step">
+                <h2>Capability</h2>
+
+                {{ render_field(form.vss) }}<br />
+                {{ render_field(form.variance) }}<br />
+                {{ render_field(form.swim_turning) }}<br />
+                {{ render_field(form.nonswim_turning) }}<br />
+
+            </div>
+
             <div class="submit step" id="review_step">
                 <h2>Review</h2>
                 <ul id="review_list"></ul>
@@ -168,7 +181,6 @@
         function dataToObjects() {
 
             // DIEL
-            alert($("#diel_data").val());
             diel_data = $("#diel_data").val();
             diel_inputs = [];
             if (diel_data != "") {
@@ -249,10 +261,19 @@
             return $("<li>").append($("label[for='" + name + "']").first().text() + ": " + $("input[name='" + name + "']").val());
         }
 
-        function reviewFieldList(title, list) {
+        function areaString(name) {
+            return $("<li>").append($("label[for='" + name + "']").first().text() + ": " + $("textarea[name='" + name + "']").val());
+        }
+
+        function radioString(label, name) {
+            return $("<li>").append(label + ": " + $("input[name='" + name + "']:checked").val());
+        }
+
+        function reviewFieldList(title, checkbox, list) {
             $("#review_list").append("<h3>" + title + "</h3>");
             $("#review_list").append("<ul>");
-            if (list.length > 0) {
+
+            if (($('#' + checkbox).is(':checked')) && (list.length > 0)) {
                 $.each(list, function(i,v) {
                     $("#review_list").append($("<li>").append(v.toString()));
                 });
@@ -266,12 +287,26 @@
             $("#review_list").html("");
             $("#review_list")
                 .append(fieldString('name'))
-                .append(fieldString('vss'))
-                .append(fieldString('duration'));
+                .append(fieldString('duration'))
+                .append(areaString('notes'));
+
             // Diel
-            reviewFieldList("Diel", diel_inputs);
+            reviewFieldList("Diel", "diel", diel_inputs);
+
             // Taxis
-            reviewFieldList("Taxis", taxis_inputs);
+            reviewFieldList("Taxis", "taxis", taxis_inputs);
+
+            // Capability
+            $("#review_list").append("<h3>Capability</h3>");
+            if ($('#capability').is(':checked')) {
+                $("#review_list")
+                    .append(fieldString('vss'))
+                    .append(fieldString('variance'))
+                    .append(radioString('Swimming direction', 'swim_turning'))
+                    .append(radioString('Non-swimming direction', 'nonswim_turning'));
+            } else {
+                $("#review_list").append($("<li>").append("None"));
+            }
         }
 
         $(document).ready(function() {
@@ -281,8 +316,8 @@
             // Wizard
             $("#lifestage").wizard({
                 beforeForward: function( event, state ) {
-                    // Only check on the first step
-                    if (state.stepIndex == 1) {
+                    // Only check on the first step and the capabilities step
+                    if ((state.stepIndex == 1) || (state.stepIndex == 4)) {
                         var inputs = $(this).wizard('state').step.find(':input');
                         return !inputs.length || !!inputs.valid();
                     }
@@ -301,8 +336,12 @@
                         updateList("taxis_list", "taxis_data", taxis_inputs);
                     }
 
-                    // Review step
                     if (state.stepIndex == 3) {
+                        move_or_stay(state, "capability", "cap_step");
+                    }
+
+                    // Review step
+                    if (state.stepIndex == 4) {
                         updateReview();
                     }
                 }
@@ -319,8 +358,42 @@
                         required: true
                     },
                     vss: {
-                        required: true,
-                        number: true
+                        required: {
+                            depends: function() {
+                                return $("#capability").is(":checked");
+                            }
+                        },
+                         number: {
+                            depends: function() {
+                                return $("#capability").is(":checked");
+                            }
+                        }
+                    },
+                    variance: {
+                        required: {
+                            depends: function() {
+                                return $("#capability").is(":checked");
+                            }
+                        },
+                         number: {
+                            depends: function() {
+                                return $("#capability").is(":checked");
+                            }
+                        }
+                    },
+                    swim_turning: {
+                        required: {
+                            depends: function() {
+                                return $("#capability").is(":checked");
+                            }
+                        }
+                    },
+                    nonswim_turning: {
+                        required: {
+                            depends: function() {
+                                return $("#capability").is(":checked");
+                            }
+                        }
                     },
                     duration: {
                         required: true,
@@ -331,72 +404,72 @@
                             depends: function() {
                                 return $("#diel").is(":checked") && $("#sun").is(":checked");
                             }
-                         },
+                        },
                          number: {
                             depends: function() {
                                 return $("#diel").is(":checked") && $("#sun").is(":checked");
                             }
-                         }
+                        }
                     },
                     diel_min_depth: {
                         required: {
                             depends: function() {
                                 return $("#diel").is(":checked");
                             }
-                         },
+                        },
                          number: {
                             depends: function() {
                                 return $("#diel").is(":checked");
                             }
-                         }
+                        }
                     },
                     diel_max_depth: {
                         required: {
                             depends: function() {
                                 return $("#diel").is(":checked");
                             }
-                         },
+                        },
                          number: {
                             depends: function() {
                                 return $("#diel").is(":checked");
                             }
-                         }
+                        }
                     },
                     taxis_min: {
                         required: {
                             depends: function() {
                                 return $("#taxis").is(":checked");
                             }
-                         },
+                        },
                          number: {
                             depends: function() {
                                 return $("#taxis").is(":checked");
                             }
-                         }
+                        }
                     },
                     taxis_max: {
                         required: {
                             depends: function() {
                                 return $("#taxis").is(":checked");
                             }
-                         },
+                        },
                          number: {
                             depends: function() {
                                 return $("#taxis").is(":checked");
                             }
-                         }
+                        }
                     },
                     taxis_grad: {
                         required: {
                             depends: function() {
                                 return $("#taxis").is(":checked");
                             }
-                         },
+                        },
                          number: {
                             depends: function() {
                                 return $("#taxis").is(":checked");
                             }
-                         }
+                        }
                     }
                 },
                 messages: {
