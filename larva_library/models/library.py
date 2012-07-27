@@ -101,6 +101,19 @@ class LifeStage(Document):
                         self[key] = dict_cp[key]
             return self
 
+    def save(self):
+        # sav sub-documents
+        for diel in self.diel:
+            diel.save()
+        for taxis in self.taxis:
+            taxis.save()
+        # verify that we don't hav any excess items not in structure
+        excess_list = [ key for key in self.keys() if key not in self.structure.keys() ]
+        for item in excess_list:
+            del self[item]
+
+        super(LifeStage, self).save()
+
     def clone(self):
         clone = deepcopy(self)
         remove_id(clone)
@@ -146,10 +159,31 @@ class Library(Document):
                         self[key] = dict[key]
         return self
 
+    def ensure_unique(self):
+        name = self['name']
+        name_num = 1
+        while self.local_validate() is False:
+            self['name'] = ("%s%d") % (name, name_num)
+            name_num += 1
+
     def clone(self):
         clone = deepcopy(self)
         remove_id(clone)
         return clone
+
+    def save(self):
+        # save lifestages
+        for lifestage in self.lifestages:
+            lifestage.save()
+        super(Library, self).save()
+
+    def local_validate(self):
+        # this will not call the super.validate()
+        # this version is necessary because super.validate() requires that the document has an _id, which isn't necessarily true
+        query = {'user': self['user'], 'name': self['name']}
+        entry = db.Library.find_one(query)
+        if entry is not None:
+            return False
 
     def validate(self, *args, **kwargs):
         query = {'user': self['user'], 'name': self['name']}

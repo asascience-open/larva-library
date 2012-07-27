@@ -1,9 +1,7 @@
 from functools import wraps
 from flask import request, redirect, url_for, session, flash
 from larva_library import db, app
-from larva_library.models.library import Library, LifeStage, Diel, Taxis, remove_id
-from bson import ObjectId
-from mongokit import Document
+from larva_library.models.library import remove_id
 import datetime
 import json
 
@@ -93,24 +91,15 @@ def copy_value(key, item=None):
         doc = dict()
         # app.logger.info("key is %s" % key)
         if key == "library":
-            doc = Library()
-            doc['collection'] = Library.__collection__
+            doc = db.Library()
         elif str(key) == "lifestages":
-            doc = LifeStage()
-            doc['collection'] = LifeStage.__collection__
-            app.logger.info(doc.__dict__)
+            doc = db.LifeStage()
         elif str(key) == "diel":
-            doc = Diel()
-            doc['collection'] = Diel.__collection__
+            doc = db.Diel()
         elif str(key) == "taxis":
-            doc = Taxis()
-            doc['collection'] = Taxis.__collection__
+            doc = db.Taxis()
         for skey in item.keys():
             doc[skey] = copy_value(skey, item[skey])
-
-        if isinstance(doc, Document) and not isinstance(doc, Library):
-            remove_id(doc)
-            doc.save()
 
         return doc
 
@@ -123,70 +112,14 @@ def import_entry(entry, user):
 
     # remove ids
     remove_id(n_lib)
-    del n_lib['_keywords']
     n_lib['user'] = user
+    n_lib['created'] = datetime.datetime.utcnow()
+    # make sure we have a unique user/name pait
+    n_lib.build_keywords()
+    n_lib.ensure_unique()
+    # rebuild keywords again to make sure they are correct
     n_lib.build_keywords()
     db.libraries.ensure_index('_keywords')
     n_lib.save()
-    # assume entry is a dict
-    # if not isinstance(entry, dict):
-    #     # not a dict, exit
-    #     flash('entry received was not a dictionary')
-    #     return
-
-    # # clean up before inserting; remove generated keys, change user, _status and created to reflect new ownership
-    # if '_id' in entry:
-    #     del entry['_id']
-
-    # if '_keywords' in entry:
-    #     del entry['_keywords']
-
-    # entry['user'] = unicode(user)
-    # entry['status'] = unicode('private')
-    # entry['created'] = datetime.datetime.utcnow()
-
-    # # need to pull out the life stages and re-add them as well
-    # lifestages = list()
-    # if 'lifestages' in entry:
-    #     lifestages = entry['lifestages']
-    #     del entry['lifestages']
-
-    # lib_entry = db.Library()
-    # lib_entry.copy_from_dictionary(entry)
-    # lib_entry.build_keywords()
-
-    # # validate that the entry isn't already in the db
-    # name = lib_entry['name']
-    # name_id = 0
-    # while lib_entry.validate() is False:
-    #     name_id += 1
-    #     lib_entry['name'] = unicode(str(name) + str(name_id))
-
-    # db.libraries.ensure_index('_keywords')
-
-    # # import each of the lifestages and append them to the entry
-    # for lifestage in lifestages:
-    #     import_lifestage(lifestage, lib_entry)
-
-    # # save the entry
-    # lib_entry.save()
-
-    return
-
-def import_lifestage(lifestage, entry):
-    # make sure both are not none:
-    if lifestage is None or entry is None or not isinstance(lifestage, dict):
-        return
-
-    # clean up the lifestage:
-    if '_id' in lifestage:
-        del lifestage['_id']
-
-    # create the lifestage in the database, then append it to the entry
-    lib_lifestage = db.LifeStage()
-    lib_lifestage.copy_from_dictionary(lifestage)
-    # save and append
-    lib_lifestage.save()
-    entry.lifestages.append(lib_lifestage)
 
     return

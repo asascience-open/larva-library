@@ -78,14 +78,9 @@ def library_clone(library_id):
 
     entry = db.Library.find_one({'_id': library_id})
     entry_clone = entry.clone()
-    app.logger.info(entry_clone)
     # make sure name and user are unique pair
     entry_clone['user'] = unicode(session['user_email'])
-    name_num = 1
-    name = entry_clone['name']
-    while db.Library.find_one({'name': entry_clone['name'], 'user': entry_clone['user']}) is not None:
-        entry_clone['name'] = unicode(('%s%d') % (name, name_num))
-        name_num += 1
+    entry_clone.ensure_unique()
 
     for lifestage in entry_clone['lifestages']:
         for diel in lifestage['diel']:
@@ -108,7 +103,6 @@ def import_library():
         stringStream = jsonfile_storage.stream
         stringStream.seek(0)
         entry_dict = json.loads(stringStream.getvalue().replace("\'", "\""))
-        app.logger.info(entry_dict)
         entry_list = entry_dict.values()[0] # assume the higher level dictionary only has one key
 
         if entry_list is None:
@@ -172,15 +166,18 @@ def library_wizard():
         lib['user'] = session['user_email'] # Safe because of @login_required decorator
 
         entry.copy_from_dictionary(lib)
-        entry.build_keywords()
-        db.libraries.ensure_index('_keywords')
-        entry.save()
+        if entry.ensure_unique() is False:
+            flash('%s already exists, please change the name to submit') % (entry['name'])
+        else:
+            entry.build_keywords()
+            db.libraries.ensure_index('_keywords')
+            entry.save()
 
-        # rebuild the indexes
-        db.libraries.reindex()
-            
-        flash('Created library entry %s' % str(entry._id))
-        return redirect(url_for('detail_view', library_id=entry._id ))
+            # rebuild the indexes
+            db.libraries.reindex()
+                
+            flash('Created library entry %s' % str(entry._id))
+            return redirect(url_for('detail_view', library_id=entry._id ))
 
     return render_template('library_wizard.html', form=form)
 
