@@ -51,7 +51,7 @@ class Diel(Document):
 
     def save(self):
         # verify that we don't hav any excess items not in structure
-        excess_list = [ key for key in self.keys() if key not in self.structure.keys() and not '_id' ]
+        excess_list = [ key for key in self.keys() if key not in self.structure.keys() and key != '_id' ]
         for item in excess_list:
             del self[item]
         super(Diel, self).save()
@@ -95,7 +95,7 @@ class Taxis(Document):
 
     def save(self):
         # verify that we don't hav any excess items not in structure
-        excess_list = [ key for key in self.keys() if key not in self.structure.keys() and not '_id' ]
+        excess_list = [ key for key in self.keys() if key not in self.structure.keys() and key != '_id' ]
         for item in excess_list:
             del self[item]
         super(Taxis, self).save()
@@ -136,7 +136,7 @@ class LifeStage(Document):
         for taxis in self.taxis:
             taxis.save()
         # verify that we don't hav any excess items not in structure
-        excess_list = [ key for key in self.keys() if key not in self.structure.keys() and not '_id' ]
+        excess_list = [ key for key in self.keys() if key not in self.structure.keys() and key != '_id' ]
         for item in excess_list:
             del self[item]
 
@@ -205,7 +205,7 @@ class Library(Document):
         for lifestage in self.lifestages:
             lifestage.save()
         # verify that we don't hav any excess items not in structure
-        excess_list = [ key for key in self.keys() if key not in self.structure.keys() and not '_id' ]
+        excess_list = [ key for key in self.keys() if key not in self.structure.keys() and key != '_id' ]
         for item in excess_list:
             del self[item]
 
