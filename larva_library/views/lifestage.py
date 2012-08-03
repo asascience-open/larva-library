@@ -219,10 +219,12 @@ def edit_lifestage(library_id, lifestage_id):
             taxis.append(tx.to_data())
         form.taxis_data.data = json.dumps(taxis)
 
-        form.vss.data = lifestage.capability.vss
-        form.variance.data = lifestage.capability.variance
-        form.swim_turning.data = lifestage.capability.swim_turning
-        form.nonswim_turning.data = lifestage.capability.nonswim_turning
+        if lifestage.capability:
+            form.vss.data = lifestage.capability.vss
+            form.variance.data = lifestage.capability.variance
+            form.swim_turning.data = lifestage.capability.swim_turning
+            form.nonswim_turning.data = lifestage.capability.nonswim_turning
+
         form.linear.data = isinstance(lifestage.linear_a, float) and isinstance(lifestage.linear_b, float)
 
     return render_template('lifestage_wizard.html', form=form)
