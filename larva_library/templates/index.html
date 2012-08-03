@@ -21,7 +21,12 @@
     <!-- Library -->
     {% if session.get('user_email') %}
         <p><a href="{{url_for('library_wizard')}}">Create new library entry</a></p>
-        <p><a href="{{url_for('import_library')}}">Import Library</a></p>
+        <p>Import library item: 
+            <form method='post' enctype='multipart/form-data' action="{{ url_for('import_library') }}" >
+                <input type="file" name="jsonfile" />
+                <input type="submit" value="upload" />
+            </form>
+        </p>
     {% else %}
         <p>Please login to create new library entries</p>
     {% endif %}

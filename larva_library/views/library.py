@@ -86,11 +86,11 @@ def import_library():
             entry_list = entry_dict.values()[0] # assume the higher level dictionary only has one key
         except:
             flash("Must upload a valid library file, please try again")
-            return render_template('library_import.html')
+            return redirect(url_for('index'))
 
         if entry_list is None:
             flash("Must upload a valid library file, please try again")
-            return render_template('library_import.html')
+            return redirect(url_for('index'))
 
         for entry in entry_list:
 
@@ -153,7 +153,7 @@ def import_library():
             flash("No library items found in import, please try again")
             return redirect(url_for('index'))
 
-    return render_template('library_import.html')
+    return redirect(url_for('index'))
 
 @app.route('/library')
 def list_library():
