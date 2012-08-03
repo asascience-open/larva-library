@@ -12,6 +12,19 @@
   {% endif %}
 {% endmacro %}
 
+{% macro render_check(field) %}
+  {{ field(**kwargs)|safe }}
+  {% if field.label is defined %}
+    {{ field.label }}
+  {% endif %}
+  {% if field.errors %}
+    <ul class=errors>
+    {% for error in field.errors %}
+      <li>{{ error }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endmacro %}
 
 {% macro time_listings() -%}
     <select id="times" name="times">

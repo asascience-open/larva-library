@@ -87,6 +87,8 @@ class LifeStage(Document):
     structure = {
         'name'      : unicode,
         'duration'  : int,
+        'linear_a'  : float,
+        'linear_b'  : float,
         'diel'      : [Diel],
         'taxis'     : [Taxis],
         'capability': Capability,
@@ -196,6 +198,9 @@ class BaseWizard(Form):
 class LifeStageWizard(Form):
     name = TextField('Name')
     duration = IntegerField('Lifestage Duration (days)')
+    linear = BooleanField("")
+    linear_a = FloatField("A", [validators.optional()])
+    linear_b = FloatField("B", [validators.optional()])
     notes = TextAreaField('Notes')
 
     diel = BooleanField('Diel')

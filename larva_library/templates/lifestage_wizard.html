@@ -1,4 +1,4 @@
-{% from "macros.html" import render_field, time_listings, timezones %}
+{% from "macros.html" import render_field, render_check, time_listings, timezones %}
 {% extends "layout.html" %}
 
 {% block css %}
@@ -12,11 +12,20 @@
         <form name="lifestage" id="lifestage" method="post" action="{{ request.path }}">
             <div class="step unidirectional" id="base_step">
                 {{ render_field(form.name) }}<br />
+
+                <h3>Duration / Growth</h3>
                 {{ render_field(form.duration) }}<br />
+
+                {{ render_check(form.linear) }} Use temperature to determine lifstage changes<br />
+                See explanation here: LINK<br />
+                {{ render_field(form.linear_a) }}
+                {{ render_field(form.linear_b) }}<br />
+                <br />
+
                 {{ render_field(form.notes) }}<br />
-                {{ render_field(form.diel) }}<br />
-                {{ render_field(form.taxis) }}<br />
-                {{ render_field(form.capability) }}<br />
+                {{ render_check(form.diel) }}<br />
+                {{ render_check(form.taxis) }}<br />
+                {{ render_check(form.capability) }}<br />
             </div>
             <div class="step" id="diel_step">
                 <h2>Diel</h2>
@@ -287,8 +296,17 @@
             $("#review_list").html("");
             $("#review_list")
                 .append(fieldString('name'))
-                .append(fieldString('duration'))
-                .append(areaString('notes'));
+                .append(fieldString('duration'));
+
+            if ($('#linear').is(':checked')) {           
+                $("#review_list")
+                    .append(fieldString('linear_a'))
+                    .append(fieldString('linear_b'));
+            } else {
+                $("#review_list").append($("<li>").append("Growth not determined by temperature"));
+            }
+
+            $("#review_list").append(areaString('notes'));
 
             // Diel
             reviewFieldList("Diel", "diel", diel_inputs);
@@ -401,6 +419,30 @@
                     duration: {
                         required: true,
                         number: true
+                    },
+                    linear_a: {
+                        required: {
+                            depends: function() {
+                                return $("#linear").is(":checked");
+                            }
+                        },
+                        number: {
+                            depends: function() {
+                                return $("#linear").is(":checked");
+                            }
+                        }
+                    },
+                    linear_b: {
+                        required: {
+                            depends: function() {
+                                return $("#linear").is(":checked");
+                            }
+                        },
+                        number: {
+                            depends: function() {
+                                return $("#linear").is(":checked");
+                            }
+                        }
                     },
                     diel_hours: {
                         required: {

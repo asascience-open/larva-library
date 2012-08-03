@@ -49,6 +49,8 @@ def clone_lifestage(library_id, lifestage_id):
             newlifestage.name = lifestage.name
             newlifestage.duration = lifestage.duration
             newlifestage.notes = lifestage.notes
+            newlifestage.linear_a = lifestage.linear_a
+            newlifestage.linear_b = lifestage.linear_b
             newlifestage.diel = diels
             newlifestage.taxis = taxis
             newlifestage.capability = capability
@@ -57,7 +59,7 @@ def clone_lifestage(library_id, lifestage_id):
             entry.save()
             
             flash('Cloned LifeStage')
-            return redirect(url_for('detail_view', library_id=entry._id ))
+            return redirect(url_for('detail_view', library_id=entry._id ))  
 
     flash('Could not clone LifeStage')
     return redirect(url_for('detail_view', library_id=entry._id ))
@@ -132,6 +134,12 @@ def edit_lifestage(library_id, lifestage_id):
         lifestage.name = form.name.data
         lifestage.duration = form.duration.data
         lifestage.notes = form.notes.data
+        if form.linear.data:
+            if form.linear_a.data:
+                lifestage.linear_a = float(form.linear_a.data)
+            if form.linear_b.data:
+                lifestage.linear_b = float(form.linear_b.data)
+
         lifestage.diel = [] 
         lifestage.taxis = []
         lifestage.capability = None
@@ -215,6 +223,7 @@ def edit_lifestage(library_id, lifestage_id):
         form.variance.data = lifestage.capability.variance
         form.swim_turning.data = lifestage.capability.swim_turning
         form.nonswim_turning.data = lifestage.capability.nonswim_turning
+        form.linear.data = isinstance(lifestage.linear_a, float) and isinstance(lifestage.linear_b, float)
 
     return render_template('lifestage_wizard.html', form=form)
 
@@ -236,6 +245,10 @@ def lifestage_wizard(library_id):
         lifestage.name = form.name.data
         lifestage.duration = form.duration.data
         lifestage.notes = form.notes.data
+        if form.linear.data:
+            lifestage.linear_a = float(form.linear_a.data)
+            lifestage.linear_b = float(form.linear_b.data)
+
         lifestage.diel = [] 
         lifestage.taxis = []
         lifestage.capability = None

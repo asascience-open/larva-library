@@ -135,6 +135,14 @@
     <table border="1">
         <tr><td>Name</td><td>{{lifestage.name}}</td></tr>
         <tr><td>Duration (days)</td><td>{{lifestage.duration}}</td></tr>
+
+        {% if lifestage.linear_a is number and lifestage.linear_b is number %}
+            <tr><td>Linear A</td><td>{{lifestage.linear_a}}</td></tr>
+            <tr><td>Linear B</td><td>{{lifestage.linear_b}}</td></tr>
+        {% else %}
+            <tr><td>Growth not determined by temperature</td><td /></tr>
+        {% endif %}
+
         <tr><td>Notes</td><td>{{lifestage.notes}}</td></tr>
         
         <tr><td>Configured Diel:</td>
