@@ -1,6 +1,6 @@
 from flask import url_for, request, redirect, flash, render_template, session
 from larva_library import app, db
-from larva_library.views.utils import login_required
+from larva_library.views.utils import login_required, authorize_entry_write
 from larva_library.models.lifestage import LifeStageWizard
 import datetime
 import json
@@ -14,92 +14,48 @@ def clone_lifestage(library_id, lifestage_id):
 
     # Be sure the logged in user has access to this library item
     entry = db.Library.find_one({'_id': library_id})
-    if entry.user != session['user_email']:
+    user = db.User.find_one({ 'email' : session.get("user_email")})
+    if not authorize_entry_write(entry=entry, user=user):
         flash("Not authorized to clone lifestages for this library item")
-
-    entry = db.Library.find_one({'_id': library_id})
-
-    # Iterate over lifestages and match on the ID
-    for lifestage in entry.lifestages:
-        if lifestage['_id'] == lifestage_id:
-
-            diels = []
-            taxis = []
-            capability = None
-
-            for diel in lifestage.diel:
-                diel.pop("_id")
-                did = db.diel.insert(diel)
-                newdid = db.Diel.find_one({'_id': did})
-                diels.append(newdid)
-
-            for tx in lifestage.taxis:  
-                tx.pop("_id")
-                tid = db.taxis.insert(tx)
-                taxis.append(db.Taxis.find_one({'_id': tid}))
-
-            c = lifestage.get('capability', None)
-            if c is not None:
-                c.pop("_id")
-                cid = db.capability.insert(c)
-                capability = db.Capability.find_one({'_id': cid})
-
-            # Populate newlifestage
-            newlifestage = db.LifeStage()
-            newlifestage.name = lifestage.name
-            newlifestage.duration = lifestage.duration
-            newlifestage.notes = lifestage.notes
-            newlifestage.linear_a = lifestage.linear_a
-            newlifestage.linear_b = lifestage.linear_b
-            newlifestage.diel = diels
-            newlifestage.taxis = taxis
-            newlifestage.capability = capability
-            newlifestage.save()
-            entry.lifestages.append(newlifestage)
-            entry.save()
-            
-            flash('Cloned LifeStage')
-            return redirect(url_for('detail_view', library_id=entry._id ))  
-
-    flash('Could not clone LifeStage')
-    return redirect(url_for('detail_view', library_id=entry._id ))
-
+        return redirect(url_for('detail_view', library_id=entry._id ))
+    else:   
+        lifestage = db.LifeStage.find_one({'_id': lifestage_id})
+        newlifestage = lifestage.clone()
+        newlifestage.save()
+        entry.lifestages.append(newlifestage)
+        entry.save()
+        flash('Cloned LifeStage')
+        return redirect(url_for('detail_view', library_id=entry._id ))
 
 @app.route('/library/<ObjectId:library_id>/lifestages/<ObjectId:lifestage_id>/delete', methods=['GET'])
 @login_required
 def delete_lifestage(library_id, lifestage_id):
 
-    # Be sure the logged in user has access to this library item
     entry = db.Library.find_one({'_id': library_id})
-    if entry.user != session['user_email']:
+    user = db.User.find_one({ 'email' : session.get("user_email")})
+    if not authorize_entry_write(entry=entry, user=user):
         flash("Not authorized to delete lifestages for this library item")
+        return redirect(url_for('detail_view', library_id=entry._id ))
+    else:
+        lifestage = db.LifeStage.find_one({'_id': lifestage_id})
+        entry.lifestages.remove(lifestage)
+        entry.save()
 
-    entry = db.Library.find_one({'_id': library_id})
-    for lifestage in entry.lifestages:
-        if lifestage['_id'] == lifestage_id:
+        for d in lifestage.diel:
+            d.delete()
+        for t in lifestage.taxis:
+            t.delete()
 
-            entry.lifestages.remove(lifestage)
-            entry.save()
+        if lifestage.capability is not None:
+            lifestage.capability.delete()
 
-            for d in lifestage.diel:
-                d.delete()
-            for t in lifestage.taxis:
-                t.delete()
+        lifestage.capability = None
+        lifestage.diel = []
+        lifestage.taxis = []
+        lifestage.delete()
 
-            if lifestage.capability is not None:
-                lifestage.capability.delete()
-
-            lifestage.capability = None
-            lifestage.diel = []
-            lifestage.taxis = []
-            lifestage.delete()
-
-            flash('Deleted LifeStage')
-            return redirect(url_for('detail_view', library_id=entry._id ))
-
-    flash('Could not delete LifeStage')
-    return redirect(url_for('detail_view', library_id=entry._id ))
-
+        flash('Deleted LifeStage')
+        return redirect(url_for('detail_view', library_id=entry._id ))
 
 @app.route('/library/<ObjectId:library_id>/lifestages/<ObjectId:lifestage_id>/edit', methods=['GET','POST'])
 @login_required
@@ -234,10 +190,12 @@ def edit_lifestage(library_id, lifestage_id):
 @login_required
 def lifestage_wizard(library_id):
 
-    # Be sure the logged in user has access to this library item
     entry = db.Library.find_one({'_id': library_id})
-    if entry.user != session['user_email']:
+    user = db.User.find_one({ 'email' : session.get("user_email")})
+    if not authorize_entry_write(entry=entry, user=user):
         flash("Not authorized to add lifestages to this library item")
+        return redirect(url_for('detail_view', library_id=entry._id ))
+
 
     form = LifeStageWizard(request.form)
 

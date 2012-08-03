@@ -19,6 +19,41 @@ class LifeStage(Document):
         'capability': Capability,
         'notes'     : unicode
     }
+
+    def clone(self):
+        diels = []
+        taxis = []
+        capability = None
+
+        for diel in self.diel:
+            diel.pop("_id")
+            did = db.diel.insert(diel)
+            newdid = db.Diel.find_one({'_id': did})
+            diels.append(newdid)
+
+        for tx in self.taxis:  
+            tx.pop("_id")
+            tid = db.taxis.insert(tx)
+            taxis.append(db.Taxis.find_one({'_id': tid}))
+
+        c = self.get('capability', None)
+        if c is not None:
+            c.pop("_id")
+            cid = db.capability.insert(c)
+            capability = db.Capability.find_one({'_id': cid})
+
+        # Populate newlifestage
+        newlifestage = db.LifeStage()
+        newlifestage.name = self.name
+        newlifestage.duration = self.duration
+        newlifestage.notes = self.notes
+        newlifestage.linear_a = self.linear_a
+        newlifestage.linear_b = self.linear_b
+        newlifestage.diel = diels
+        newlifestage.taxis = taxis
+        newlifestage.capability = capability
+        return newlifestage
+
 db.register([LifeStage])
 
 class LifeStageWizard(Form):

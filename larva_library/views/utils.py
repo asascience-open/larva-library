@@ -39,6 +39,16 @@ def str_to_num(string):
         except:
             return string
 
+def authorize_entry_write(entry=None, user=None):
+    if entry is None:
+        return False
+
+    if user is not None:
+        if entry.user == user.email or user.admin:
+            return True
+            
+    return False
+
 def authorize_entry(entry=None, user=None):
     if entry is None:
         return False
