@@ -93,7 +93,7 @@
                 $('#geo').val(poly.getPath().getArray());
             });
 
-            {% if request.path == '/library/wizard' %}
+            {% if request.path == '/library/wizard' or form.markers|length < 1 %}
                 var isClosed = false;
 
                 google.maps.event.addListener(poly, 'click', function (clickEvent) {
