@@ -42,7 +42,7 @@ def str_to_num(string):
 def authorize_entry(entry=None, user=None):
     if entry is None:
         return False
-    if entry.status == Library.STATUS_PUBLIC:
+    if entry.status == Library.STATUS_PUBLIC or entry.status == Library.STATUS_DEPREC:
         return True
     if user is not None:
         if entry.user == user.email or user.admin:

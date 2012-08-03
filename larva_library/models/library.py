@@ -118,9 +118,10 @@ class Library(Document):
         '_keywords'     : [unicode]
     }
     
-    STATUS_PUBLIC = "public"
-    STATUS_REVIEW = "review"
+    STATUS_PUBLIC  = "public"
+    STATUS_REVIEW  = "review"
     STATUS_PRIVATE = "private"
+    STATUS_DEPREC  = "deprecated"
 
     def ensure_unique(self):
         name = self['name']
@@ -191,7 +192,7 @@ class BaseWizard(Form):
     keywords = TagListField('Keywords')
     geo = HiddenField('Geo');
     geo_keywords = TagListField('Geographical Keywords')
-    status = SelectField('Permissions', choices=[(Library.STATUS_PRIVATE, 'Private'), (Library.STATUS_PUBLIC, 'Public'), (Library.STATUS_REVIEW, 'Under Review')])
+    status = SelectField('Permissions', choices=[(Library.STATUS_PRIVATE, 'Private'), (Library.STATUS_PUBLIC, 'Public'), (Library.STATUS_REVIEW, 'Under Review'), (Library.STATUS_DEPREC, "Deprecated")])
     notes = TextAreaField('Notes')
 
 ## forms for library wizard (editing and creating)
