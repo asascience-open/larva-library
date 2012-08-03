@@ -47,9 +47,13 @@ def library_search():
 
     form = LibrarySearch(request.form)
 
+    user = session.get('user_email', None)
+    if user is not None:
+        libraries = list(db.Library.find({'user':user}))
+
     if form.search_keywords.data is None or form.search_keywords.data == '':
         flash('Please enter a search term')
-        return render_template('index.html', form=form)
+        return render_template('index.html', form=form, libraries=libraries)
 
     # Build query; first look for entries that belong to user, then look for entries that are marked public
     keywords = form.search_keywords.data
@@ -57,7 +61,7 @@ def library_search():
 
     if len(entries) == 0:
         flash("Searching for '%s' returned 0 results" % keywords)
-        return render_template('index.html', form=form)
+        return render_template('index.html', form=form, libraries=libraries)
 
     return render_template('library_list.html', libraries=entries)
 
@@ -155,7 +159,7 @@ def import_library():
 
     return redirect(url_for('index'))
 
-@app.route('/library')
+@app.route('/library', methods=['GET'])
 def list_library():
     # retrieve entries marked as public and that belong to the user
     entry_list = list()
