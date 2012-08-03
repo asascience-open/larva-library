@@ -1,5 +1,6 @@
 from flask.ext.mongokit import Document
 from larva_library import app, db
+from larva_library.models.library import Library
 
 class User(Document):
     __collection__ = 'users'
@@ -9,7 +10,8 @@ class User(Document):
     structure = {
         'name': unicode,
         'email': unicode,
-        'institution': unicode
+        'institution': unicode,
+        'admin': bool
     }
 
     def __repr__(self):

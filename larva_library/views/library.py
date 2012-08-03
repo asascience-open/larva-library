@@ -1,7 +1,7 @@
 from flask import url_for, request, redirect, flash, render_template, session, send_file, make_response, jsonify
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch, Library, BaseWizard
-from utils import retrieve_by_terms, retrieve_all, login_required
+from utils import login_required, retrieve_by_terms, retrieve_all
 from shapely.wkt import loads
 from shapely.geometry import Point, Polygon
 from dateutil.parser import parse
@@ -47,9 +47,11 @@ def library_search():
 
     form = LibrarySearch(request.form)
 
-    user = session.get('user_email', None)
+    email = session.get('user_email', None)
+    user = db.User.find_one({ 'email' : email })
+
     if user is not None:
-        libraries = list(db.Library.find({'user':user}))
+        libraries = retrieve_all(user=user, only_owned=True)
 
     if form.search_keywords.data is None or form.search_keywords.data == '':
         flash('Please enter a search term')
@@ -57,22 +59,24 @@ def library_search():
 
     # Build query; first look for entries that belong to user, then look for entries that are marked public
     keywords = form.search_keywords.data
-    entries = retrieve_by_terms(keywords, email=session.get('user_email', None), owned=form.user_owned.data)
+    entries = list(retrieve_by_terms(keywords, user=user, only_owned=form.user_owned.data))
 
-    if len(entries) == 0:
+    if len(entries) < 1:
         flash("Searching for '%s' returned 0 results" % keywords)
-        return render_template('index.html', form=form, libraries=libraries)
+        return render_template('index.html', form=form, libraries=entries)
 
-    return render_template('library_list.html', libraries=entries)
+    return render_template('library_list.html', libraries=entries)    
 
 @app.route("/library/search.json", methods=["GET"])
 def library_json_search():
     email = request.args.get("email", None)
     keywords = request.args.get("terms", None)
-    owned = bool(request.args.get("owned", False))
+    only_owned = bool(request.args.get("owned", False))
 
-    results = retrieve_by_terms(keywords, email=email, owned=owned)
-    entries = [json.loads(js.to_json()) for js in results]
+    user = db.User.find_one({ 'email' : email })
+
+    results = retrieve_by_terms(keywords, user=user, only_owned=only_owned)
+    entries = (json.loads(js.to_json()) for js in results)
 
     return jsonify({"results" : entries})
 
@@ -163,15 +167,16 @@ def import_library():
 def list_library():
     # retrieve entries marked as public and that belong to the user
     entry_list = list()
-    user = session.get('user_email', None)
+    email = session.get('user_email', None)
+    user = db.User.find_one({ 'email' : email })
 
-    entry_list = retrieve_all(user)
+    # We should paginate here
+    entries = list(retrieve_all(user=user))
 
-    if len(entry_list) == 0:
+    if len(entries) < 1:
         flash('No entries exist in the library')
 
-    return render_template('library_list.html', libraries=entry_list)
-
+    return render_template('library_list.html', libraries=entries)
 
 @app.route('/library/wizard', methods=['GET','POST'])
 @login_required

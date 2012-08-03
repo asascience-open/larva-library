@@ -3,6 +3,7 @@ from flask import request, redirect, url_for, session, flash
 from larva_library import db, app
 import datetime
 import json
+from larva_library.models.library import Library
 
 def login_required(f):
     @wraps(f)
@@ -11,6 +12,20 @@ def login_required(f):
             session['user_email']
         except KeyError:
             flash('Must be logged in to proceed')
+            return redirect(url_for('index'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def admin_login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        try:
+            assert len(list(db.User.find({'admin': True, 'email': session['user_email']}))) > 0
+        except KeyError:
+            flash('Must be logged in to proceed')
+            return redirect(url_for('index'))
+        except AssertionError:
+            flash('Must be logged in as an adminstrator to proceed')
             return redirect(url_for('index'))
         return f(*args, **kwargs)
     return decorated_function
@@ -24,59 +39,49 @@ def str_to_num(string):
         except:
             return string
 
-def retrieve_public_entries(keywords=None):
-    query = dict()
-    query['status'] = unicode('public')
-    if keywords is not None:
-        query['_keywords'] = keywords
+def authorize_entry(entry=None, user=None):
+    if entry is None:
+        return False
+    if entry.status == Library.STATUS_PUBLIC:
+        return True
+    if user is not None:
+        if entry.user == user.email or user.admin:
+            return True
+    return False
 
-    return db.Library.find(query)
+def authorize_owned(entry=None, user=None):
+    if entry is None:
+        return False
+    if user is not None:
+        if entry.user == user.email:
+            return True
+    return False
 
-def retrieve_entries_for_user(email, keywords=None):
-    query = dict()
-    query['user'] = email
-    if keywords is not None:
-        query['_keywords'] = keywords
+def authorize_list(entries=None, user=None):
+    if entries is None:
+        entries = []
 
-    return db.Library.find(query)
+    return (entry for entry in entries if authorize_entry(entry,user))
 
-def retrieve_by_terms(terms, email=None, owned=False):
-    entry_list = []
+def retrieve_all(user=None, only_owned=None):
+    if only_owned is None:
+        only_owned = False
+    matches = db.Library.find()
+    matches = authorize_list(matches, user)
+    if only_owned and user is not None:
+        return (match for match in matches if authorize_owned(match,user))
+    return matches
 
+def retrieve_by_terms(terms, user=None, only_owned=None):
+    if only_owned is None:
+        only_owned = False
     if terms is None:
-        return entry_list
-
+        return []
     # terms should be a comma deliminated string; remove any trailing commas
     # and split into an array
     keywords = { '$all' : terms.rstrip(',').split(',') }
-
-    if email is not None:
-        email_result = retrieve_entries_for_user(email, keywords=keywords)
-        for result in email_result:
-            entry_list.append(result)
-
-    if owned is False:
-        public_result = retrieve_public_entries(keywords=keywords)
-        for result in public_result:
-            if result not in entry_list:
-                entry_list.append(result)
-
-    return entry_list
-
-def retrieve_all(email=None, owned=False):
-    entry_list = list()
-
-    # retrieve user and public entries; add each entry's json representation
-    if email is not None:
-        entries = retrieve_entries_for_user(email)
-        for entry in entries:
-            entry_list.append(entry)
-
-    #get the master/public list and add it
-    if owned is False:
-        entries = retrieve_public_entries()
-        for entry in entries:
-            if entry not in entry_list:
-                entry_list.append(entry)
-
-    return entry_list
+    matches = db.Library.find({ '_keywords' : keywords })
+    matches = authorize_list(matches, user)
+    if only_owned and user is not None:
+        return (match for match in matches if authorize_owned(match,user))
+    return matches
