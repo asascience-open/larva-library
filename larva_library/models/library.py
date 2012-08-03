@@ -2,7 +2,6 @@ from mongokit import Document, DocumentMigration
 from larva_library import db, app
 from wtforms import *
 from datetime import datetime
-from copy import deepcopy
 import json
 
 class Capability(Document):
