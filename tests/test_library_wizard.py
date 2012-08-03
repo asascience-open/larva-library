@@ -1,7 +1,5 @@
-from larva_library import app
-import unittest
+from tests.flask_mongo import FlaskMongoTestCase
 import random
-
 random.seed()
 
 def random_string(number_of_chars=1):
@@ -18,12 +16,7 @@ def random_keyword_string(number_of_kwrds=1):
         result += rdn_set[random.randint(0,16)] + ','
     return result.rstrip(',')
 
-class LibraryWizardTestCase(unittest.TestCase):
-    def setUp(self):
-        app.config['TESTING'] = True
-        self.app = app.test_client()
-        with self.app.session_transaction() as sess:
-            sess['user_email'] = u'testing@larvalibrary.com'
+class LibraryWizardTestCase(FlaskMongoTestCase):
 
     def test_add_entries(self):
         # add an entry following all redirects

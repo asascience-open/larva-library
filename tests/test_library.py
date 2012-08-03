@@ -1,13 +1,6 @@
-from larva_library import app
-import unittest
+from tests.flask_mongo import FlaskMongoTestCase
 
-class LibraryTestCase(unittest.TestCase):
-
-    def setUp(self):
-        app.config['TESTING'] = True
-        self.app = app.test_client()
-        with self.app.session_transaction() as sess:
-            sess['user_email'] = u'testing@larvalibrary.com'
+class LibraryTestCase(FlaskMongoTestCase):
 
     def test_index(self):
         # make sure we can talk to index
