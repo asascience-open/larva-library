@@ -8,20 +8,26 @@
 </head>
 <body>
     {% block body %}
-        <div class=page>
-            <h1>Larva Library</h1>
-            <ul class=navigation>
+            <div class=login>
                 {% if session['user_email'] %}
-                    <li><a href="{{ url_for('logout') }}">sign out</a></li>
+                    <a href="{{ url_for('logout') }}" style="margin-right:-530px;">sign out</a>
+                    </div>
                 {% else %}
-                    <li><a href="{{ url_for('login_facebook') }}">sign in w/ facebook</a></li>
-                    <li><a href="{{ url_for('login_google') }}">sign in w/ google</a></li>
+                    <a href="{{ url_for('login_google') }}" style="float:right;">
+                        <img src="{{ url_for('.static', filename='images/google.png') }}" />
+                        <p>sign in with google</p></a>
+                    <a href="{{ url_for('login_facebook') }}" style="float:left;">
+                        <img src="{{ url_for('.static', filename='images/facebook.png') }}" />
+                        <p>sign in with facebook</p></a>
+                    </div>
+                    <div class=divider></div>
                 {% endif %}
-            </ul>
             {% for message in get_flashed_messages() %}
                 <div class=flash>{{ message }}</div>
             {% endfor %}
-            {% block page %}{% endblock %}
-        </div>
+            <div class=content>
+                {% block page %}{% endblock %}
+            </div>
     {% endblock %}
+    <div class=footer></div>
 </body>
