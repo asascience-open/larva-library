@@ -1,7 +1,7 @@
 from flask import url_for, request, redirect, flash, render_template, session, send_file, make_response, jsonify
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch, Library, BaseWizard
-from utils import login_required, retrieve_by_terms, retrieve_all
+from utils import login_required, retrieve_by_terms, retrieve_all, remove_mongo_keys
 from shapely.wkt import loads
 from shapely.geometry import Point, Polygon
 from dateutil.parser import parse
@@ -37,7 +37,9 @@ def detail_view(library_id):
 @app.route('/library/<ObjectId:library_id>.json', methods=['GET'])
 def json_view(library_id):
     entry = db.Library.find_one({'_id': library_id})
-    return jsonify({"results" : [json.loads(entry.to_json())] })
+    jsond = json.loads(entry.to_json())
+    remove_mongo_keys(jsond) #destructive method
+    return jsonify({"results" : [jsond] })
 
 @app.route("/library/search", methods=["POST", "GET"])
 def library_search():
@@ -113,14 +115,12 @@ def import_library():
                 capability = None
 
                 for diel in lifestage.get('diel', []):
-                    diel.pop("_id")
                     d = db.Diel.from_json(json.dumps(diel))
                     d.save()
                     diels.append(d)
                 lifestage['diel'] = []
 
                 for tx in lifestage.get('taxis', []):
-                    tx.pop("_id")
                     t = db.Taxis.from_json(json.dumps(tx))
                     t.save()
                     taxis.append(t)
@@ -128,14 +128,9 @@ def import_library():
 
                 c = lifestage.get('capability', None)
                 if c is not None:
-                    c.pop("_id")
                     capability = db.Capability.from_json(json.dumps(c))
                     capability.save()
                     lifestage['capability'] = None
-
-                lifestage.pop("_id")
-                lifestage.pop("_collection")
-                lifestage.pop("_database")
 
                 ls = db.LifeStage.from_json(json.dumps(lifestage))
                 ls.diel = diels
@@ -146,9 +141,9 @@ def import_library():
 
             js['lifestages'] = []
             js['user'] = session['user_email']
-            js.pop("_id")
             new = db.Library.from_json(json.dumps(js))
             new.lifestages = lifestages
+            new.build_keywords()
             new.save()
 
         if len(entry_list) == 1:
