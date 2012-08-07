@@ -21,6 +21,7 @@ def clone_lifestage(library_id, lifestage_id):
     else:   
         lifestage = db.LifeStage.find_one({'_id': lifestage_id})
         newlifestage = lifestage.clone()
+        newlifestage.name = lifestage.name + " (cloned)"
         newlifestage.save()
         entry.lifestages.append(newlifestage)
         entry.save()
