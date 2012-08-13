@@ -23,10 +23,24 @@
                 <br />
 
                 {{ render_field(form.notes) }}<br />
+
+                {{ render_check(form.capability) }}<br />
+                Note: Capabilities are required if implementing a Diel or Sensory behavior<br />
                 {{ render_check(form.diel) }}<br />
                 {{ render_check(form.taxis) }}<br />
-                {{ render_check(form.capability) }}<br />
+                
             </div>
+
+            <div class="step" id="cap_step">
+                <h2>Capability</h2>
+                <div style="margin:15px 0 0 70px;">
+                    {{ render_field(form.vss) }}<br />
+                    {{ render_field(form.variance) }}<br /><br />
+                    {{ render_field(form.swim_turning) }}<br />
+                    {{ render_field(form.nonswim_turning) }}<br />
+                </div>
+            </div>
+
             <div class="step" id="diel_step">
                 <h2>Diel</h2>
                 <div class=margin>
@@ -88,16 +102,6 @@
 
                 <!-- holds the JSON data for POSTing -->
                 {{ render_field(form.taxis_data) }}
-            </div>
-
-            <div class="step" id="cap_step">
-                <h2>Capability</h2>
-                <div style="margin:15px 0 0 70px;">
-                    {{ render_field(form.vss) }}<br />
-                    {{ render_field(form.variance) }}<br /><br />
-                    {{ render_field(form.swim_turning) }}<br />
-                    {{ render_field(form.nonswim_turning) }}<br />
-                </div>
             </div>
 
             <div class="submit step" id="review_step">
@@ -330,27 +334,28 @@
             $("#lifestage").wizard({
                 beforeForward: function( event, state ) {
                     // Only check on the first step and the capabilities step
-                    if ((state.stepIndex == 1) || (state.stepIndex == 4)) {
+                    if ((state.stepIndex == 1) || (state.stepIndex == 2)) {
                         var inputs = $(this).wizard('state').step.find(':input');
                         return !inputs.length || !!inputs.valid();
                     }
                 },
                 afterSelect : function( event, state ) {
 
-                    // Diel step
+                    // Capability step
                     if (state.stepIndex == 1) {
+                        move_or_stay(state, "capability", "cap_step");
+                    }
+
+                    // Diel step
+                    if (state.stepIndex == 2) {
                         move_or_stay(state, "diel", "diel_step");
                         updateList("diel_list", "diel_data", diel_inputs);
                     }
 
                     // Taxis step
-                    if (state.stepIndex == 2) {
+                    if (state.stepIndex == 3) {
                         move_or_stay(state, "taxis", "taxis_step");
                         updateList("taxis_list", "taxis_data", taxis_inputs);
-                    }
-
-                    if (state.stepIndex == 3) {
-                        move_or_stay(state, "capability", "cap_step");
                     }
 
                     // Review step
@@ -576,6 +581,25 @@
                     var max = $("#taxis_max").val();
                     taxis_inputs.push(new TaxisInput(variable, min, max, gradient));
                     updateList("taxis_list", "taxis_data", taxis_inputs);
+                }
+            });
+
+            $("#capability:input").change(function(event) {
+                if (!$(this).is(':checked')) {
+                    $("#diel:input").attr("checked", "");
+                    $("#taxis:input").attr("checked", "");
+                }
+            });
+
+            $("#diel:input").change(function(event) {
+                if ($(this).is(':checked')) {
+                    $("#capability:input").attr("checked", "checked");
+                }
+            });
+
+            $("#taxis:input").change(function(event) {
+                if ($(this).is(':checked')) {
+                    $("#capability:input").attr("checked", "checked");
                 }
             });
         });   
