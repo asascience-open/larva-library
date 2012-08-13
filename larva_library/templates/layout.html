@@ -8,11 +8,12 @@
 </head>
 <body>
     {% block body %}
-            <div class=login>
                 {% if session['user_email'] %}
-                    <a href="{{ url_for('logout') }}" style="margin-right:-530px;">sign out</a>
-                    </div>
+                <div class=logout>
+                    <a href="{{ url_for('logout') }}">sign out</a>
+                </div>
                 {% else %}
+                <div class=login>
                     <a href="{{ url_for('login_google') }}" style="float:right;">
                         <img src="{{ url_for('.static', filename='images/google.png') }}" />
                         <p>sign in with google</p></a>

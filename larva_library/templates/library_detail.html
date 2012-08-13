@@ -25,85 +25,81 @@
     {% if entry %}
 
         {% if session.get('user_email', None) == entry.user %}
+        <div class=edit>
             <a class="edit" href="{{ url_for( 'library_edit_wizard', library_id=entry._id ) }}">edit</a>
+        </div>
         {% endif %}
 
         <!-- show the entry in a table structure -->
-        <table border="1">
-            <tr><td>
+        <table class="detail_table">
+            <tr><td class="label_cell">
                 Name:
-            </td><td>
+            </td><td class="data_cell">
                 {{ entry.name }}
             </td></tr>
-            <tr><td>
+            <tr><td class="label_cell">
                 Genus:
-            </td><td>
+            </td><td class="data_cell">
                 {{ entry.genus }}
             </td></tr>
-            <tr><td>
+            <tr><td class="label_cell">
                 Species:
-            </td><td>
+            </td><td class="data_cell">
                 {{ entry.species }}
             </td></tr>
-            <tr><td>
+            <tr><td class="label_cell">
                 Common Name:
-            </td><td>
+            </td><td class="data_cell">
                 {{ entry.common_name }}
             </td></tr>
-            <tr><td>
+            <tr><td class="label_cell">
                 Notes:
-            </td><td>
+            </td><td class="data_cell">
                 {{ entry.notes }}
             </td></tr>
-        </table>
-        <table border="1">
-            <tr><td>
+            <tr><td class="label_cell">
                 Keywords:
-            </td></tr>
-            <tr>
+            </td><td class="data_cell"><ul>
                 {% for keyword in entry.keywords %}
-                    <td>{{ keyword }}</td>
+                    <li>{{ keyword }}</li>
                 {% endfor %}
-            </tr>
-        </table>
-        <table border="1">
-            <tr><td>
+            </ul></td></tr>
+            <tr><td class="label_cell">
                 Geo-Keywords:
-            </td></tr>
-            <tr>
+            </td><td class="data_cell"><ul>
                 {% for keyword in entry.geo_keywords %}
-                    <td>{{ keyword }}</td>
+                    <li>{{ keyword }}</li>
                 {% endfor %}
-            </tr>
+            </ul></td></tr>
         </table>
-        <table border="1">
+        <table>
             <tr><td>
-                <div id="map_canvas" style="width:400px; height:350px"></div>
+                <div id="map_canvas" style="width:570px;height:350px;border:1px solid #00315C;margin-bottom:20px;"></div>
                 <script type="text/javascript">DisplayMapAndMarkers();</script>
             </td></tr>
         </table>
         
-        <table border="1">
-            <tr><td>
+        <table class="detail_table">
+            <tr><td class="label_cell">
                 Owned By:
-            </td><td>
+            </td><td class="data_cell">
                 {{ entry.user }}
             </td></tr>
-            <tr><td>
+            <tr><td class="label_cell">
                 Created:
-            </td><td>
+            </td><td class="data_cell">
                 {{ entry.created }}
             </td></tr>
-            <tr><td>
+            <tr><td class="label_cell">
                 Permissions:
-            </td><td>
+            </td><td class="data_cell">
                 {{ entry.status }}
             </td></tr>
         </table>
 
-        <table border="1">
+        <table class="detail_table">
             <tr><td>
-                Lifestages
+                <strong>Lifestages</strong>
             </td></tr>
             <tr><td>
                 {% for lifestage in entry.lifestages %}
@@ -124,59 +120,55 @@
 {% macro lifestage_summary(lifestage, library_id) -%}
     <br />
 
-    <table border="1">
-        <tr>
-            <td><a href="{{url_for('clone_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Clone</a></td>
-            <td><a href="{{url_for('edit_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Edit</a></td>
-            <td><a href="{{url_for('delete_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Delete</a></td>
-        </tr>
-    </table>
+    <div class="lifestage_links">
+        <a href="{{url_for('clone_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Clone</a>
+        <a href="{{url_for('edit_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Edit</a>
+        <a href="{{url_for('delete_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Delete</a>
+    </div>
 
-    <table border="1">
-        <tr><td>Name</td><td>{{lifestage.name}}</td></tr>
-        <tr><td>Duration (days)</td><td>{{lifestage.duration}}</td></tr>
-
+    <table class="detail_table">
+        <tr><td class="label_cell">Name:</td><td class="data_cell">{{lifestage.name}}</td></tr>
+        <tr><td class="label_cell">Duration (days):</td><td class="data_cell">{{lifestage.duration}}</td></tr>
         {% if lifestage.linear_a is number and lifestage.linear_b is number %}
-            <tr><td>Linear A</td><td>{{lifestage.linear_a}}</td></tr>
-            <tr><td>Linear B</td><td>{{lifestage.linear_b}}</td></tr>
+            <tr><td class="label_cell">Linear A</td><td class="data_cell">{{lifestage.linear_a}}</td></tr>
+            <tr><td class="label_cell">Linear B</td><td class="data_cell">{{lifestage.linear_b}}</td></tr>
         {% else %}
-            <tr><td>Growth not determined by temperature</td><td /></tr>
+            <tr><td class="label_cell">Growth not determined by temperature</td><td class="data_cell"></td></tr>
         {% endif %}
-
-        <tr><td>Notes</td><td>{{lifestage.notes}}</td></tr>
+        <tr><td class="label_cell">Notes:</td><td class="data_cell">{{lifestage.notes}}</td></tr>
         
-        <tr><td>Configured Diel:</td>
+        <tr><td class="label_cell">Configured Diel:</td>
         {% if lifestage.diel[0] is defined %}
             <td />
         {% else %}
-            <td>None</td>
+            <td class="data_cell">None</td>
         {% endif %}
         </tr>
         {%- for dtry in lifestage.diel %}
-            <tr><td>{{dtry}}</td><td /></tr>
+            <tr><td class="label_cell"></td><td class="data_cell">{{dtry}}</td><td /></tr>
         {% endfor %}
         
-        <tr><td>Configured Taxis:</td>
+        <tr><td class="label_cell">Configured Taxis:</td>
         {% if lifestage.taxis[0] is defined %}
             <td />
         {% else %}
-            <td>None</td>
+            <td class="data_cell">None</td>
         {% endif %}
         </tr>
         {%- for ztry in lifestage.taxis %}
-            <tr><td>{{ztry}}</td><td /></tr>
+            <tr><td class="label_cell"></td><td class="data_cell">{{ztry}}</td><td /></tr>
         {% endfor %}
 
 
-        <tr><td>Configured Capabilities:</td>
+        <tr><td class="label_cell">Configured Capabilities:</td>
         {% if lifestage.capability.vss is defined %}
-            <td /></tr>
-            <tr><td>Vertical Swimming Speed (m/s)</td><td>{{lifestage.capability.vss}}</td></tr>
-            <tr><td>Swimming Speed Variance (m/s)</td><td>{{lifestage.capability.variance}}</td></tr>
-            <tr><td>Swimming turning direction</td><td>{{lifestage.capability.swim_turning}}</td></tr>
-            <tr><td>Non-swimming turning direction</td><td>{{lifestage.capability.nonswim_turning}}</td></tr>
+            </tr>
+            <tr><td class="label_cell"></td><td class="data_cell">Vertical Swimming Speed (m/s):</td><td>{{lifestage.capability.vss}}</td></tr>
+            <tr><td class="label_cell"></td><td class="data_cell">Swimming Speed Variance (m/s):</td><td>{{lifestage.capability.variance}}</td></tr>
+            <tr><td class="label_cell"></td><td class="data_cell">Swimming turning direction:</td><td>{{lifestage.capability.swim_turning}}</td></tr>
+            <tr><td class="label_cell"></td><td class="data_cell">Non-swimming turning direction:</td><td>{{lifestage.capability.nonswim_turning}}</td></tr>
         {% else %}
-            <td>None</td></tr>
+            <td class="data_cell">None</td></tr>
         {% endif %}
 
     </table>

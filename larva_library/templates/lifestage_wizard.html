@@ -29,32 +29,35 @@
             </div>
             <div class="step" id="diel_step">
                 <h2>Diel</h2>
+                <div class=margin>
+                    <input type="radio" name="diel_type" id="specifictime" value="specifictime" />Specific Time
+                    {{ time_listings() }} {{ timezones() }}
 
-                <input type="radio" name="diel_type" id="specifictime" value="specifictime" />Specific Time
-                {{ time_listings() }} {{ timezones() }}
+                    <div style="margin:2px 0 0 32px;font-style:italic;">or</div>
 
+                    <input type="radio" name="diel_type" id="sun" value="cycles" checked="checked" />Sun Cycles
+                    <select id="cycles" name="cycles">
+                        <option value="sunrise" selected="selected">Sunrise</ofption>
+                        <option value="sunset">Sunset</option>
+                    </select>
+                    <input type="radio" name="pmhours" value="+" checked="checked"/> +
+                    <input type="radio" name="pmhours" value="-"/> -
+                    {{ render_field(form.diel_hours) }} hours 
+                    <br />
+                    <br />
+
+                    <table>
+                        <tr><td><label>Desired Depth:</label></td></tr>
+                        <tr><td></td><td>{{ render_field(form.diel_min_depth) }}</td></tr>
+                        <tr><td></td><td>{{ render_field(form.diel_max_depth) }}</td></tr>
+                    </table>
+                    <br />
+
+                    <button type="button" name="diel_add" id="diel_add">Add</button>
+                </div>
                 <br />
-
-                <input type="radio" name="diel_type" id="sun" value="cycles" checked="checked" />Sun Cycles
-                <select id="cycles" name="cycles">
-                    <option value="sunrise" selected="selected">Sunrise</ofption>
-                    <option value="sunset">Sunset</option>
-                </select>
-                <input type="radio" name="pmhours" value="+" checked="checked"/> +
-                <input type="radio" name="pmhours" value="-"/> -
-                {{ render_field(form.diel_hours) }} hours 
-                <br />
-                <br />
-
-                <label>Desired Depth</label>
-                {{ render_field(form.diel_min_depth) }}
-                {{ render_field(form.diel_max_depth) }}
-                <br />
-                <br />
-
-                <button type="button" name="diel_add" id="diel_add">Add</button>
-
                 <h3>Currently configured</h3>
+                <br />
                 <ul id="diel_list"></ul>
 
                 <!-- holds the JSON data for POSTing -->
@@ -63,24 +66,24 @@
             
             <div class="step" id="taxis_step">
                 <h2>Taxis</h2>
+                <div style="margin-left:80px;">
+                    {{ render_field(form.variable) }}
 
-                {{ render_field(form.variable) }}
+                    <br />
+                    <br />
+                    <table>
+                        <tr><td style="width:240px;">{{ render_field(form.taxis_min) }}</td><td>{{ render_field(form.taxis_max) }}</td></tr>
+                    </table>
+                    <table style="margin-top:10px;">
+                        <tr><td>{{ render_field(form.taxis_grad) }}</td></tr>
+                    </table>
+                    <br />
 
-                <br />
-                <br />
+                    <button type="button" name="taxis_add" id="taxis_add">Add</button>
 
-                {{ render_field(form.taxis_min) }}
-                {{ render_field(form.taxis_max) }}
-                <br />
-                <br />
-
-                {{ render_field(form.taxis_grad) }}
-                <br />
-                <br />
-
-                <button type="button" name="taxis_add" id="taxis_add">Add</button>
-
+                </div><br />
                 <h3>Currently configured</h3>
+                <br />
                 <ul id="taxis_list"></ul>
 
                 <!-- holds the JSON data for POSTing -->
@@ -89,12 +92,12 @@
 
             <div class="step" id="cap_step">
                 <h2>Capability</h2>
-
-                {{ render_field(form.vss) }}<br />
-                {{ render_field(form.variance) }}<br />
-                {{ render_field(form.swim_turning) }}<br />
-                {{ render_field(form.nonswim_turning) }}<br />
-
+                <div style="margin:15px 0 0 70px;">
+                    {{ render_field(form.vss) }}<br />
+                    {{ render_field(form.variance) }}<br /><br />
+                    {{ render_field(form.swim_turning) }}<br />
+                    {{ render_field(form.nonswim_turning) }}<br />
+                </div>
             </div>
 
             <div class="submit step" id="review_step">
@@ -102,17 +105,9 @@
                 <ul id="review_list"></ul>
             </div>
             <div class="navigation">
-                <ul class="clearfix">
-                    <li>
                         <button type="button" name="backward" class="backward">Backward</button>
-                    </li>
-                    <li>
                         <button type="button" name="forward" class="forward">Forward</button>
-                    </li>
-                    <li>
                         <button type="submit" name="process" class="submit">Submit</button>
-                    </li>
-                </ul>
             </div>
         </form>
     </div>

@@ -30,11 +30,11 @@
 
     {% if libraries %}
         Owned Library Entries: <br />
-        <table style="margin-left:20px;">
+        <table style="margin-left:20px;padding-top:10px;">
            {% for library in libraries %}
            <tr>
                <td><strong>{{ library.name }}</strong></td>
-               <td><a href="{{ url_for( 'detail_view', library_id=library._id ) }}">detail</a></td>
+               <td style="padding-left:10px;"><a href="{{ url_for( 'detail_view', library_id=library._id ) }}">detail</a></td>
            </tr>
            {% endfor %}
         </table>
