@@ -5,8 +5,8 @@
 {% block page %}
     {% if libraries %}
         <!-- display library listings in a table format -->
-        <table border="1">
-                <tr><td>Name:</td><td>Genus:</td><td>Species:</td><td>Common:</td><td>Date Created:</td></tr>
+        <table class="search_results" border="1">
+                <tr><th>Name:</th><th>Genus:</th><th>Species:</th><th>Common:</th><th>Date Created:</th></tr>
             {% for library in libraries %}
                 <tr class="table_cell">
                     <td>{{ library.name }}</td>
@@ -27,5 +27,5 @@
     {% else %}
 
     {% endif %}
-    <a href="{{url_for('index')}}">Home</a> <br />
+    <div style="margin-top:10px;"><a href="{{url_for('index')}}">Home</a></div>
 {% endblock %}
