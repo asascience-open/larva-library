@@ -16,16 +16,19 @@
                 <h3>Duration / Growth</h3>
                 {{ render_field(form.duration) }}<br />
 
-                {{ render_check(form.linear) }} Use temperature to determine lifstage changes<br />
-                See explanation here: LINK<br />
+                {{ render_check(form.linear) }}
+                <span style="margin-left: -208px;">Use temperature to determine lifstage changes</span> <br />
+                <span style="margin-left:223px;">See explanation here: LINK</span><br />
                 {{ render_field(form.linear_a) }}
                 {{ render_field(form.linear_b) }}<br />
                 <br />
 
                 {{ render_field(form.notes) }}<br />
-                {{ render_check(form.diel) }}<br />
-                {{ render_check(form.taxis) }}<br />
-                {{ render_check(form.capability) }}<br />
+                <div style="margin-left:201px;">
+                    {{ render_check(form.diel) }}<br />
+                    {{ render_check(form.taxis) }}<br />
+                    {{ render_check(form.capability) }}<br />
+                </div>
             </div>
             <div class="step" id="diel_step">
                 <h2>Diel</h2>
@@ -105,9 +108,9 @@
                 <ul id="review_list"></ul>
             </div>
             <div class="navigation">
-                        <button type="button" name="backward" class="backward">Backward</button>
-                        <button type="button" name="forward" class="forward">Forward</button>
-                        <button type="submit" name="process" class="submit">Submit</button>
+                <button type="button" name="backward" class="backward">Backward</button>
+                <button type="button" name="forward" class="forward">Forward</button>
+                <button type="submit" name="process" class="submit">Submit</button>
             </div>
         </form>
     </div>

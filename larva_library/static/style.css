@@ -1,73 +1,308 @@
-.detail         { padding: 0em 0em 0em 2em; }
-.table_cell     { padding: 0em 1em; }
+html { 
+	background: #00315c url(images/masthead.png) no-repeat top center;
+	min-width: 1024px; 
+	font: normal normal 17px sans-serif;
+	line-height: 18px; 
+	color: #00315c; 
+	height: 100%; 
+	}
 
-/************************************************************************************************/
-html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp,
-small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, figcaption, figure,  footer, header, hgroup, 
-menu, nav, section, summary, time, mark, audio, video 
-										{ margin: 0; padding: 0; border: 0; outline: 0; font-size: 100%; vertical-align: baseline;
-						  					background: transparent; }
-html		 							{ background: #00315c url(images/masthead.png) no-repeat top center;
-						  					min-width: 1024px; font: normal normal 17px sans-serif;
-						  					line-height: 18px; color: #00315c; height: 100%;}
-body									{ background: #00315c url(images/background.png) no-repeat top center; 
-											margin: 269px auto 0 auto; min-height: 499px; }
-p 										{ margin: 10px 0;}
-a 										{ color: #00315c; } 
-ul 										{ list-style: none; }
-textarea								{ background-color: #e3ecfe; padding: 0; width: 347px; margin-bottom: 0; border: 2px inset #eee;
-											font: 17px sans-serif; }
-input[type=text]						{ background-color: #e3ecfe; width: 280px; font-size: 17px; }
-input[type=submit]						{ background: #fff url(images/search.png) no-repeat top center; 
-					  						margin-top: 10px;	border: 0; cursor: pointer; float: right; width: 109px;
-					  						height: 29px; }
-.content 	 							{ width: 576px;	margin: 0 auto 0 auto; padding: 8px 40px 20px 40px; background-color: #fff;}
-.login	 								{ width: 234px; margin: 0 auto 0 auto; font-size: 14px; text-align: center; padding-top: 26px; }
-	.login a 								{ font-size: 12px; font-weight: bold;}
-	.login p 								{ width: 77px; }
-.logout									{ clear: both; width: 576px; margin: 0 auto 22px auto; font-size: 12px; font-weight: bold; 
-											text-align: right; padding-top: 22px;}
-.divider 								{ background: #fff url(images/fish_divider.png) no-repeat top center;
-					  						clear: both; width: 616px; height: 25px; margin: 15px auto 15px auto; }
-.search									{ width: 305px;	margin: 25px auto 0 auto; }
-.library								{ clear: both; padding-top: 20px;}
-.bottom 								{ font-style: italic; text-align: center; margin: 0 auto 0 auto; padding-top: 36px;
-					  						width: 300px;	clear: both; }
-.flash          						{ clear: both; background: #CEE5F5; padding: 0.5em; border: 1px solid #AACBE2; 
-					  						width: 500px; margin: 10px auto 0 auto; text-align: center; }
-#lib_entry label, #base_step label		{ width: 120px; display: inline-block; text-align: right;}
-	#lib_entry label[generated=true]		{ padding-left: 5px; }
-	#lib_entry input[type=text] 			{ width: 320px;}
-.error[generated=true] 					{ font-size: 12px; }
-.navigation								{ text-align: right; margin-top: 20px;}
-	.navigation ul, li 						{ display: inline; }
-.submit.step label  					{ width: 200px; }
-.submit.step input[type=text] 			{ width: 346px; }
-.footer									{ height: 100px; }
-.edit									{ width: 100%; text-align: center; padding-bottom: 10px; }
-.detail_table							{ width: 100%; padding-bottom: 20px; }
-	.deatil_table ul, li					{ display: block; }
-.label_cell								{ text-align: right; width: 270px; }
-.data_cell								{ padding-left: 32px; }
-.lifestage_links						{ text-align: center; padding-bottom: 10px; }
-#base_step label						{ width: 200px; }
-#base_step label[generated=true]		{ margin-left: 5px; width: 160px; text-align: left;}
-#base_step input[type=text] 			{ width: 180px; } 
-#base_step input[type=checkbox] 		{ padding-left: 0; margin-left: 0; } 
-.margin									{ margin-left: 60px; }
+body { 
+	background: #00315c url(images/background.png) no-repeat top center;
+	margin: 269px auto 0 auto; 
+	min-height: 499px; 
+	}
+
+p { 
+	margin: 10px 0;
+	}
+
+a { 
+	color: #00315c; 
+	} 
+
+ul, li { 
+	margin: 0;
+	padding: 0;
+	list-style: none; /*vertical-align: baseline;*/
+	}
+
+img {
+	border: 0;
+	}
+
+td { 
+	vertical-align: baseline; 
+	}
+
+textarea { 
+	background-color: #e3ecfe; 
+	padding: 0 0 0 2px; 
+	width: 347px; 
+	margin-bottom: 0; 
+	border: 2px inset #eee;
+	font: 17px sans-serif; 
+	}
+
+input[type=text] { 
+	background-color: #e3ecfe; width: 280px; 
+	font-size: 17px;
+	padding-left: 2px; 
+	padding-right: 0;
+	margin-right: 0;
+	}
+
+input[class=search]	{ 
+	background: #fff url(images/search.png) no-repeat top center; 
+	margin-top: 10px;	
+	border: 0; 
+	cursor: pointer; 
+	float: right; 
+	width: 77px; 
+	height: 29px; 
+	}
+
+#import_bttn { 
+	background: #fff url(images/import.png) no-repeat top center; 
+	border: 0; 
+	cursor: pointer; 
+	width: 77px; 
+	height: 29px; 
+	margin-top: -4px; 
+	position: absolute; 
+	}
+
+.content { 
+	width: 576px;	
+	margin: 0 auto 0 auto; 
+	padding: 8px 40px 20px 40px; 
+	background-color: #fff;
+	}
+
+.login { 
+	width: 234px; 
+	margin: 0 auto 0 auto; 
+	font-size: 14px; text-align: center; padding-top: 26px; 
+	}
+
+	.login a { 
+		font-size: 12px; 
+		font-weight: bold;
+		}
+
+	.login p { 
+		width: 77px; 
+		}
+
+.logout { 
+	clear: both;
+	width: 576px; 
+	margin: 0 auto 22px auto; 
+	font-size: 12px; 
+	font-weight: bold;
+	text-align: right; 
+	padding-top: 22px;
+	}
+
+.divider { 
+	background: #fff url(images/fish_divider.png) no-repeat top center;
+	clear: both;
+	width: 616px; 
+	height: 25px; 
+	margin: 15px auto 15px auto;
+	}
+
+.search	{ 
+	width: 305px;	
+	margin: 25px auto 0 auto;
+	}
+
+.library {
+	clear: both; 
+	padding-top: 10px;
+	}
+
+.bottom	{ 
+	font-style: italic; 
+	text-align: center; 
+	margin: 0 auto 0 auto; 
+	padding-top: 36px;
+	width: 300px;	
+	clear: both; 
+	}
+
+.flash { 
+	clear: both; 
+	background: #CEE5F5; 
+	padding: 0.5em; 
+	border: 1px solid #AACBE2;
+	width: 500px; 
+	margin: 10px auto 0 auto; 
+	text-align: center; 
+	}
+
+#lib_entry label, 
+#base_step label { 
+	width: 120px; 
+	display: inline-block; 
+	text-align: right;
+	}
+	
+	#lib_entry label[generated=true] { 
+		padding-left: 5px;
+		}
+	
+#lib_entry input[type=text]	{ 
+	width: 320px;
+	}
+
+.error[generated=true] { 
+	font-size: 12px; 
+	}
+
+.navigation { 
+	text-align: right; 
+	margin-top: 20px;
+	}
+
+.footer { 
+	height: 100px; 
+	}
+
+.edit { 
+	width: 100%; 
+	text-align: center; 
+	padding-bottom: 10px; 
+	}
+
+.detail_table { 
+	width: 100%; 
+	padding-bottom: 20px;
+	}
+
+	.detail_table ul, li { 
+		display: block; 
+		}
+
+.label_cell { 
+	text-align: right; 
+	width: 270px; 
+	}
+
+.data_cell { 
+	padding-left: 32px;
+	}
+
+.lifestage_links { 
+	text-align: center;
+	padding-bottom: 10px;
+	}
+
+#base_step label { 
+	width: 200px;
+	}
+
+	#base_step label[generated=true] { 
+		margin-left: 5px; 
+		width: 160px; 
+		text-align: left;
+		}
+
+#base_step input[type=text] { 
+	width: 180px;
+	}
+
+.margin { 
+	margin-left: 60px; 
+	}
+
 #diel_step input[type=text], 
-	#taxis_step input[type=text]		{ width: 30px; }
-#diel_min_depth, #taxis_min				{ margin-left: 3px; }
-#diel_step label[generated=true],
-	#taxis_step label[generated=true],
-	#cap_step label[generated=true]		{ margin-left: 5px; }
-#diel_step label[generated=true][for=diel_hours] { position: absolute; margin: 7px 0 0 55px;}
-#diel_list a, #taxis_list a				{ margin-left: 15px; }
-#review_list h3							{ margin-top: 10px; }
-#vss, #variance							{ width: 30px; }
-#vss									{ margin-left: 11px; }
-#cap_step label[generated=true][for=swim_turning] { position: absolute; margin: 12px 0 0 310px;}
-#cap_step label[generated=true][for=nonswim_turning] { position: absolute; margin: 24px 0 0 310px;}
+#taxis_step input[type=text] { 
+	width: 30px; 
+	}
+
+#diel_min_depth, 
+#taxis_min { 
+	margin-left: 3px; 
+	}
+
+#diel_step label[generated=true], 
+#taxis_step label[generated=true], 
+#cap_step label[generated=true] { 
+	margin-left: 5px; 
+	}
+
+#diel_step label[generated=true][for=diel_hours] { 
+	position: absolute; 
+	margin: 7px 0 0 55px;
+	}
+
+#diel_list a, 
+#taxis_list a	{ 
+	margin-left: 15px;
+	}
+
+#review_list h3	{ 
+	margin-top: 10px;
+	}
+
+#vss, 
+#variance { 
+	width: 30px;
+	}
+
+#vss { 
+	margin-left: 11px;
+	}
+
+#cap_step label[generated=true][for=swim_turning] {
+	position: absolute; margin: 12px 0 0 310px; 
+	}
+
+#cap_step label[generated=true][for=nonswim_turning] {
+	position: absolute; margin: 24px 0 0 310px;
+	}
+
+#keyword_div { 
+	text-align: right; 
+	}
+
+	#keyword_div label { 
+		display: inline block; 
+		}
+
+	#keyword_div input[type=text], 
+#notes {
+		width: 380px;
+		margin-left: 0;
+		}
+
+#status {
+	margin: 0 279px 0 0;
+	}
+
+#linear {
+	margin-left: 205px;
+	}
+
+#linear_a {
+	margin-top: 10px;
+	}
+
+#lifestage textarea {
+	width: 356px;
+	}
+
+label[for=diel],
+label[for=taxis],
+label[for=capability] {
+	max-width: 1px;
+	}
+
+.search_results th {
+	font-weight: bold;
+	}
+
+.table_cell td {
+	padding: 2px;
+}
