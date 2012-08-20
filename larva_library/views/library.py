@@ -63,7 +63,7 @@ def library_search():
 
     # Build query; first look for entries that belong to user, then look for entries that are marked public
     keywords = form.search_keywords.data
-    print form.user_owned.data
+
     entries = list(retrieve_by_terms(keywords, user=user, only_owned=form.user_owned.data))
 
     if len(entries) < 1:
