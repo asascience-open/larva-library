@@ -77,7 +77,7 @@ class Library(Document):
         del(tm['lifestages'])
         del(tm['notes'])
         del(tm['keywords'])
-        del(tm['geo_keywords']) 
+        del(tm['geo_keywords'])
         return tm
 
 db.register([Library])

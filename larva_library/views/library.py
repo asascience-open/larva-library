@@ -87,10 +87,20 @@ def library_json_search():
     return jsonify({"results" : entries})
 
 
-@app.route('/library/import', methods=['GET','POST'])
-@login_required
+@app.route('/library/import', methods=['POST'])
 def import_library():
     # using login decorator
+
+    email = None
+    try:
+        email = session['user_email']
+    except:
+        try:
+            email = request.args['email']
+        except:
+            flash("Must be logged in to import library entries")
+            return redirect(url_for('index'))
+
     if request.method == 'POST':
         jsonfile_storage = request.files.get('jsonfile')
         stringStream = jsonfile_storage.stream
@@ -144,10 +154,13 @@ def import_library():
                 lifestages.append(ls)
 
             js['lifestages'] = []
-            js['user'] = session['user_email']
+            js['user'] = email
+            js['_keywords'] = []
             new = db.Library.from_json(json.dumps(js))
+            new.created = datetime.datetime.utcnow()
             new.lifestages = lifestages
             new.build_keywords()
+            new.name = "%s (imported %s)" % (new.name, new.created.isoformat())
             new.save()
 
         if len(entry_list) == 1:
