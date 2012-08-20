@@ -71,15 +71,15 @@ def authorize_list(entries=None, user=None):
     if entries is None:
         entries = []
 
-    return (entry for entry in entries if authorize_entry(entry,user))
+    return (entry for entry in entries if authorize_entry(entry=entry,user=user))
 
 def retrieve_all(user=None, only_owned=None):
     if only_owned is None:
         only_owned = False
     matches = db.Library.find()
-    matches = authorize_list(matches, user)
-    if only_owned and user is not None:
-        return (match for match in matches if authorize_owned(match,user))
+    matches = authorize_list(entries=matches, user=user)
+    if only_owned is True:
+        return (match for match in matches if authorize_owned(entry=match,user=user))
     return matches
 
 def retrieve_by_terms(terms, user=None, only_owned=None):
@@ -92,24 +92,6 @@ def retrieve_by_terms(terms, user=None, only_owned=None):
     keywords = { '$all' : terms.rstrip(',').split(',') }
     matches = db.Library.find({ '_keywords' : keywords })
     matches = authorize_list(matches, user)
-    if only_owned and user is not None:
-        return (match for match in matches if authorize_owned(match,user))
+    if only_owned is True:
+        return (match for match in matches if authorize_owned(entry=match,user=user))
     return matches
-
-def remove_mongo_keys(d):
-
-    remove_keys = ['_id', '_collection', '_database', '_keywords']
-
-    if d is not None:
-        if isinstance(d, list):
-            for sublist in d:
-                remove_mongo_keys(sublist)
-        elif isinstance(d, dict):
-            for key in d.keys():
-                try:
-                    remove_keys.index(key)
-                    del(d[key])
-                except:
-                    remove_mongo_keys(d[key])
-
-    return

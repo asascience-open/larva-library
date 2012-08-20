@@ -1,6 +1,6 @@
 from flask import url_for, request, redirect, flash, render_template, session
 from larva_library import app, db
-from larva_library.views.utils import login_required, authorize_entry_write
+from larva_library.views.helpers import login_required, authorize_entry_write
 from larva_library.models.lifestage import LifeStageWizard
 import datetime
 import json

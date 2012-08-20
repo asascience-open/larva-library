@@ -1,5 +1,6 @@
 from mongokit import Document, DocumentMigration
 from larva_library import db
+from larva_library.utils import remove_mongo_keys
 from larva_library.models.lifestage import LifeStage
 from wtforms import *
 from datetime import datetime
@@ -69,6 +70,16 @@ class Library(Document):
         _keywords.extend(self.geo_keywords)
         self._keywords = list(set(_keywords))
         
+    def simplified_json(self):
+        tm = json.loads(self.to_json())
+        remove_mongo_keys(tm)
+        tm['_id'] = str(self._id)
+        del(tm['lifestages'])
+        del(tm['notes'])
+        del(tm['keywords'])
+        del(tm['geo_keywords']) 
+        return tm
+
 db.register([Library])
 
 # custom field classes
