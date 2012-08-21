@@ -5,16 +5,21 @@
 {% block page %}
     {% if libraries %}
         <!-- display library listings in a table format -->
-        <table class="search_results" border="1">
-                <tr><th>Name:</th><th>Genus:</th><th>Species:</th><th>Common:</th><th>Date Created:</th></tr>
+        <table class="search_results">
+            <thead>
+                <tr>
+                    <th>Name</th><th>Genus</th><th>Species</th><th>Common</th><th colspan="2">Date Created</th>
+                </tr>
+            </thead>
             {% for library in libraries %}
-                <tr class="table_cell">
+            <tbody>
+                <tr>
                     <td>{{ library.name }}</td>
                     <td>{{ library.genus }}</td>
                     <td>{{ library.species }}</td>
                     <td>{{ library.common_name }}</td>
                     <td>{{ library.created }}</td>
-                    <td>
+                    <td style="width:100px;">
                         <a href="{{ url_for( 'detail_view', library_id=library._id ) }}">detail</a>
                         {% if session.get('user_email',None) == library.user %}
                             <a class="edit" href="{{ url_for( 'library_edit_wizard', library_id=library._id ) }}">edit</a>
@@ -23,6 +28,10 @@
                     </td>
                 </tr>
             {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr><td colspan="6"></td></tr>
+            </tfoot>
         </table>
     {% else %}
 

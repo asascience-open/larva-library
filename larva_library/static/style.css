@@ -298,8 +298,50 @@ label[for=capability] {
 	max-width: 1px;
 	}
 
-.search_results th {
-	font-weight: bold;
+.search_results {
+	border: 1px solid #00315c;
+	font-size: 14px;
+	width: 576px;
+	background-color: #578FC2;
+	border-radius: 10px;
+	border-spacing: 0;
+	}
+
+	.search_results thead {
+		font-size: 17px;
+		text-align: left;
+	}
+
+	.search_results th {
+		font-weight: normal;
+		padding: 8px;
+		border-bottom: 1px solid white;
+	}
+
+	.search_results tbody tr {
+		background-color: #73BDFF;
+	}
+
+	.search_results tbody tr:hover {
+		background-color: #40A5FF;
+	}
+
+	.search_results tbody td{
+		border-bottom: 1px solid #fff;
+		font-size: 12px;
+		padding: 8px;
+		vertical-align: middle;
+	}
+
+	.search_results a {
+		font-size: 10px;
+	}
+
+	.search_results tfoot td {
+		border: none;
+		border-bottom-right-radius: 10px;
+		border-bottom-left-radius: 10px;
+		height: 5px;
 	}
 
 .table_cell td {
