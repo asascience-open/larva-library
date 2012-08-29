@@ -50,7 +50,11 @@ def delete_lifestage(library_id, lifestage_id):
         if lifestage.capability is not None:
             lifestage.capability.delete()
 
+        if lifestage.settlement is not None:
+            lifestage.settlement.delete()
+
         lifestage.capability = None
+        lifestage.settlement = None
         lifestage.diel = []
         lifestage.taxis = []
         lifestage.delete()
@@ -90,6 +94,7 @@ def edit_lifestage(library_id, lifestage_id):
             newlifestage.diel = [] 
             newlifestage.taxis = []
             newlifestage.capability = None
+            newlifestage.settlement = None
 
             # Capability
             if form.capability.data:
@@ -100,6 +105,15 @@ def edit_lifestage(library_id, lifestage_id):
                 c.nonswim_turning = form.nonswim_turning.data
                 c.save()
                 newlifestage.capability = c
+
+            # Settlement
+            if form.settle.data:
+                s = db.Settlement()
+                s.type = form.settle_type.data
+                s.upper = float(form.settle_lower.data)
+                s.lower = float(form.settle_upper.data)
+                s.save()
+                newlifestage.settlement = s
 
             # Diel
             if form.diel_data.data and len(form.diel_data.data) > 0:
@@ -144,7 +158,6 @@ def edit_lifestage(library_id, lifestage_id):
 
             newlifestage.save()
 
-
             # Remove lifestage we are editing
             entry.lifestages.remove(lifestage)
 
@@ -171,6 +184,11 @@ def edit_lifestage(library_id, lifestage_id):
                 form.variance.data = lifestage.capability.variance
                 form.swim_turning.data = lifestage.capability.swim_turning
                 form.nonswim_turning.data = lifestage.capability.nonswim_turning
+
+            if lifestage.settlement:
+                form.settle_type.data = lifestage.settlement.type
+                form.settle_upper.data = lifestage.settlement.upper
+                form.settle_lower.data = lifestage.settlement.lower
 
             form.linear.data = isinstance(lifestage.linear_a, float) and isinstance(lifestage.linear_b, float)
 
@@ -212,6 +230,15 @@ def lifestage_wizard(library_id):
             c.nonswim_turning = form.nonswim_turning.data
             c.save()
             lifestage.capability = c
+
+        # Settlement
+        if form.settle.data:
+            s = db.Settlement()
+            s.type = form.settle_type.data
+            s.upper = float(form.settle_lower.data)
+            s.lower = float(form.settle_upper.data)
+            s.save()
+            lifestage.settlement = s
 
         # Diel
         if form.diel_data.data and len(form.diel_data.data) > 0:

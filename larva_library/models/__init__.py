@@ -4,6 +4,7 @@ from larva_library.models.lifestage import LifeStage
 from larva_library.models.diel import Diel
 from larva_library.models.taxis import Taxis
 from larva_library.models.capability import Capability
+from larva_library.models.settlement import Settlement
 
 def remove_mongo_keys(d):
 

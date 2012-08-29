@@ -127,6 +127,7 @@ def import_library():
                 diels = []
                 taxis = []
                 capability = None
+                settlement = None
 
                 for diel in lifestage.get('diel', []):
                     d = db.Diel.from_json(json.dumps(diel))
@@ -146,10 +147,17 @@ def import_library():
                     capability.save()
                     lifestage['capability'] = None
 
+                s = lifestage.get('settlement', None)
+                if s is not None:
+                    settlement = db.Settlement.from_json(json.dumps(s))
+                    settlement.save()
+                    lifestage['settlement'] = None
+
                 ls = db.LifeStage.from_json(json.dumps(lifestage))
                 ls.diel = diels
                 ls.taxis = taxis
                 ls.capability = capability
+                ls.settlement = settlement
                 ls.save()
                 lifestages.append(ls)
 

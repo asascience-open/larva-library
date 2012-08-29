@@ -3,6 +3,7 @@ from larva_library import db
 from larva_library.models.diel import Diel
 from larva_library.models.taxis import Taxis
 from larva_library.models.capability import Capability
+from larva_library.models.settlement import Settlement
 from wtforms import *
 
 class LifeStage(Document):
@@ -17,6 +18,7 @@ class LifeStage(Document):
         'diel'      : [Diel],
         'taxis'     : [Taxis],
         'capability': Capability,
+        'settlement': Settlement,
         'notes'     : unicode
     }
 
@@ -24,6 +26,7 @@ class LifeStage(Document):
         diels = []
         taxis = []
         capability = None
+        settlement = None
 
         for diel in self.diel:
             diel.pop("_id")
@@ -42,6 +45,12 @@ class LifeStage(Document):
             cid = db.capability.insert(c)
             capability = db.Capability.find_one({'_id': cid})
 
+        s = self.get('settlement', None)
+        if s is not None:
+            s.pop("_id")
+            sid = db.settlements.insert(s)
+            settlement = db.Settlement.find_one({'_id': sid})
+
         # Populate newlifestage
         newlifestage = db.LifeStage()
         newlifestage.name = self.name
@@ -52,6 +61,7 @@ class LifeStage(Document):
         newlifestage.diel = diels
         newlifestage.taxis = taxis
         newlifestage.capability = capability
+        newlifestage.capability = settlement
         return newlifestage
 
 db.register([LifeStage])
@@ -86,3 +96,9 @@ class LifeStageWizard(Form):
     taxis_max = FloatField("Max", [validators.optional()])
     taxis_grad = FloatField("Sensory Gradient +/-", [validators.optional()])
     taxis_data = HiddenField('taxis_data')
+
+    # Settlement
+    settle = BooleanField('Settlement')
+    settle_type = RadioField("", [validators.optional()], choices=[('benthic', 'Benthic'), ('pelagic', 'Pelagic')])
+    settle_upper = FloatField("Upper depth", [validators.optional()])
+    settle_lower = FloatField("Lower depth", [validators.optional()])

@@ -30,6 +30,7 @@
                     Note: Capabilities are required if implementing a Diel or Sensory behavior<br />
                     {{ render_check(form.diel) }}<br />
                     {{ render_check(form.taxis) }}<br />
+                    {{ render_check(form.settle) }}<br />
                 </div>
             </div>
 
@@ -104,6 +105,20 @@
 
                 <!-- holds the JSON data for POSTing -->
                 {{ render_field(form.taxis_data) }}
+            </div>
+
+            <div class="step" id="settle_step">
+                <h2>Settlement</h2>
+                <p>
+                    As the organism grows to the final larval stage, settle into adult habitat occurs.
+                    This dialog guides you to set up the period for finding appropriate habitat for settlement,
+                    and the location of that habitat.
+                </p>
+                <div style="margin:15px 0 0 70px;">
+                    {{ render_field(form.settle_type) }}<br />
+                    {{ render_field(form.settle_upper) }}<br />
+                    {{ render_field(form.settle_lower) }}<br />
+                </div>
             </div>
 
             <div class="submit step" id="review_step">
@@ -335,8 +350,8 @@
             // Wizard
             $("#lifestage").wizard({
                 beforeForward: function( event, state ) {
-                    // Only check on the first step and the capabilities step
-                    if ((state.stepIndex == 1) || (state.stepIndex == 2)) {
+                    // Only check on the first step, capabilities, and settlement
+                    if ((state.stepIndex == 1) || (state.stepIndex == 2) || (state.stepIndex == 5)) {
                         var inputs = $(this).wizard('state').step.find(':input');
                         return !inputs.length || !!inputs.valid();
                     }
@@ -360,8 +375,13 @@
                         updateList("taxis_list", "taxis_data", taxis_inputs);
                     }
 
-                    // Review step
+                    // Settlement step
                     if (state.stepIndex == 4) {
+                        move_or_stay(state, "settle", "settle_step");
+                    }
+
+                    // Review step
+                    if (state.stepIndex == 5) {
                         updateReview();
                     }
                 }
@@ -529,7 +549,38 @@
                                 return $("#taxis").is(":checked");
                             }
                         }
-                    }
+                    },
+                    settle_upper: {
+                        required: {
+                            depends: function() {
+                                return $("#settle").is(":checked");
+                            }
+                        },
+                        number: {
+                            depends: function() {
+                                return $("#settle").is(":checked");
+                            }
+                        }
+                    },
+                    settle_lower: {
+                        required: {
+                            depends: function() {
+                                return $("#settle").is(":checked");
+                            }
+                        },
+                        number: {
+                            depends: function() {
+                                return $("#settle").is(":checked");
+                            }
+                        }
+                    },
+                    settle_type: {
+                        required: {
+                            depends: function() {
+                                return $("#settle").is(":checked");
+                            }
+                        }
+                    },
                 },
                 messages: {
                     name: {

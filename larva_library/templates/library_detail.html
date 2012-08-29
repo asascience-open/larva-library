@@ -159,7 +159,6 @@
             <tr><td class="label_cell"></td><td class="data_cell">{{ztry}}</td><td /></tr>
         {% endfor %}
 
-
         <tr><td class="label_cell">Configured Capabilities:</td>
         {% if lifestage.capability.vss is defined %}
             </tr>
@@ -167,6 +166,16 @@
             <tr><td class="label_cell"></td><td class="data_cell">Swimming Speed Variance (m/s):</td><td>{{lifestage.capability.variance}}</td></tr>
             <tr><td class="label_cell"></td><td class="data_cell">Swimming turning direction:</td><td>{{lifestage.capability.swim_turning}}</td></tr>
             <tr><td class="label_cell"></td><td class="data_cell">Non-swimming turning direction:</td><td>{{lifestage.capability.nonswim_turning}}</td></tr>
+        {% else %}
+            <td class="data_cell">None</td></tr>
+        {% endif %}
+
+        <tr><td class="label_cell">Configured Settlement:</td>
+        {% if lifestage.settlement.type is defined %}
+            </tr>
+            <tr><td class="label_cell"></td><td class="data_cell">Type:</td><td>{{lifestage.settlement.type}}</td></tr>
+            <tr><td class="label_cell"></td><td class="data_cell">Upper (m):</td><td>{{lifestage.settlement.upper}}</td></tr>
+            <tr><td class="label_cell"></td><td class="data_cell">Lower (m):</td><td>{{lifestage.settlement.lower}}</td></tr>
         {% else %}
             <td class="data_cell">None</td></tr>
         {% endif %}
