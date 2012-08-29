@@ -88,8 +88,13 @@ def library_json_search():
 
 
 @app.route('/library/import', methods=['POST'])
-def import_library():
-    # using login decorator
+@app.route('/library/import.<string:format>', methods=['POST'])
+def import_library(format=None):
+    if format is None:
+        format = 'html'
+
+    if format != 'html' and format != 'json':
+        raise ValueError("Only html and json formats are supported")
 
     email = None
     try:
@@ -98,8 +103,11 @@ def import_library():
         try:
             email = request.args['email']
         except:
-            flash("Must be logged in to import library entries")
-            return redirect(url_for('index'))
+            if format == 'html':
+                flash("Must be logged in to import library entries")
+                return redirect(url_for('index'))
+            elif format == 'json':
+                return jsonify( { 'results' : 'Must add an email parameter to request' } )
 
     if request.method == 'POST':
         jsonfile_storage = request.files.get('jsonfile')
@@ -108,13 +116,16 @@ def import_library():
         try:
             entry_dict = json.loads(stringStream.getvalue())
             entry_list = entry_dict.values()[0] # assume the higher level dictionary only has one key
+            assert entry_list is not None
         except:
-            flash("Must upload a valid library file, please try again")
-            return redirect(url_for('index'))
+            message = "Must upload a valid library file, please try again"
+            if format == 'html':
+                flash(message)
+                return redirect(url_for('index'))
+            elif format == 'json':
+                return jsonify( { 'results' : message } )
 
-        if entry_list is None:
-            flash("Must upload a valid library file, please try again")
-            return redirect(url_for('index'))
+        saved_items = []
 
         for entry in entry_list:
 
@@ -170,16 +181,27 @@ def import_library():
             new.build_keywords()
             new.name = "%s (imported %s)" % (new.name, new.created.isoformat())
             new.save()
+            saved_items.append(str(new['_id']))
 
         if len(entry_list) == 1:
-            flash("Library item imported")
-            return redirect(url_for('detail_view', library_id=new._id ))
+            if format == 'html':
+                flash("Library item imported")
+                return redirect(url_for('index'))
+            elif format == 'json':
+                return jsonify( { 'results' : saved_items} )
         elif len(entry_list > 1):
-            flash("%s library items imported" % len(entry_list))
-            return redirect(url_for('index'))
+            if format == 'html':
+                flash("%s library items imported" % len(entry_list))
+                return redirect(url_for('index'))
+            elif format == 'json':
+                return jsonify( { 'results' : saved_items} )
         else:
-            flash("No library items found in import, please try again")
-            return redirect(url_for('index'))
+            message = "No library items found in import, please try again"
+            if format == 'html':
+                flash(message)
+                return redirect(url_for('index'))
+            elif format == 'json':
+                return jsonify( { 'results' : message } )
 
     return redirect(url_for('index'))
 
