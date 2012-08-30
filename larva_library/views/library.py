@@ -115,7 +115,7 @@ def import_library(format=None):
         stringStream.seek(0)
         try:
             entry_dict = json.loads(stringStream.getvalue())
-            entry_list = entry_dict.values()[0] # assume the higher level dictionary only has one key
+            entry_list = entry_dict.get('results', None) # assume the higher level dictionary only has one key
             assert entry_list is not None
         except:
             message = "Must upload a valid library file, please try again"
@@ -130,7 +130,6 @@ def import_library(format=None):
         for entry in entry_list:
 
             js = json.loads(json.dumps(entry))
-
             lifestages = []
 
             for lifestage in js.get('lifestages', []):
