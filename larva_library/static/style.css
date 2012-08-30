@@ -296,7 +296,7 @@ input[class=search]	{
 label[for=diel],
 label[for=taxis],
 label[for=capability],
-label[for=settle] {
+label[for=settlement]{
 	max-width: 1px;
 	}
 

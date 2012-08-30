@@ -107,7 +107,7 @@ def edit_lifestage(library_id, lifestage_id):
                 newlifestage.capability = c
 
             # Settlement
-            if form.settle.data:
+            if form.settlement.data:
                 s = db.Settlement()
                 s.type = form.settle_type.data
                 s.upper = float(form.settle_lower.data)
@@ -232,7 +232,7 @@ def lifestage_wizard(library_id):
             lifestage.capability = c
 
         # Settlement
-        if form.settle.data:
+        if form.settlement.data:
             s = db.Settlement()
             s.type = form.settle_type.data
             s.upper = float(form.settle_lower.data)

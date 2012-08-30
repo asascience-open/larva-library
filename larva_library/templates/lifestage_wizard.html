@@ -30,7 +30,7 @@
                     Note: Capabilities are required if implementing a Diel or Sensory behavior<br />
                     {{ render_check(form.diel) }}<br />
                     {{ render_check(form.taxis) }}<br />
-                    {{ render_check(form.settle) }}<br />
+                    {{ render_check(form.settlement) }}<br />
                 </div>
             </div>
 
@@ -341,6 +341,17 @@
             } else {
                 $("#review_list").append($("<li>").append("None"));
             }
+
+            // Settlement
+            $("#review_list").append("<h3>Settlement</h3>");
+            if ($('#settlement').is(':checked')) {
+                $("#review_list")
+                    .append(radioString('Type', 'settle_type'))
+                    .append(fieldString('settle_upper'))
+                    .append(fieldString('settle_lower'))
+            } else {
+                $("#review_list").append($("<li>").append("None"));
+            }
         }
 
         $(document).ready(function() {
@@ -377,7 +388,7 @@
 
                     // Settlement step
                     if (state.stepIndex == 4) {
-                        move_or_stay(state, "settle", "settle_step");
+                        move_or_stay(state, "settlement", "settle_step");
                     }
 
                     // Review step
@@ -553,31 +564,31 @@
                     settle_upper: {
                         required: {
                             depends: function() {
-                                return $("#settle").is(":checked");
+                                return $("#settlement").is(":checked");
                             }
                         },
                         number: {
                             depends: function() {
-                                return $("#settle").is(":checked");
+                                return $("#settlement").is(":checked");
                             }
                         }
                     },
                     settle_lower: {
                         required: {
                             depends: function() {
-                                return $("#settle").is(":checked");
+                                return $("#settlement").is(":checked");
                             }
                         },
                         number: {
                             depends: function() {
-                                return $("#settle").is(":checked");
+                                return $("#settlement").is(":checked");
                             }
                         }
                     },
                     settle_type: {
                         required: {
                             depends: function() {
-                                return $("#settle").is(":checked");
+                                return $("#settlement").is(":checked");
                             }
                         }
                     },

@@ -61,7 +61,7 @@ class LifeStage(Document):
         newlifestage.diel = diels
         newlifestage.taxis = taxis
         newlifestage.capability = capability
-        newlifestage.capability = settlement
+        newlifestage.settlement = settlement
         return newlifestage
 
 db.register([LifeStage])
@@ -77,11 +77,12 @@ class LifeStageWizard(Form):
     diel = BooleanField('Diel')
     taxis = BooleanField('Sensory')
     capability = BooleanField('Capability')
+    settlement = BooleanField('Settlement')
 
     # Diel
     diel_hours = FloatField("", [validators.optional()])
-    diel_min_depth = FloatField("Min", [validators.optional()])
-    diel_max_depth = FloatField("Max", [validators.optional()])
+    diel_min_depth = FloatField("Min (m)", [validators.optional()])
+    diel_max_depth = FloatField("Max (m)", [validators.optional()])
     diel_data = HiddenField('diel_data')
 
     # Capability
@@ -98,7 +99,6 @@ class LifeStageWizard(Form):
     taxis_data = HiddenField('taxis_data')
 
     # Settlement
-    settle = BooleanField('Settlement')
     settle_type = RadioField("", [validators.optional()], choices=[('benthic', 'Benthic'), ('pelagic', 'Pelagic')])
-    settle_upper = FloatField("Upper depth", [validators.optional()])
-    settle_lower = FloatField("Lower depth", [validators.optional()])
+    settle_upper = FloatField("Upper depth (m)", [validators.optional()])
+    settle_lower = FloatField("Lower depth (m)", [validators.optional()])
