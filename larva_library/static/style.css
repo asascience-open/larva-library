@@ -45,16 +45,19 @@ textarea {
 	}
 
 input[type=text] { 
-	background-color: #e3ecfe; width: 280px; 
+	background-color: #e3ecfe; 
+	width: 269px; 
 	font-size: 17px;
 	padding-left: 2px; 
 	padding-right: 0;
 	margin-right: 0;
+	display: inline block;
 	}
 
 input[class=search]	{ 
 	background: #fff url(images/search.png) no-repeat top center; 
-	margin-top: 10px;	
+	margin-top: 10px;
+	margin-right: 10px;	
 	border: 0; 
 	cursor: pointer; 
 	float: right; 
@@ -77,6 +80,7 @@ input[class=search]	{
 	margin: 0 auto 0 auto; 
 	padding: 8px 40px 20px 40px; 
 	background-color: #fff;
+	overflow: hidden;
 	}
 
 .login { 
@@ -193,11 +197,6 @@ input[class=search]	{
 	padding-left: 32px;
 	}
 
-.lifestage_links { 
-	text-align: center;
-	padding-bottom: 10px;
-	}
-
 #base_step label { 
 	width: 200px;
 	}
@@ -300,10 +299,117 @@ label[for=settlement]{
 	max-width: 1px;
 	}
 
-.search_results th {
-	font-weight: bold;
+.search_results {
+	border: 1px solid #00315c;
+	font-size: 14px;
+	width: 576px;
+	background-color: #578FC2;
+	border-radius: 10px;
+	border-spacing: 0;
+	}
+
+	.search_results thead {
+		font-size: 17px;
+		text-align: left;
+	}
+
+	.search_results th {
+		font-weight: normal;
+		padding: 8px;
+		border-bottom: 1px solid white;
+	}
+
+	.search_results tbody tr {
+		background-color: #73BDFF;
+	}
+
+	.search_results tbody tr:hover {
+		background-color: #40A5FF;
+	}
+
+	.search_results tbody td{
+		border-bottom: 1px solid #fff;
+		font-size: 12px;
+		padding: 8px;
+		vertical-align: middle;
+	}
+
+	.search_results a {
+		font-size: 10px;
+	}
+
+	.search_results tfoot td {
+		border: none;
+		border-bottom-right-radius: 10px;
+		border-bottom-left-radius: 10px;
+		height: 5px;
 	}
 
 .table_cell td {
 	padding: 2px;
-}
+	}
+
+.lifestage_detail {
+	font: 14px arial narrow;
+	padding: 9px;
+	margin: 0 0 20px 10px;
+	float: left;
+	width: 255px;
+	text-align: left;
+	border: 1px solid #00315c;
+	height: 100%;
+	}
+
+	.lifestage_detail a {
+	    text-decoration: none;
+	    background-color: #EEE;
+	    color: #333;
+	    padding: 2px 6px 2px 6px;
+	    border-top: 1px solid #CCC;
+	    border-right: 1px solid #333;
+	    border-bottom: 1px solid #333;
+	    border-left: 1px solid #CCC;
+		}
+
+	.lifestage_detail a:hover {
+		background-color: #ccc;
+		}
+
+	.lifestage_detail ul {
+		position: absolute;
+		margin-left: 215px;
+		}
+
+	.lifestage_detail li {
+		margin-bottom: 9px;
+		}
+
+	.lifestage_detail p {
+		display: inline-block;
+		min-width: 90px;
+		margin-top: 2px;
+		vertical-align: top;
+		margin-bottom: 0;
+		}
+
+	.lifestage_detail .p_data {
+		width: 120px;
+		}
+
+	.lifestage_detail .p_note {
+		width: 165px;
+		}
+
+	.lifestage_detail .p_diel {
+		margin-left: 15px;
+		}
+
+	.lifestage_detail .p_cap {
+		min-width: 1px;
+		}
+	.lifestage_detail .cap_label {
+		width: 175px;
+	}
+.bold {
+	font-weight: bold;
+	}

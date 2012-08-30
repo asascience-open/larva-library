@@ -97,89 +97,78 @@
             </td></tr>
         </table>
 
-        <table class="detail_table">
-            <tr><td>
-                <strong>Lifestages</strong>
-            </td></tr>
-            <tr><td>
-                {% for lifestage in entry.lifestages %}
-                    {{ lifestage_summary(lifestage, entry._id) }}
-                {% endfor %}
-            </td></tr>
-            <tr><td>
-                <a href="{{url_for('lifestage_wizard', library_id=entry._id)}}">Add Lifestage</a>
-            </td></tr>
-        </table>
+        <strong>Lifestages</strong>
+        <br /><br />
+            {% for lifestage in entry.lifestages %}
+                {{ lifestage_summary(lifestage, entry._id) }}
+            {% endfor %}
+        <span style="margin-left:10px;"><a href="{{url_for('lifestage_wizard', library_id=entry._id)}}">Add Lifestage</a></span><br />
 
     {% endif %}
     <br />
-    <a href="{{url_for('json_view', library_id=entry._id)}}">Download For External Use</a> <br />
-    <a href="{{url_for('index')}}">Home</a>
+    <span style="margin-left:10px;"><a href="{{url_for('json_view', library_id=entry._id)}}">Download For External Use</a></span><br /><br />
+    <span style="margin-left:10px;"><a href="{{url_for('index')}}">Home</a></span>
 {% endblock %}
 
 {% macro lifestage_summary(lifestage, library_id) -%}
-    <br />
+    <div class="lifestage_detail">
+        <ul>
+            <li><a href="{{url_for('clone_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Clone</a></li>
+            <li><a href="{{url_for('edit_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Edit</a></li>
+            <li><a href="{{url_for('delete_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Delete</a></li>
+        </ul>
+        <p>Name:</p><p class="p_data">{{lifestage.name}}</p>
+        <p>Duration (days):</p><p class="p_data">{{lifestage.duration}}</p>
+            {% if lifestage.linear_a is number and lifestage.linear_b is number %}
+                <p>Linear A:</p><p class="p_data">{{lifestage.linear_a}}</p>
+                <p>Linear B:</p><p class="p_data">{{lifestage.linear_b}}</p>
+            {% else %}
+                <p style="font-style:italic;margin:13px 0 8px 8px;">Growth not determined by temperature</p>
+            {% endif %}
+            <p>Notes:</p><p class="p_note">{{lifestage.notes}}</p>
+            
+            <p class="bold" style="margin-top:10px;">Configured Diel:</p>
+            {% if lifestage.diel[0] is defined %}
+                
+            {% else %}
+                <p style="margin-top:10px;">None</p>
+            {% endif %}
+            {%- for dtry in lifestage.diel %}
+                <p class="p_diel">{{dtry}}</p>
+            {% endfor %}
+            
+            <p class="bold" style="margin-top:10px;">Configured Taxis:</p>
+            {% if lifestage.taxis[0] is defined %}
+                
+            {% else %}
+                <p style="margin-top:10px;">None</p>
+            {% endif %}
+            {%- for ztry in lifestage.taxis %}
+                <p class="p_diel">{{ztry}}</p>
+            {% endfor %}
 
-    <div class="lifestage_links">
-        <a href="{{url_for('clone_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Clone</a>
-        <a href="{{url_for('edit_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Edit</a>
-        <a href="{{url_for('delete_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Delete</a>
+
+            <p class="bold" style="margin-top:10px;">Configured Capabilities:</p>
+            {% if lifestage.capability.vss is defined %}
+            <div style="margin-left:15px;">
+                <p class="cap_label">Vertical Swimming Speed (m/s):</p> <p class="p_cap">{{lifestage.capability.vss}}</p>
+                <p class="cap_label">Swimming Speed Variance (m/s):</p> <p class="p_cap">{{lifestage.capability.variance}}</p>
+                <p class="cap_label">Swimming turning direction:</p> <p class="p_cap">{{lifestage.capability.swim_turning}}</p>
+                <p class="cap_label">Non-swimming turning direction:</p> <p class="p_cap">{{lifestage.capability.nonswim_turning}}</p>
+            </div>
+            {% else %}
+                <p style="margin-top:10px;">None</p>
+            {% endif %}
+
+            <p class="bold" style="margin-top:10px;">Configured Settlement:</p>
+            {% if lifestage.settlement.type is defined %}
+                <div style="margin-left:15px;">
+                    <p class="cap_label">Type:</p> <p class="p_cap">{{lifestage.settlement.type}}</p>
+                    <p class="cap_label">Upper (m):</p> <p class="p_cap">{{lifestage.settlement.upper}}</p>
+                    <p class="cap_label">Lower (m):</p> <p class="p_cap">{{lifestage.settlement.lower}}</p>
+                </div>
+            {% else %}
+                <p style="margin-top:10px;">None</p>
+            {% endif %}
     </div>
-
-    <table class="detail_table">
-        <tr><td class="label_cell">Name:</td><td class="data_cell">{{lifestage.name}}</td></tr>
-        <tr><td class="label_cell">Duration (days):</td><td class="data_cell">{{lifestage.duration}}</td></tr>
-        {% if lifestage.linear_a is number and lifestage.linear_b is number %}
-            <tr><td class="label_cell">Linear A</td><td class="data_cell">{{lifestage.linear_a}}</td></tr>
-            <tr><td class="label_cell">Linear B</td><td class="data_cell">{{lifestage.linear_b}}</td></tr>
-        {% else %}
-            <tr><td class="label_cell">Growth not determined by temperature</td><td class="data_cell"></td></tr>
-        {% endif %}
-        <tr><td class="label_cell">Notes:</td><td class="data_cell">{{lifestage.notes}}</td></tr>
-        
-        <tr><td class="label_cell">Configured Diel:</td>
-        {% if lifestage.diel[0] is defined %}
-            <td />
-        {% else %}
-            <td class="data_cell">None</td>
-        {% endif %}
-        </tr>
-        {%- for dtry in lifestage.diel %}
-            <tr><td class="label_cell"></td><td class="data_cell">{{dtry}}</td><td /></tr>
-        {% endfor %}
-        
-        <tr><td class="label_cell">Configured Taxis:</td>
-        {% if lifestage.taxis[0] is defined %}
-            <td />
-        {% else %}
-            <td class="data_cell">None</td>
-        {% endif %}
-        </tr>
-        {%- for ztry in lifestage.taxis %}
-            <tr><td class="label_cell"></td><td class="data_cell">{{ztry}}</td><td /></tr>
-        {% endfor %}
-
-        <tr><td class="label_cell">Configured Capabilities:</td>
-        {% if lifestage.capability.vss is defined %}
-            </tr>
-            <tr><td class="label_cell"></td><td class="data_cell">Vertical Swimming Speed (m/s):</td><td>{{lifestage.capability.vss}}</td></tr>
-            <tr><td class="label_cell"></td><td class="data_cell">Swimming Speed Variance (m/s):</td><td>{{lifestage.capability.variance}}</td></tr>
-            <tr><td class="label_cell"></td><td class="data_cell">Swimming turning direction:</td><td>{{lifestage.capability.swim_turning}}</td></tr>
-            <tr><td class="label_cell"></td><td class="data_cell">Non-swimming turning direction:</td><td>{{lifestage.capability.nonswim_turning}}</td></tr>
-        {% else %}
-            <td class="data_cell">None</td></tr>
-        {% endif %}
-
-        <tr><td class="label_cell">Configured Settlement:</td>
-        {% if lifestage.settlement.type is defined %}
-            </tr>
-            <tr><td class="label_cell"></td><td class="data_cell">Type:</td><td>{{lifestage.settlement.type}}</td></tr>
-            <tr><td class="label_cell"></td><td class="data_cell">Upper (m):</td><td>{{lifestage.settlement.upper}}</td></tr>
-            <tr><td class="label_cell"></td><td class="data_cell">Lower (m):</td><td>{{lifestage.settlement.lower}}</td></tr>
-        {% else %}
-            <td class="data_cell">None</td></tr>
-        {% endif %}
-
-    </table>
-    <br />
 {%- endmacro %}

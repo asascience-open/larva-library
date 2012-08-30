@@ -9,7 +9,7 @@
     <form method='post' action="{{url_for('library_search')}}">
         <p>{{ render_field(form.search_keywords) }}</p>
         {% if session.get('user_email') %}
-            <p style="text-align:right;">{{ render_field(form.user_owned) }}</p>
+            <p style="text-align:right;margin-right:8px;">{{ render_field(form.user_owned) }}</p>
         {% endif %}
         <input type='submit' class="search" value="" style="text-align:right;">
     </form>
