@@ -5,6 +5,7 @@ from larva_library.models.taxis import Taxis
 from larva_library.models.capability import Capability
 from larva_library.models.settlement import Settlement
 from wtforms import *
+from mongokit import OR
 
 class LifeStage(Document):
     __collection__= 'lifestage'
@@ -13,8 +14,8 @@ class LifeStage(Document):
     structure = {
         'name'      : unicode,
         'duration'  : int,
-        'linear_a'  : float,
-        'linear_b'  : float,
+        'linear_a'  : OR(int, float),
+        'linear_b'  : OR(int, float),
         'diel'      : [Diel],
         'taxis'     : [Taxis],
         'capability': Capability,
