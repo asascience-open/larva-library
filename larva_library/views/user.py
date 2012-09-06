@@ -8,3 +8,9 @@ from larva_library.views.helpers import admin_login_required
 def show_users():
     users = list(db.User.find())
     return render_template('show_users.html', users=users)
+
+#debug
+@app.route('/users/remove_entries')
+def remove_libraries():
+    db.drop_collection('users')
+    return redirect(url_for('index'))
