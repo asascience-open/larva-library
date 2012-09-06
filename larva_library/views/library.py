@@ -38,9 +38,12 @@ def detail_view(library_id):
 @app.route('/library/<ObjectId:library_id>.json', methods=['GET'])
 def json_view(library_id):
     entry = db.Library.find_one({'_id': library_id})
-    jsond = json.loads(entry.to_json())
-    remove_mongo_keys(jsond) #destructive method
-    return jsonify({"results" : [jsond] })
+    if entry is not None:
+        jsond = json.loads(entry.to_json())
+        remove_mongo_keys(jsond) #destructive method
+        return jsonify({"results" : [jsond] })
+    else:
+        return jsonify({"results" : "No library entry with ID %s" % str(library_id) })
 
 @app.route("/library/search", methods=["POST", "GET"])
 def library_search():
@@ -110,13 +113,26 @@ def import_library(format=None):
                 return jsonify( { 'results' : 'Must add an email parameter to request' } )
 
     if request.method == 'POST':
-        jsonfile_storage = request.files.get('jsonfile')
-        stringStream = jsonfile_storage.stream
-        stringStream.seek(0)
+
+        entry_dict = None
+
+        jsonfile_storage = request.files.get('jsonfile', None)
+        json_data = request.form.get("config", None)
+
         try:
-            entry_dict = json.loads(stringStream.getvalue())
+            # Are they POSTing a file?
+            if jsonfile_storage is not None:
+                stringStream = jsonfile_storage.stream
+                stringStream.seek(0)
+                entry_dict = json.loads(stringStream.getvalue())
+            
+            # Are they POSTing JSON?
+            if json_data is not None:
+                entry_dict = json.loads(json_data)
+
             entry_list = entry_dict.get('results', None) # assume the higher level dictionary only has one key
             assert entry_list is not None
+            assert isinstance(entry_list, list)
         except:
             message = "Must upload a valid library file, please try again"
             if format == 'html':
