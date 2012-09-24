@@ -81,20 +81,19 @@ def edit_lifestage(library_id, lifestage_id):
 
         if request.method == 'POST' and form.validate():
 
-            newlifestage = db.LifeStage()
-            newlifestage.name = form.name.data
-            newlifestage.duration = form.duration.data
-            newlifestage.notes = form.notes.data
+            lifestage.name = form.name.data
+            lifestage.duration = form.duration.data
+            lifestage.notes = form.notes.data
             if form.linear.data:
                 if form.linear_a.data:
-                    newlifestage.linear_a = float(form.linear_a.data)
+                    lifestage.linear_a = float(form.linear_a.data)
                 if form.linear_b.data:
-                    newlifestage.linear_b = float(form.linear_b.data)
+                    lifestage.linear_b = float(form.linear_b.data)
 
-            newlifestage.diel = [] 
-            newlifestage.taxis = []
-            newlifestage.capability = None
-            newlifestage.settlement = None
+            lifestage.diel = [] 
+            lifestage.taxis = []
+            lifestage.capability = None
+            lifestage.settlement = None
 
             # Capability
             if form.capability.data:
@@ -104,7 +103,7 @@ def edit_lifestage(library_id, lifestage_id):
                 c.swim_turning = form.swim_turning.data
                 c.nonswim_turning = form.nonswim_turning.data
                 c.save()
-                newlifestage.capability = c
+                lifestage.capability = c
 
             # Settlement
             if form.settlement.data:
@@ -113,7 +112,7 @@ def edit_lifestage(library_id, lifestage_id):
                 s.upper = float(form.settle_lower.data)
                 s.lower = float(form.settle_upper.data)
                 s.save()
-                newlifestage.settlement = s
+                lifestage.settlement = s
 
             # Diel
             if form.diel_data.data and len(form.diel_data.data) > 0:
@@ -139,7 +138,7 @@ def edit_lifestage(library_id, lifestage_id):
                             d.time = t
                         
                     d.save()
-                    newlifestage.diel.append(d)
+                    lifestage.diel.append(d)
                 
             if form.taxis_data.data and len(form.taxis_data.data) > 0:
 
@@ -154,16 +153,9 @@ def edit_lifestage(library_id, lifestage_id):
                     t.gradient = float(taxis_data['gradient'])
 
                     t.save()
-                    newlifestage.taxis.append(t)
+                    lifestage.taxis.append(t)
 
-            newlifestage.save()
-
-            # Remove lifestage we are editing
-            entry.lifestages.remove(lifestage)
-
-            # Add new lifestage
-            entry.lifestages.append(newlifestage)
-            entry.save()
+            lifestage.save()
 
             flash('Edited LifeStage')
             return redirect(url_for('detail_view', library_id=entry._id ))

@@ -2,7 +2,8 @@ from flask import url_for, request, redirect, flash, render_template, session, s
 from larva_library import app, db
 from larva_library.models.library import LibrarySearch, Library, BaseWizard
 from larva_library.utils import remove_mongo_keys
-from larva_library.views.helpers import login_required, retrieve_by_terms, retrieve_all
+from bson.objectid import ObjectId
+from larva_library.views.helpers import login_required, retrieve_by_terms, retrieve_all, authorize_entry_write
 from shapely.wkt import loads
 from shapely.geometry import Point, Polygon
 from dateutil.parser import parse
@@ -142,6 +143,8 @@ def import_library(format=None):
                 return jsonify( { 'results' : message } )
 
         saved_items = []
+
+        #app.logger.info(entry_list)
 
         for entry in entry_list:
 
@@ -296,19 +299,48 @@ def library_wizard():
     return render_template('library_wizard.html', form=form)
 
 
-@app.route('/library/<ObjectId:library_id>/edit', methods=['GET','POST'])
+@app.route('/library/<ObjectId:library_id>/reorder_lifestages', methods=['PUT'])
 @login_required
-def library_edit_wizard(library_id):
-
-    # Get library object
+def reorder_lifestages(library_id):
+    # Get objects
     entry = db.Library.find_one({'_id':library_id})
+    user = db.User.find_one({ 'email' : session.get("user_email")})
+
     if entry is None:
         flash('Cannot find ' + str(library_id) + ' for editing')
         return redirect(url_for('index'))
 
     # Permissions
-    if session.get('user_email', None) != entry.user:
-        flash('%s does not have permission to edit this entry')
+    if not authorize_entry_write(entry=entry, user=user):
+        flash("Not authorized edit this library item")
+        return redirect(url_for('index'))
+
+    lifestage_ids = request.form.get('lifestages').split(',')
+
+    entry.lifestages = []
+    for lfid in lifestage_ids:
+        ls = db.LifeStage.find_one({'_id': ObjectId(lfid)})
+        entry.lifestages.append(ls)
+
+    entry.save()
+
+    return jsonify({"results" : "success" })
+
+
+@app.route('/library/<ObjectId:library_id>/edit', methods=['GET','POST'])
+@login_required
+def library_edit_wizard(library_id):
+    # Get objects
+    entry = db.Library.find_one({'_id':library_id})
+    user = db.User.find_one({ 'email' : session.get("user_email")})
+
+    if entry is None:
+        flash('Cannot find ' + str(library_id) + ' for editing')
+        return redirect(url_for('index'))
+
+    # Permissions
+    if not authorize_entry_write(entry=entry, user=user):
+        flash("Not authorized edit this library item")
         return redirect(url_for('index'))
 
     form = BaseWizard(request.form, obj=entry)
