@@ -29,8 +29,12 @@
             $('#sortable').sortable({
                 update: function(event, ui) {
                     var lifestages = [];
+                    c = 1;
                     $('.lifestage_detail').each(function(i) {
                         lifestages.push($(this).attr('id'));
+                        // Update index
+                        $(this).find("h2.num").text(c + ".)");
+                        c++;
                     });
                     // Call the Library edit to arrange lifestages correctly
                     $.ajax({
@@ -125,7 +129,7 @@
         <br /><br />
             <div id="sortable" style="display: block;">
                 {% for lifestage in entry.lifestages %}
-                    {{ lifestage_summary(lifestage, entry._id) }}
+                    {{ lifestage_summary(lifestage, entry._id, loop.index) }}
                 {% endfor %}
             <div>
         <span style="margin-left:10px;"><a href="{{url_for('lifestage_wizard', library_id=entry._id)}}">Add Lifestage</a></span><br />
@@ -136,69 +140,79 @@
     <span style="margin-left:10px;"><a href="{{url_for('index')}}">Home</a></span>
 {% endblock %}
 
-{% macro lifestage_summary(lifestage, library_id) -%}
+{% macro lifestage_summary(lifestage, library_id, loop_index) -%}
     <div class="lifestage_detail" id="{{lifestage._id}}">
-        <ul>
-            <li><a href="{{url_for('clone_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Clone</a></li>
-            <li><a href="{{url_for('edit_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Edit</a></li>
-            <li><a href="{{url_for('delete_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Delete</a></li>
-        </ul>
-        <div class="info">
-            <p>Name:</p><p class="p_data">{{lifestage.name}}</p><br />
-            <p>Duration (days):</p><p class="p_data">{{lifestage.duration}}</p><br />
-                {% if lifestage.linear_a is number and lifestage.linear_b is number %}
-                    <p style="width:190px;font-style:italic;margin:2px 0;font-size:13px">Growth determined by temperature</p><br />
-                    <p style="margin: 0px 15px;">Linear A:</p><p class="p_data">{{lifestage.linear_a}}</p><br />
-                    <p style="margin: 0px 15px;">Linear B:</p><p class="p_data">{{lifestage.linear_b}}</p><br />
-                {% else %}
-                    <p style="width:190px;font-style:italic;margin:2px 0;font-size:13px">Growth not determined by temperature</p><br />
-                {% endif %}
-            <p>Notes:</p><p class="p_data">{{lifestage.notes}}</p><br />
+        <h2 style="float: left;" class="num">{{ loop_index }}.)</h2>
+        <h2 style="margin-left: 5px; float: left;">{{ lifestage.name | truncate(45) }}</h2>
+        
+        <a style="float: right; margin: 15px 2px;" href="{{url_for('clone_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Clone</a>
+        <a style="float: right; margin: 15px 2px;" href="{{url_for('edit_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Edit</a>
+        <a style="float: right; margin: 15px 2px;" href="{{url_for('delete_lifestage', library_id=library_id, lifestage_id=lifestage._id)}}">Delete</a>
+
+        <div class="clear"></div>
+
+        <p class="bold" style="margin-top:10px;">Duration: {{ lifestage.duration }} days</p>
+        <br />
+        {% if lifestage.linear_a is number and lifestage.linear_b is number %}
+            <p style="font-style:italic;margin:2px 15px;font-size:13px">Growth determined by temperature</p><br />
+            <p style="margin: 0px 15px;">Linear A:</p><p class="p_data">{{lifestage.linear_a}}</p><br />
+            <p style="margin: 0px 15px;">Linear B:</p><p class="p_data">{{lifestage.linear_b}}</p><br />
+        {% else %}
+            <p style="font-style:italic;margin:2px 15px;font-size:13px">Growth not determined by temperature</p><br />
+        {% endif %}
+
+        <p class="bold" style="margin-top:10px;">Notes:</p>
+        <div style="margin-left:15px;">
+        {% if lifestage.notes %}
+            {{ lifestage.notes }}
+        {% else %}
+            <p style="margin-top:10px;">None</p>
+        {% endif %}
         </div>
-            <p class="bold" style="margin-top:10px;">Configured Diel:</p>
-            {% if lifestage.diel[0] is defined %}
-                {%- for dtry in lifestage.diel %}
-                    <p class="p_diel">{{dtry}}</p>
-                {% endfor %}
-            {% else %}
-                <p style="margin-top:10px;">None</p>
-            {% endif %}
 
-            <br />
-            <p class="bold" style="margin-top:10px;">Configured Taxis:</p>
-            {% if lifestage.taxis[0] is defined %}
-                {%- for ztry in lifestage.taxis %}
-                    <br /><p class="p_diel">{{ztry}}</p>
-                {% endfor %}
-            {% else %}
-                <p style="margin-top:10px;">None</p>
-            {% endif %}
+        <p class="bold" style="margin-top:10px;">Configured Diel:</p>
+        <div style="margin-left:15px;">
+        {% if lifestage.diel[0] is defined %}
+            {%- for dtry in lifestage.diel %}
+                <p class="p_diel">{{dtry}}</p>
+            {% endfor %}
+        {% else %}
+            <p style="margin-top:10px;">None</p>
+        {% endif %}
+        </div>
 
-            <br />
-            <p class="bold" style="margin-top:10px;">Configured Capabilities:</p>
-            {% if lifestage.capability.vss is defined %}
-            <div style="margin-left:15px;width:290px;">
-                <p class="cap_label">Vertical Swimming Speed (m/s):</p> <p class="p_cap">{{lifestage.capability.vss}}</p><br />
-                <p class="cap_label">Swimming Speed Variance (m/s):</p> <p class="p_cap">{{lifestage.capability.variance}}</p><br />
-                <p class="cap_label">Swimming turning direction:</p> <p class="p_cap">{{lifestage.capability.swim_turning}}</p><br />
-                <p class="cap_label">Non-swimming turning direction:</p> <p class="p_cap">{{lifestage.capability.nonswim_turning}}</p>
-            </div>
-            {% else %}
-                <p style="margin-top:10px;">None</p>
-            {% endif %}
-            
-            <br />
-            <div style="float:left;">
-                <p class="bold" style="margin-top:10px;">Configured Settlement:</p>
-                {% if lifestage.settlement.type is defined %}
-                    <div style="margin-left:15px;">
-                        <p>Type:</p> <p class="p_cap">{{lifestage.settlement.type}}</p><br />
-                        <p>Upper (m):</p> <p class="p_cap">{{lifestage.settlement.upper}}</p><br />
-                        <p>Lower (m):</p> <p class="p_cap">{{lifestage.settlement.lower}}</p>
-                    </div>
-                {% else %}
-                    <p style="margin-top:10px;">None</p>
-                {% endif %}
-            </div>
+        <p class="bold" style="margin-top:10px;">Configured Taxis:</p>
+        <div style="margin-left:15px;">
+        {% if lifestage.taxis[0] is defined %}
+            {%- for ztry in lifestage.taxis %}
+                <p class="p_diel">{{ztry}}</p>
+            {% endfor %}
+        {% else %}
+            <p style="margin-top:10px;">None</p>
+        {% endif %}
+        </div>
+
+        <p class="bold" style="margin-top:10px;">Configured Capabilities:</p>
+        <div style="margin-left:15px;">
+        {% if lifestage.capability.vss is defined %}
+            <p class="cap_label">Vertical Swimming Speed (m/s):</p> <p class="p_cap">{{lifestage.capability.vss}}</p><br />
+            <p class="cap_label">Swimming Speed Variance (m/s):</p> <p class="p_cap">{{lifestage.capability.variance}}</p><br />
+            <p class="cap_label">Swimming turning direction:</p> <p class="p_cap">{{lifestage.capability.swim_turning}}</p><br />
+            <p class="cap_label">Non-swimming turning direction:</p> <p class="p_cap">{{lifestage.capability.nonswim_turning}}</p>
+        {% else %}
+            <p style="margin-top:10px;">None</p>
+        {% endif %}
+        </div>
+
+        <p class="bold" style="margin-top:10px;">Configured Settlement:</p>
+        <div style="margin-left:15px;">
+        {% if lifestage.settlement.type is defined %}
+            <p>Type:</p> <p class="p_cap">{{lifestage.settlement.type}}</p><br />
+            <p>Upper (m):</p> <p class="p_cap">{{lifestage.settlement.upper}}</p><br />
+            <p>Lower (m):</p> <p class="p_cap">{{lifestage.settlement.lower}}</p>
+        {% else %}
+            <p style="margin-top:10px;">None</p>
+        {% endif %}
+        </div>
     </div>
 {%- endmacro %}
