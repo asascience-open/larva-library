@@ -358,7 +358,6 @@ label[for=settlement]{
     border: 1px solid #00315c;
     height: 100%;
     background-color: #fff;
-    cursor: move;
     min-height: 112px;
     overflow: hidden;
     font-size: 12px;

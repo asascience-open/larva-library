@@ -19,6 +19,7 @@ def detail_view(library_id):
         return redirect(url_for('index'))
 
     entry = db.Library.find_one({'_id': library_id})
+    user = db.User.find_one({ 'email' : session.get("user_email")})
 
     if entry is None:
         flash('Cannot find object ' + str(library_id))
@@ -34,7 +35,12 @@ def detail_view(library_id):
 
     entry['markers'] = marker_positions
 
-    return render_template('library_detail.html', entry=entry)
+    auth = False
+        # Permissions
+    if authorize_entry_write(entry=entry, user=user):
+        auth = True
+
+    return render_template('library_detail.html', entry=entry, auth=auth)
 
 @app.route('/library/<ObjectId:library_id>.json', methods=['GET'])
 def json_view(library_id):

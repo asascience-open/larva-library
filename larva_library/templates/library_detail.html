@@ -24,35 +24,41 @@
             {% endfor %}
         }
     </script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#sortable').sortable({
-                update: function(event, ui) {
-                    var lifestages = [];
-                    c = 1;
-                    $('.lifestage_detail').each(function(i) {
-                        lifestages.push($(this).attr('id'));
-                        // Update index
-                        $(this).find("h2.num").text(c + ".)");
-                        c++;
-                    });
-                    // Call the Library edit to arrange lifestages correctly
-                    $.ajax({
-                        url: "{{ url_for( 'reorder_lifestages', library_id=entry._id ) }}",
-                        type: 'PUT',
-                        data: { 'lifestages' : lifestages.join() }
-                    });
-                }
+    {% if auth %}
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('.lifestage_detail').each(function(i) {
+                    $(this).css('cursor','move');
+                });
+
+                $('#sortable').sortable({
+                    update: function(event, ui) {
+                        var lifestages = [];
+                        c = 1;
+                        $('.lifestage_detail').each(function(i) {
+                            lifestages.push($(this).attr('id'));
+                            // Update index
+                            $(this).find("h2.num").text(c + ".)");
+                            c++;
+                        });
+                        // Call the Library edit to arrange lifestages correctly
+                        $.ajax({
+                            url: "{{ url_for( 'reorder_lifestages', library_id=entry._id ) }}",
+                            type: 'PUT',
+                            data: { 'lifestages' : lifestages.join() }
+                        });
+                    }
+                });
+                $('#sortable').disableSelection();
             });
-            $('#sortable').disableSelection();
-        });
-    </script>
+        </script>
+    {% endif %}
 {% endblock %}
 
 {% block page %}
     {% if entry %}
 
-        {% if session.get('user_email', None) == entry.user %}
+        {% if auth %}
         <div class=edit>
             <a class="edit" href="{{ url_for( 'library_edit_wizard', library_id=entry._id ) }}">edit</a>
         </div>
