@@ -207,9 +207,9 @@
         <p class="bold" style="margin-top:10px;">Configured Settlement:</p>
         <div style="margin-left:15px;">
         {% if lifestage.settlement.type is defined %}
-            <p>Type:</p> <p class="p_cap">{{lifestage.settlement.type}}</p><br />
-            <p>Upper (m):</p> <p class="p_cap">{{lifestage.settlement.upper}}</p><br />
-            <p>Lower (m):</p> <p class="p_cap">{{lifestage.settlement.lower}}</p>
+            <p class="cap_label">Type:</p> <p class="p_cap">{{lifestage.settlement.type}}</p><br />
+            <p class="cap_label">Upper (m):</p> <p class="p_cap">{{lifestage.settlement.upper}}</p><br />
+            <p class="cap_label">Lower (m):</p> <p class="p_cap">{{lifestage.settlement.lower}}</p>
         {% else %}
             <p style="margin-top:10px;">None</p>
         {% endif %}

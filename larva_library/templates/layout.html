@@ -8,27 +8,30 @@
 </head>
 <body>
     {% block body %}
-                {% if session['user_email'] %}
-                <div class=logout>
-                    <a href="{{ url_for('logout') }}">sign out</a>
-                </div>
-                {% else %}
-                <div class=login>
-                    <a href="{{ url_for('login_google') }}" style="float:right;">
-                        <img src="{{ url_for('.static', filename='images/google.png') }}" />
-                        <p>sign in with google</p></a>
-                    <a href="{{ url_for('login_facebook') }}" style="float:left;">
-                        <img src="{{ url_for('.static', filename='images/facebook.png') }}" />
-                        <p>sign in with facebook</p></a>
-                    </div>
-                    <div class=divider></div>
-                {% endif %}
-            {% for message in get_flashed_messages() %}
-                <div class=flash>{{ message }}</div>
-            {% endfor %}
-            <div class=content>
-                {% block page %}{% endblock %}
+        {% if session['user_email'] %}
+            <div class='logout'>
+                <a href="{{ url_for('logout') }}">sign out</a>
             </div>
+        {% else %}
+            <div class='login'>
+                <a href="{{ url_for('login_google') }}" style="float:right;">
+                    <img src="{{ url_for('.static', filename='images/google.png') }}" />
+                    <p>sign in with google</p>
+                </a>
+                <a href="{{ url_for('login_facebook') }}" style="float:left;">
+                    <img src="{{ url_for('.static', filename='images/facebook.png') }}" />
+                    <p>sign in with facebook</p>
+                </a>
+            </div>
+            <div class='divider'></div>
+        {% endif %}
+            
+        {% for message in get_flashed_messages() %}
+            <div class='flash'>{{ message }}</div>
+        {% endfor %}
+        <div class='content'>
+            {% block page %}{% endblock %}
+        </div>
     {% endblock %}
-    <div class=footer></div>
+    <div class='footer'></div>
 </body>
