@@ -1,7 +1,7 @@
 html { 
     background: #00315c url(images/masthead.png) no-repeat top center;
     min-width: 1024px; 
-    font: normal normal 17px sans-serif;
+    font: normal normal 14px sans-serif;
     line-height: 18px; 
     color: #00315c; 
     height: 100%; 
@@ -54,27 +54,6 @@ input[type=text] {
     display: inline block;
     }
 
-input[class=search] { 
-    background: #fff url(images/search.png) no-repeat top center; 
-    margin-top: 10px;
-    margin-right: 10px; 
-    border: 0; 
-    cursor: pointer; 
-    float: right; 
-    width: 77px; 
-    height: 29px; 
-    }
-
-#import_bttn { 
-    background: #fff url(images/import.png) no-repeat top center; 
-    border: 0; 
-    cursor: pointer; 
-    width: 77px; 
-    height: 29px; 
-    margin-top: -4px; 
-    position: absolute; 
-    }
-
 .content { 
     width: 576px;   
     margin: 0 auto 0 auto; 
@@ -83,10 +62,37 @@ input[class=search] {
     overflow: hidden;
     }
 
+.front_block {
+    float: left;
+    width: 576px;
+    margin: 0 auto 40px auto;
+    clear: both;
+    text-align: center;
+}
+
+input[class=search] {
+    margin-top: 15px;
+    padding: 5px;
+}
+
+input[class=import] {
+    margin-top: 15px;
+    padding: 5px;
+}
+
+.half_front {
+    width: 265px;
+    padding: 10px;
+    float: left;
+    overflow: hidden;
+}
+
 .login { 
     width: 234px; 
     margin: 0 auto 0 auto; 
-    font-size: 14px; text-align: center; padding-top: 26px; 
+    font-size: 14px;
+    text-align: center;
+    padding-top: 0px; 
     }
 
     .login a { 
@@ -98,7 +104,7 @@ input[class=search] {
         width: 77px; 
         }
 
-.logout { 
+.topnav {
     clear: both;
     width: 576px; 
     margin: 0 auto 22px auto; 
@@ -106,24 +112,14 @@ input[class=search] {
     font-weight: bold;
     text-align: right; 
     padding-top: 22px;
-    }
+}
 
 .divider { 
     background: #fff url(images/fish_divider.png) no-repeat top center;
     clear: both;
     width: 616px; 
     height: 25px; 
-    margin: 15px auto 15px auto;
-    }
-
-.search { 
-    width: 305px;   
-    margin: 25px auto 0 auto;
-    }
-
-.library {
-    clear: both; 
-    padding-top: 10px;
+    margin: 0px auto;
     }
 
 .bottom { 
@@ -141,7 +137,7 @@ input[class=search] {
     padding: 0.5em; 
     border: 1px solid #AACBE2;
     width: 500px; 
-    margin: 10px auto 0 auto; 
+    margin: 10px auto; 
     text-align: center; 
     }
 
@@ -167,10 +163,6 @@ input[class=search] {
 .navigation { 
     text-align: right; 
     margin-top: 20px;
-    }
-
-.footer { 
-    height: 100px; 
     }
 
 .edit { 
@@ -300,6 +292,10 @@ label[for=capability],
 label[for=settlement]{
     max-width: 1px;
     }
+
+#search_keywords {
+    width: 220px;
+}
 
 .search_results {
     border: 1px solid #00315c;

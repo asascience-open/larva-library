@@ -59,8 +59,9 @@
     {% if entry %}
 
         {% if auth %}
-        <div class=edit>
-            <a class="edit" href="{{ url_for( 'library_edit_wizard', library_id=entry._id ) }}">edit</a>
+        <div class="edit">
+            <a class="edit" href="{{ url_for( 'library_edit_wizard', library_id=entry._id ) }}">Edit Library Item</a>
+            <span style="margin-left:10px;"><a href="{{url_for('json_view', library_id=entry._id)}}">Download For External Use</a></span>
         </div>
         {% endif %}
 
@@ -132,18 +133,17 @@
         </table>
 
         <strong>Lifestages</strong>
+        <br />
+        <br />
+        <span style="margin-left:10px;"><a href="{{url_for('lifestage_wizard', library_id=entry._id)}}">Add Lifestage</a></span><br />
         <br /><br />
             <div id="sortable" style="display: block;">
                 {% for lifestage in entry.lifestages %}
                     {{ lifestage_summary(lifestage, entry._id, loop.index) }}
                 {% endfor %}
             <div>
-        <span style="margin-left:10px;"><a href="{{url_for('lifestage_wizard', library_id=entry._id)}}">Add Lifestage</a></span><br />
-
     {% endif %}
     <br />
-    <span style="margin-left:10px;"><a href="{{url_for('json_view', library_id=entry._id)}}">Download For External Use</a></span><br /><br />
-    <span style="margin-left:10px;"><a href="{{url_for('index')}}">Home</a></span>
 {% endblock %}
 
 {% macro lifestage_summary(lifestage, library_id, loop_index) -%}

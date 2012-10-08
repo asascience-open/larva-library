@@ -8,11 +8,20 @@
 </head>
 <body>
     {% block body %}
-        {% if session['user_email'] %}
-            <div class='logout'>
+
+        <div class="topnav">
+            <span style="margin-left:10px;"><a href="{{url_for('index')}}">home</a></span>
+            {% if session['user_email'] %}
                 <a href="{{ url_for('logout') }}">sign out</a>
-            </div>
-        {% else %}
+            {% endif %}
+            
+        </div>
+
+        {% for message in get_flashed_messages() %}
+            <div class='flash'>{{ message }}</div>
+        {% endfor %}
+
+        {% if not session['user_email'] %}
             <div class='login'>
                 <a href="{{ url_for('login_google') }}" style="float:right;">
                     <img src="{{ url_for('.static', filename='images/google.png') }}" />
@@ -26,12 +35,8 @@
             <div class='divider'></div>
         {% endif %}
             
-        {% for message in get_flashed_messages() %}
-            <div class='flash'>{{ message }}</div>
-        {% endfor %}
         <div class='content'>
             {% block page %}{% endblock %}
         </div>
     {% endblock %}
-    <div class='footer'></div>
 </body>

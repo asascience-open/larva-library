@@ -100,8 +100,8 @@ class TagListField(Field):
 
 ## forms for library searching
 class LibrarySearch(Form):
-    search_keywords = TextField('Search')
-    user_owned = BooleanField('User Owned Only')
+    search_keywords = TextField('')
+    user_owned = BooleanField('Restrict search to personal entries')
 
 ## forms for library wizard (editing and creating)
 class BaseWizard(Form):

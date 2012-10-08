@@ -5,41 +5,57 @@
 {% endblock %}
 {% block page %}
 
-    <!-- Search Form-->
-    <form method='post' action="{{url_for('library_search')}}">
-        <p>{{ render_field(form.search_keywords) }}</p>
-        {% if session.get('user_email') %}
-            <p style="text-align:right;margin-right:8px;">{{ render_field(form.user_owned) }}</p>
-        {% endif %}
-        <input type='submit' class="search" value="" style="text-align:right;">
-    </form>
-
-    <!-- Library -->
-    <div class=library>
-    {% if session.get('user_email') %}
-        <p><a href="{{url_for('library_wizard')}}">Create new library entry</a></p><br />
-        <p>Import library item: 
-            <form method='post' enctype='multipart/form-data' action="{{ url_for('import_library') }}" >
-                <input type="file" name="jsonfile" />
-                <input type="submit" id="import_bttn" value="" />
+    <div class="front_block">
+        <div class="half_front">
+            <h3>Search</h3>
+            <form method='post' action="{{url_for('library_search')}}">
+                <p>{{ render_field(form.search_keywords) }}</p>
+                {% if session.get('user_email') %}
+                    {{ render_field(form.user_owned) }}
+                {% endif %}
+                <input type='submit' class="search" value="Search" />
             </form>
-        </p>
-    {% else %}
-        <p>Please login to create new library entries</p>
-    {% endif %}
+        </div>
 
-    {% if libraries %}
-        <br />Owned Library Entries: <br />
-        <table style="margin-left:20px;padding-top:10px;">
-           {% for library in libraries %}
-           <tr>
-               <td><strong>{{ library.name }}</strong></td>
-               <td style="padding-left:10px;"><a href="{{ url_for( 'detail_view', library_id=library._id ) }}">detail</a></td>
-           </tr>
-           {% endfor %}
-        </table>
-    {% endif %}
+        <div class="half_front">
+            <h3>Browse</h3>
+            <p><a href="{{ url_for('list_library') }}">View</a> a listing of the library entries.</p> 
+        </div>
 
-    <p><br /><a href="{{url_for('list_library')}}">Browse library</a></p>
     </div>
+
+    {% if session['user_email'] %}
+        <div class="front_block">
+            <div class="half_front">
+                <h3>Import</h3>
+                <form method='post' enctype='multipart/form-data' action="{{ url_for('import_library') }}" >
+                    <input type="file" name="jsonfile" />
+                    <input type="submit" class="import" value="Import" />
+                </form>
+            </div>
+                    
+            <div class="half_front">
+                {% if session.get('user_email') %}
+                    <h3>Create</h3>
+                    <p><a href="{{ url_for('library_wizard') }}">Create</a> a new listing in the library.</p> 
+                {% endif %}
+            </div>
+        </div>
+
+        {% if libraries %}
+            <div class="front_block">
+                <h3>Your personal library entries</h3>
+                <table style="margin-left:20px;">
+                   {% for library in libraries %}
+                   <tr>
+                       <td><strong>{{ library.name }}</strong></td>
+                       <td style="padding-left:10px;"><a href="{{ url_for( 'detail_view', library_id=library._id ) }}">detail</a></td>
+                   </tr>
+                   {% endfor %}
+                </table>
+            </div>
+        {% endif %}
+
+    {% endif %}
+
 {% endblock %}

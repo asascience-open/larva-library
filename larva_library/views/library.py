@@ -36,7 +36,7 @@ def detail_view(library_id):
     entry['markers'] = marker_positions
 
     auth = False
-        # Permissions
+    # Permissions
     if authorize_entry_write(entry=entry, user=user):
         auth = True
 
@@ -73,7 +73,7 @@ def library_search():
 
     # Build query; first look for entries that belong to user, then look for entries that are marked public
     keywords = form.search_keywords.data
-
+ 
     entries = list(retrieve_by_terms(keywords, user=user, only_owned=form.user_owned.data))
 
     if len(entries) < 1:

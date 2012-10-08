@@ -14,17 +14,43 @@
                 {{ render_field(form.name) }}<br />
 
                 <h3>Duration / Growth</h3>
-                {{ render_field(form.duration) }}<br />
 
+                {{ render_field(form.duration) }}
+                <br />
+                <br />
                 {{ render_check(form.linear) }}
                 <span style="margin-left: -208px;">Use temperature to determine lifstage changes</span> <br />
-                <span style="margin-left:223px;">See explanation here: LINK</span><br />
-                {{ render_field(form.linear_a) }}
-                {{ render_field(form.linear_b) }}<br />
+
+                <div id="temp_growth" style="display: none;">
+                    <p style="margin-left:50px;">
+                        Colder water temperatures can slow down larva growth rate.  Please enter a linear relationhip between growth and temperature as a function of the larval stage per degree Celcius.
+                        <br />
+                        <br />
+                        P = AT + B, where:
+                        <br />
+                        <br />
+                        P = Percent Larva Stage Completed
+                        <br />
+                        T = Temperature (degrees C) from forcing hydro-dyanmic model (if available)
+                        <br />
+                        A = Percent Larva Stage Completed / degrees C)
+                        <br />
+                        B = Percent Larva Stage Completed (as decimal, ie. 0.5 for 50%)
+                        <br />
+                    </p>
+                    
+                    {{ render_field(form.linear_a) }}
+                    {{ render_field(form.linear_b) }}
+                </div>
+
+                <br />
                 <br />
 
                 {{ render_field(form.notes) }}<br />
+                <br />
+                <br />
 
+                <h3>Choose Behaviors</h3>
                 <div style="margin-left:201px;">
                     {{ render_check(form.capability) }}<br />
                     <div style="margin:5px 0 5px 30px;font-style:italic;">Note: Capabilities are required if implementing a Diel or Sensory behavior</div>
@@ -647,6 +673,14 @@
                     updateList("taxis_list", "taxis_data", taxis_inputs);
                 }
             });
+
+            $("#linear").click(function(event) {
+                $("#temp_growth").toggle();
+            });
+
+            if ($("#linear").is(':checked')) {
+                $("#temp_growth").toggle();
+            }
 
             $("#capability:input").change(function(event) {
                 if (!$(this).is(':checked')) {
