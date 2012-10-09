@@ -13,34 +13,39 @@
             <div class="step unidirectional" id="base_step">
                 {{ render_field(form.name) }}<br />
 
-                <h3>Duration / Growth</h3>
+                <h3>Duration</h3>
 
                 {{ render_field(form.duration) }}
                 <br />
                 <br />
                 {{ render_check(form.linear) }}
-                <span style="margin-left: -208px;">Use temperature to determine lifstage changes</span> <br />
+                <span style="margin-left: -208px;">Use temperature to determine duration</span> <br />
 
                 <div id="temp_growth" style="display: none;">
+                    <br />
+                    <div style="margin-left: 50px;"><strong>If no temperature data from forcing model is available, lifestage duration (in days) entered above is used.</strong></div>
+
+
                     <p style="margin-left:50px;">
-                        Colder water temperatures can slow down larva growth rate.  Please enter a linear relationhip between growth and temperature as a function of the larval stage per degree Celcius.
+                        Colder water temperatures can slow down larval growth rate, therefore controlling larval stage duration.  Please enter a linear relationship between growth and temperature as a function of the larval stage per degree Celcius.
                         <br />
                         <br />
                         P = AT + B, where:
                         <br />
                         <br />
-                        P = Percent Larva Stage Completed
+                        P = Percent Larval Stage Completed
                         <br />
                         T = Temperature (degrees C) from forcing hydro-dyanmic model (if available)
                         <br />
-                        A = Percent Larva Stage Completed / degrees C)
+                        A = Percent Larval Stage Completed / degrees C)
                         <br />
-                        B = Percent Larva Stage Completed (as decimal, ie. 0.5 for 50%)
+                        B = Percent Larval Stage Completed (as decimal, ie. 0.5 for 50%)
                         <br />
                     </p>
                     
                     {{ render_field(form.linear_a) }}
                     {{ render_field(form.linear_b) }}
+
                 </div>
 
                 <br />
@@ -53,10 +58,11 @@
                 <h3>Choose Behaviors</h3>
                 <div style="margin-left:201px;">
                     {{ render_check(form.capability) }}<br />
-                    <div style="margin:5px 0 5px 30px;font-style:italic;">Note: Capabilities are required if implementing a Diel or Sensory behavior</div>
+                    <div style="margin:5px 0 5px 30px;font-style:italic;">Note: Capabilities are required if implementing a Vertical Migration or Sensory behavior</div>
                     {{ render_check(form.diel) }}<br />
                     {{ render_check(form.taxis) }}<br />
                     {{ render_check(form.settlement) }}<br />
+                    <div style="margin:5px 0 5px 30px;font-style:italic;">Note: Select only if larval settlement occurs during this lifestage</div>
                 </div>
             </div>
 
@@ -65,13 +71,27 @@
                 <div style="margin:15px 0 0 70px;">
                     {{ render_field(form.vss) }}<br />
                     {{ render_field(form.variance) }}<br /><br />
+
+                    <div style="margin:5px 0 0 30px;">
+                        <strong>Variance defined: </strong>Each larva is assigned a speed in the possible range.  That speed held constant throughout this lifestage.
+                        <br />
+                        <br />
+                        <strong>Variance not defined: </strong>Each larva is assigned the specified speed and held constant throughout this lifestage.
+                    </div>
+                    <br />
+                    <br />
+
+                    <h3>Avoidance Behavior:</h3>
+                    If the organism is swimming vertically at the time of the encounter:
                     {{ render_field(form.swim_turning) }}<br />
+
+                    If the organism is <strong>not</strong> swimming vertically at the time of encounter:
                     {{ render_field(form.nonswim_turning) }}<br />
                 </div>
             </div>
 
             <div class="step" id="diel_step">
-                <h2>Diel</h2>
+                <h2>Vertical Migration</h2>
                 <div class=margin>
                     <input type="radio" name="diel_type" id="specifictime" value="specifictime" />Specific Time
                     {{ time_listings() }} {{ timezones() }}
@@ -108,15 +128,21 @@
             </div>
             
             <div class="step" id="taxis_step">
-                <h2>Taxis</h2>
+                <h2>Sensory</h2>
                 <div style="margin-left:80px;">
                     {{ render_field(form.variable) }}
 
                     <br />
                     <br />
+                    <strong>Variable range in which a behavioral response will occur</strong>
                     <table>
                         <tr><td style="width:240px;">{{ render_field(form.taxis_min) }}</td><td>{{ render_field(form.taxis_max) }}</td></tr>
                     </table>
+
+                    <br />
+                    <bn />
+
+                    <strong>Rate of change in variable which triggers a behavioral response</strong>
                     <table style="margin-top:10px;">
                         <tr><td>{{ render_field(form.taxis_grad) }}</td></tr>
                     </table>
@@ -136,15 +162,22 @@
             <div class="step" id="settle_step">
                 <h2>Settlement</h2>
                 <p>
-                    As the organism grows to the final larval stage, settle into adult habitat occurs.
-                    This dialog guides you to set up the period for finding appropriate habitat for settlement,
-                    and the location of that habitat.
+                    As the organism grows to the final larval stage, settlement into adult habitat occurs.  If at any time during this lifestage these conditions are met, the larval will settle.
+                    <br />
                 </p>
                 <div style="margin:15px 0 0 70px;">
                     {{ render_field(form.settle_type) }}<br />
                     {{ render_field(form.settle_upper) }}<br />
                     {{ render_field(form.settle_lower) }}<br />
                 </div>
+
+                <div style="margin:15px 0 0 70px;">
+                    <strong>Benthic:</strong> Lower depth represents the maximum depth at which the larva will successfully settle.  Upper depth should be 0 (sea surface).
+                    <br />
+                    <br />
+                    <strong>Pelagic:</strong> If a larva enters the depth range during this lifestage they mature to the juvenile stage.
+                </div>
+
             </div>
 
             <div class="submit step" id="review_step">

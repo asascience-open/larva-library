@@ -68,14 +68,14 @@ class LifeStage(Document):
 db.register([LifeStage])
 
 class LifeStageWizard(Form):
-    name = TextField('Name')
+    name = TextField('Lifestage Name')
     duration = IntegerField('Lifestage Duration (days)')
     linear = BooleanField("")
     linear_a = FloatField("A", [validators.optional()])
     linear_b = FloatField("B", [validators.optional()])
     notes = TextAreaField('Notes')
 
-    diel = BooleanField('Diel')
+    diel = BooleanField('Vertical Migration')
     taxis = BooleanField('Sensory')
     capability = BooleanField('Capability')
     settlement = BooleanField('Settlement')
