@@ -78,7 +78,7 @@ class LifeStageWizard(Form):
     diel = BooleanField('Vertical Migration')
     taxis = BooleanField('Sensory')
     capability = BooleanField('Capability')
-    settlement = BooleanField('Settlement')
+    settlement = BooleanField('Transition out of the plankton')
 
     # Diel
     diel_hours = FloatField("", [validators.optional()])

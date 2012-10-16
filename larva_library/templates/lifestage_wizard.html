@@ -56,13 +56,13 @@
                 <br />
 
                 <h3>Choose Behaviors</h3>
-                <div style="margin-left:201px;">
+                <div style="margin-left:201px;" id="selection">
                     {{ render_check(form.capability) }}<br />
                     <div style="margin:5px 0 5px 30px;font-style:italic;">Note: Capabilities are required if implementing a Vertical Migration or Sensory behavior</div>
                     {{ render_check(form.diel) }}<br />
                     {{ render_check(form.taxis) }}<br />
                     {{ render_check(form.settlement) }}<br />
-                    <div style="margin:5px 0 5px 30px;font-style:italic;">Note: Select only if larval settlement occurs during this lifestage</div>
+                    <div style="margin:5px 0 5px 30px;font-style:italic;">Note: Select only if transition occurs during this lifestage</div>
                 </div>
             </div>
 
@@ -109,11 +109,14 @@
                     <br />
                     <br />
 
-                    <table>
-                        <tr><td><label>Desired Depth:</label></td></tr>
-                        <tr><td></td><td>{{ render_field(form.diel_min_depth) }}</td></tr>
-                        <tr><td></td><td>{{ render_field(form.diel_max_depth) }}</td></tr>
-                    </table>
+                    <h3>Desired Depth</h3>
+                    <p>Please enter depths as 'negative down' from the sea surface.  3 meters below the sea surface would be 3.</p>
+                    <span style="margin: 10px;">{{ render_field(form.diel_min_depth) }}</span>
+                    <br />
+                    <span style="margin: 10px;">{{ render_field(form.diel_max_depth) }}</span>
+
+                    <br />
+                    <br />
                     <br />
 
                     <button type="button" name="diel_add" id="diel_add">Add</button>
@@ -160,13 +163,14 @@
             </div>
 
             <div class="step" id="settle_step">
-                <h2>Settlement</h2>
+                <h2>Transition out of the plankton</h2>
                 <p>
                     As the organism grows to the final larval stage, settlement into adult habitat occurs.  If at any time during this lifestage these conditions are met, the larval will settle.
                     <br />
                 </p>
                 <div style="margin:15px 0 0 70px;">
                     {{ render_field(form.settle_type) }}<br />
+                    <p>Please enter depths as 'positive down' from the sea surface.  3 meters below the sea surface would be 3.</p>
                     {{ render_field(form.settle_upper) }}<br />
                     {{ render_field(form.settle_lower) }}<br />
                 </div>
@@ -325,7 +329,7 @@
 
         function move_or_stay(state, checkbox, current_step) {
             // Should we be showing the current step?
-             if (!$('#' + checkbox).is(':checked')) {
+            if (!$('#' + checkbox).is(':checked')) {
                 // clear any input in fields
                 $("#" + current_step + " :input").attr("disabled", true);
 
@@ -402,7 +406,7 @@
             }
 
             // Settlement
-            $("#review_list").append("<h3>Settlement</h3>");
+            $("#review_list").append("<h3>Transition out of the plankton</h3>");
             if ($('#settlement').is(':checked')) {
                 $("#review_list")
                     .append(radioString('Type', 'settle_type'))
@@ -666,13 +670,13 @@
                         min: "Min must be less than max"
                     },
                     taxis_min: {
-                        max: "Max must be more than min"
+                        max: "Max must be greater than min"
                     },
                     diel_max_depth: {
-                        min: "Min depth must be less than max depth"
+                        min: "Max depth must be greater than Min depth"
                     },
                     diel_min_depth: {
-                        max: "Max depth must be more than min depth"
+                        max: "Min depth must be less than Max depth"
                     }
                 }
             });

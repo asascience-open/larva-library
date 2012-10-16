@@ -425,3 +425,10 @@ label[for=settlement]{
 .clear {
     clear: both;
 }
+
+#selection label {
+    width: 300px !important;
+    text-align: left;
+    margin-left: 5px;
+    max-width: 300px;
+}
