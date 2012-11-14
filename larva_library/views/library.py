@@ -180,13 +180,13 @@ def import_library(format=None):
                 if c is not None:
                     capability = db.Capability.from_json(json.dumps(c))
                     capability.save()
-                    lifestage['capability'] = None
+                lifestage['capability'] = None
 
                 s = lifestage.get('settlement', None)
                 if s is not None:
                     settlement = db.Settlement.from_json(json.dumps(s))
                     settlement.save()
-                    lifestage['settlement'] = None
+                lifestage['settlement'] = None
 
                 ls = db.LifeStage.from_json(json.dumps(lifestage))
                 ls.diel = diels
