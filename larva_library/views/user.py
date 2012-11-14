@@ -11,6 +11,6 @@ def show_users():
 
 #debug
 @app.route('/users/remove_entries')
-def remove_libraries():
+def remove_users():
     db.drop_collection('users')
     return redirect(url_for('index'))
