@@ -302,18 +302,18 @@ label[for=settlement]{
     font-size: 14px;
     width: 576px;
     background-color: #578FC2;
-    border-radius: 10px;
     border-spacing: 0;
     }
 
     .search_results thead {
-        font-size: 17px;
+        font-size: 12px;
         text-align: left;
     }
 
     .search_results th {
-        font-weight: normal;
-        padding: 8px;
+        font-weight: bold;
+        padding: 4px;
+        color: #fff;
         border-bottom: 1px solid white;
     }
 
@@ -328,7 +328,7 @@ label[for=settlement]{
     .search_results tbody td{
         border-bottom: 1px solid #fff;
         font-size: 12px;
-        padding: 8px;
+        padding: 4px;
         vertical-align: middle;
     }
 
@@ -338,8 +338,6 @@ label[for=settlement]{
 
     .search_results tfoot td {
         border: none;
-        border-bottom-right-radius: 10px;
-        border-bottom-left-radius: 10px;
         height: 5px;
     }
 

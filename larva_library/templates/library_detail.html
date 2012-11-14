@@ -62,6 +62,7 @@
         <div class="edit">
             <a class="edit" href="{{ url_for( 'library_edit_wizard', library_id=entry._id ) }}">Edit Library Item</a>
             <span style="margin-left:10px;"><a href="{{url_for('json_view', library_id=entry._id)}}">Download For External Use</a></span>
+            <span style="margin-left:10px;"><a href="{{url_for('library_destroy', library_id=entry._id)}}">Delete</a></span>
         </div>
         {% endif %}
 

@@ -8,7 +8,7 @@
         <table class="search_results">
             <thead>
                 <tr>
-                    <th>Name</th><th>Genus</th><th>Species</th><th>Common</th><th colspan="2">Date Created</th>
+                    <th>Name</th><th>Genus</th><th>Species</th><th>Common</th><th>Date Created</th><th>User</th><th>Actions</th>
                 </tr>
             </thead>
             {% for library in libraries %}
@@ -19,10 +19,12 @@
                     <td>{{ library.species }}</td>
                     <td>{{ library.common_name }}</td>
                     <td>{{ library.created }}</td>
+                    <td>{{ library.user }}</td>
                     <td style="width:100px;">
-                        <a href="{{ url_for( 'detail_view', library_id=library._id ) }}">detail</a>
-                        {% if session.get('user_email',None) == library.user %}
-                            <a class="edit" href="{{ url_for( 'library_edit_wizard', library_id=library._id ) }}">edit</a>
+                        <a href="{{ url_for( 'detail_view', library_id=library._id ) }}">detail</a><br />
+                        {% if user.admin or user.email == library.user %}
+                            <a class="edit" href="{{ url_for( 'library_edit_wizard', library_id=library._id ) }}">edit</a><br />
+                            <a class="edit" href="{{ url_for( 'library_destroy', library_id=library._id ) }}">delete</a><br />
                         {% endif %}
                         <a href="{{ url_for( 'json_view', library_id=library._id ) }}">download</a>
                     </td>

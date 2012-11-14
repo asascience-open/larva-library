@@ -253,7 +253,7 @@ def list_library(format=None):
     if format == 'html':
         if len(entries) < 1:
             flash('No entries exist in the library')
-        return render_template('library_list.html', libraries=entries)
+        return render_template('library_list.html', libraries=entries, user=user)
     elif format == 'json':
         ls = [entry.simplified_json() for entry in entries]
         return jsonify( { 'results' : ls } )
@@ -399,6 +399,38 @@ def library_edit_wizard(library_id):
 
     return render_template('library_wizard.html', form=form)
 
+
+@app.route('/library/<ObjectId:library_id>/destroy', methods=['GET','POST'])
+@login_required
+def library_destroy(library_id):
+    entry = db.Library.find_one({'_id': library_id})
+    user = db.User.find_one({ 'email' : session.get("user_email")})
+    if not authorize_entry_write(entry=entry, user=user):
+        flash("Not authorized to delete library item")
+        return redirect(url_for('detail_view', library_id=entry._id ))
+    else:
+        for lifestage in entry.lifestages:
+
+            for d in lifestage.diel:
+                d.delete()
+            for t in lifestage.taxis:
+                t.delete()
+
+            if lifestage.capability is not None:
+                lifestage.capability.delete()
+
+            if lifestage.settlement is not None:
+                lifestage.settlement.delete()
+
+            lifestage.capability = None
+            lifestage.settlement = None
+            lifestage.diel = []
+            lifestage.taxis = []
+            lifestage.delete()
+
+        entry.delete()
+        flash('Deleted Library Entry')
+        return redirect(url_for('list_library'))
 
 #debug
 @app.route('/library/remove_entries')
