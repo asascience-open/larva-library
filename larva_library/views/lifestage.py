@@ -109,8 +109,8 @@ def edit_lifestage(library_id, lifestage_id):
             if form.settlement.data:
                 s = db.Settlement()
                 s.type = form.settle_type.data
-                s.upper = float(form.settle_lower.data)
-                s.lower = float(form.settle_upper.data)
+                s.upper = float(form.settle_upper.data)
+                s.lower = float(form.settle_lower.data)
                 s.save()
                 lifestage.settlement = s
 
@@ -227,8 +227,8 @@ def lifestage_wizard(library_id):
         if form.settlement.data:
             s = db.Settlement()
             s.type = form.settle_type.data
-            s.upper = float(form.settle_lower.data)
-            s.lower = float(form.settle_upper.data)
+            s.upper = float(form.settle_upper.data)
+            s.lower = float(form.settle_lower.data)
             s.save()
             lifestage.settlement = s
 
