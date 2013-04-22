@@ -80,7 +80,7 @@ def library_search():
         flash("Searching for '%s' returned 0 results" % keywords)
         return render_template('index.html', form=form, libraries=libraries)
     else:
-        return render_template('library_list.html', libraries=entries)    
+        return render_template('library_list.html', user=user, libraries=entries)    
 
 @app.route("/library/search.json", methods=["GET"])
 def library_json_search():
