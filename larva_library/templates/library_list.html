@@ -20,7 +20,7 @@
                     <td>{{ library.user }}</td>
                     <td>
                         <a href="{{ url_for( 'detail_view', library_id=library._id ) }}">detail</a><br />
-                        {% if user.admin or user.email == library.user %}
+                        {% if user.get('admin', False) or user.email == library.user %}
                             <a class="edit" href="{{ url_for( 'library_edit_wizard', library_id=library._id ) }}">edit</a><br />
                             <a class="edit" href="{{ url_for( 'library_destroy', library_id=library._id ) }}">delete</a><br />
                         {% endif %}

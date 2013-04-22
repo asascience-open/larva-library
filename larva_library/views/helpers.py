@@ -44,8 +44,11 @@ def authorize_entry_write(entry=None, user=None):
         return False
 
     if user is not None:
-        if entry.user == user.email or user.admin:
-            return True
+        try:
+            if entry.user == user.email or user.admin:
+                return True
+        except:
+            return False
             
     return False
 
@@ -55,8 +58,11 @@ def authorize_entry(entry=None, user=None):
     if entry.status == Library.STATUS_PUBLIC or entry.status == Library.STATUS_DEPREC:
         return True
     if user is not None:
-        if entry.user == user.email or user.admin:
-            return True
+        try:
+            if entry.user == user.email or user.admin:
+                return True
+        except:
+            return False
     return False
 
 def authorize_owned(entry=None, user=None):
