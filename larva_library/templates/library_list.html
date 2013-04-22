@@ -8,19 +8,17 @@
         <table class="search_results">
             <thead>
                 <tr>
-                    <th>Name</th><th>Genus</th><th>Species</th><th>Common</th><th>Date Created</th><th>User</th><th>Actions</th>
+                    <th>Name</th><th>Common</th><th>Date Created</th><th>User</th><th>Actions</th>
                 </tr>
             </thead>
             {% for library in libraries %}
             <tbody>
                 <tr>
                     <td>{{ library.name }}</td>
-                    <td>{{ library.genus }}</td>
-                    <td>{{ library.species }}</td>
                     <td>{{ library.common_name }}</td>
-                    <td>{{ library.created }}</td>
+                    <td style="width: 80px;">{{ library.created.strftime("%Y-%m-%d") }}</td>
                     <td>{{ library.user }}</td>
-                    <td style="width:100px;">
+                    <td>
                         <a href="{{ url_for( 'detail_view', library_id=library._id ) }}">detail</a><br />
                         {% if user.admin or user.email == library.user %}
                             <a class="edit" href="{{ url_for( 'library_edit_wizard', library_id=library._id ) }}">edit</a><br />

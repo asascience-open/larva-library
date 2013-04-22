@@ -298,11 +298,9 @@ label[for=settlement]{
 }
 
 .search_results {
-    border: 1px solid #00315c;
-    font-size: 14px;
-    width: 576px;
     background-color: #578FC2;
     border-spacing: 0;
+    line-height: 14px;
     }
 
     .search_results thead {
@@ -325,7 +323,7 @@ label[for=settlement]{
         background-color: #40A5FF;
     }
 
-    .search_results tbody td{
+    .search_results tbody td {
         border-bottom: 1px solid #fff;
         font-size: 12px;
         padding: 4px;
