@@ -431,9 +431,3 @@ def library_destroy(library_id):
         entry.delete()
         flash('Deleted Library Entry')
         return redirect(url_for('list_library'))
-
-#debug
-@app.route('/library/remove_entries')
-def remove_libraries():
-    db.drop_collection('libraries')
-    return redirect(url_for('index'))
