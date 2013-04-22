@@ -3,7 +3,7 @@ Flask-MongoKit==0.6
 Flask-WTF==0.8
 Flask-OAuth==0.11
 gunicorn==0.13.4
-mongokit==0.8
+mongokit==0.8.3
 Shapely==1.2.14
 pytz==2012d
 python-dateutil==2.1
