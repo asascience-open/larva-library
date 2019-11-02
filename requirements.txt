@@ -1,5 +1,5 @@
 pymongo==2.5
-Flask==0.9
+Flask==1.0
 Flask-MongoKit==0.6
 Flask-WTF==0.8
 Flask-OAuth==0.11
